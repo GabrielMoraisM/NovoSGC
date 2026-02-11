@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: sgc-backend
+Version: 0.1.0
+Requires-Dist: fastapi==0.115.0
+Requires-Dist: uvicorn[standard]==0.30.1
+Requires-Dist: sqlalchemy==2.0.30
+Requires-Dist: alembic==1.13.1
+Requires-Dist: psycopg2-binary==2.9.9
+Requires-Dist: python-dotenv==1.0.0
+Requires-Dist: passlib[bcrypt]==1.7.4
+Requires-Dist: python-jose[cryptography]==3.3.0
+Requires-Dist: pydantic-settings==2.2.0
+Dynamic: requires-dist
