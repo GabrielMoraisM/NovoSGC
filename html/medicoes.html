@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SGC - Boletins de Medicao">
+  <meta name="theme-color" content="#1e3a5f">
+  <title>Medicoes | SGC - Heca Engenharia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .measurement-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      transition: var(--transition);
+      position: relative;
+    }
+    .measurement-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .measurement-card.locked {
+      opacity: 0.7;
+    }
+    .measurement-card.locked::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0,0,0,0.03) 10px,
+        rgba(0,0,0,0.03) 20px
+      );
+      border-radius: var(--radius-lg);
+      pointer-events: none;
+    }
+    .measurement-number {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .measurement-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .status-step {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      position: relative;
+    }
+    .status-step.completed {
+      background: var(--success);
+    }
+    .status-step.current {
+      background: var(--warning);
+    }
+    .status-step::after {
+      content: attr(data-label);
+      position: absolute;
+      top: 8px;
+      left: 0;
+      font-size: 0.625rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .measurement-values {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .measurement-value {
+      text-align: center;
+    }
+    .measurement-value span {
+      display: block;
+      font-size: 0.625rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .measurement-value strong {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">HC</div>
+        <div class="sidebar-brand">
+          <h1>Heca Engenharia</h1>
+          <span>SGC Protótipo</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a href="contratos.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14,2 14,8 20,8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>Contratos</span>
+          </a>
+          <a href="medicoes.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="20" x2="12" y2="10"></line>
+              <line x1="18" y1="20" x2="18" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="16"></line>
+            </svg>
+            <span>Medicoes</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Financeiro</div>
+          <a href="financeiro.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            <span>Financeiro</span>
+          </a>
+          <a href="alertas.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>Alertas</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="configuraçoes.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Configuracoes</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button id="sidebar-toggle" class="sidebar-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <polyline points="11 17 6 12 11 7"></polyline>
+            <polyline points="18 17 13 12 18 7"></polyline>
+          </svg>
+          <span>Recolher</span>
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          
+          <div class="breadcrumb">
+            <a href="dashboard.html">SGC</a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <span>Medicoes</span>
+          </div>
+        </div>
+        
+        <div class="topbar-right">
+          <button id="theme-toggle" class="topbar-btn" data-tooltip="Alternar tema">
+            <svg id="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg id="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          
+          <button class="topbar-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge"></span>
+          </button>
+          
+          <div class="user-menu">
+            <div class="user-avatar" data-dropdown="user-dropdown">HC</div>
+            <div id="user-dropdown" class="dropdown">
+              <div class="dropdown-header">
+                <h4 class="user-display-name">Heca Admin</h4>
+                <p>admin@heca.com.br</p>
+              </div>
+              <a href="#" class="dropdown-item" data-modal-open="profile-modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Meu Perfil
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+    <polyline points="16 17 21 12 16 7"></polyline>
+    <line x1="21" y1="12" x2="9" y2="12"></line>
+  </svg>
+  Sair
+</a>
+
+<script>
+  function fazerLogout(event) {
+    // 1. Previne o comportamento padrão do link
+    event.preventDefault();
+
+    // 2. (Opcional) Limpa dados salvos no navegador (se você usar tokens)
+    sessionStorage.clear();
+    localStorage.clear();
+
+    // 3. Substitui a página atual no histórico pela index.html
+    window.location.replace("index.html");
+  }
+</script>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="page-header flex items-center justify-between">
+          <div>
+            <h1>Boletins de Medicao</h1>
+            <p>Acompanhe o progresso das medicoes por contrato</p>
+          </div>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Nova Medicao
+          </button>
+        </div>
+        
+        <!-- Contract Selector -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="card-body">
+            <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
+              <div class="flex items-center gap-3">
+                <select class="form-input form-select" style="width: auto; min-width: 200px;" id="contract-selector">
+                  <option value="CT-2024-001">CT-2024-001 - Plataforma P-80</option>
+                  <option value="CT-2024-002">CT-2024-002 - Terminal Portuario</option>
+                  <option value="CT-2024-003">CT-2024-003 - Subestacao 230kV</option>
+                </select>
+                <div>
+                  <div class="text-sm font-semibold">Petrobras</div>
+                  <div class="text-xs text-muted">Valor: R$ 12.500.000,00</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="text-center">
+                  <div class="text-xs text-muted">Acumulado Fisico</div>
+                  <div class="font-bold" style="color: var(--primary);">72%</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs text-muted">Acumulado Financeiro</div>
+                  <div class="font-bold" style="color: var(--success);">68%</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs text-muted">Faturado</div>
+                  <div class="font-bold">R$ 8.5M</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Measurements Grid -->
+        <div class="grid grid-cols-4" style="gap: 1rem;">
+          <!-- BM-001 - Faturado -->
+          <div class="measurement-card locked animate-fade-in">
+            <div class="flex items-center justify-between">
+              <div class="measurement-number">BM-001</div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div class="text-xs text-muted mt-1">Jan/2024</div>
+            
+            <div class="measurement-status">
+              <div class="status-step completed" data-label="Rascunho"></div>
+              <div class="status-step completed" data-label="Aprovado"></div>
+              <div class="status-step completed" data-label="Faturado"></div>
+            </div>
+            
+            <div class="measurement-values">
+              <div class="measurement-value">
+                <span>Fisico</span>
+                <strong>12%</strong>
+              </div>
+              <div class="measurement-value">
+                <span>Valor</span>
+                <strong>R$ 1.5M</strong>
+              </div>
+            </div>
+            
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-success">Faturado</span>
+            </div>
+          </div>
+          
+          <!-- BM-002 - Faturado -->
+          <div class="measurement-card locked animate-fade-in stagger-1">
+            <div class="flex items-center justify-between">
+              <div class="measurement-number">BM-002</div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div class="text-xs text-muted mt-1">Fev/2024</div>
+            
+            <div class="measurement-status">
+              <div class="status-step completed" data-label="Rascunho"></div>
+              <div class="status-step completed" data-label="Aprovado"></div>
+              <div class="status-step completed" data-label="Faturado"></div>
+            </div>
+            
+            <div class="measurement-values">
+              <div class="measurement-value">
+                <span>Fisico</span>
+                <strong>10%</strong>
+              </div>
+              <div class="measurement-value">
+                <span>Valor</span>
+                <strong>R$ 1.25M</strong>
+              </div>
+            </div>
+            
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-success">Faturado</span>
+            </div>
+          </div>
+          
+          <!-- BM-003 - Faturado -->
+          <div class="measurement-card locked animate-fade-in stagger-2">
+            <div class="flex items-center justify-between">
+              <div class="measurement-number">BM-003</div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div class="text-xs text-muted mt-1">Mar/2024</div>
+            
+            <div class="measurement-status">
+              <div class="status-step completed" data-label="Rascunho"></div>
+              <div class="status-step completed" data-label="Aprovado"></div>
+              <div class="status-step completed" data-label="Faturado"></div>
+            </div>
+            
+            <div class="measurement-values">
+              <div class="measurement-value">
+                <span>Fisico</span>
+                <strong>15%</strong>
+              </div>
+              <div class="measurement-value">
+                <span>Valor</span>
+                <strong>R$ 1.875M</strong>
+              </div>
+            </div>
+            
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-success">Faturado</span>
+            </div>
+          </div>
+          
+          <!-- BM-004 - Faturado -->
+          <div class="measurement-card locked animate-fade-in stagger-3">
+            <div class="flex items-center justify-between">
+              <div class="measurement-number">BM-004</div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div class="text-xs text-muted mt-1">Abr/2024</div>
+            
+            <div class="measurement-status">
+              <div class="status-step completed" data-label="Rascunho"></div>
+              <div class="status-step completed" data-label="Aprovado"></div>
+              <div class="status-step completed" data-label="Faturado"></div>
+            </div>
+            
+            <div class="measurement-values">
+              <div class="measurement-value">
+                <span>Fisico</span>
+                <strong>18%</strong>
+              </div>
+              <div class="measurement-value">
+                <span>Valor</span>
+                <strong>R$ 2.25M</strong>
+              </div>
+            </div>
+            
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-success">Faturado</span>
+            </div>
+          </div>
+          
+          <!-- BM-005 - Aprovado -->
+          <div class="measurement-card animate-fade-in stagger-4">
+            <div class="flex items-center justify-between">
+              <div class="measurement-number">BM-005</div>
+            </div>
+            <div class="text-xs text-muted mt-1">Mai/2024</div>
+            
+            <div class="measurement-status">
+              <div class="status-step completed" data-label="Rascunho"></div>
+              <div class="status-step completed" data-label="Aprovado"></div>
+              <div class="status-step" data-label="Faturado"></div>
+            </div>
+            
+            <div class="measurement-values">
+              <div class="measurement-value">
+                <span>Fisico</span>
+                <strong>12%</strong>
+              </div>
+              <div class="measurement-value">
+                <span>Valor</span>
+                <strong>R$ 1.5M</strong>
+              </div>
+            </div>
+            
+            <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center;">
+              <span class="badge badge-primary">Aprovado</span>
+              <button class="btn btn-success btn-sm" style="margin-left: auto;">Faturar</button>
+            </div>
+          </div>
+          
+          <!-- BM-006 - Em Elaboracao -->
+          <div class="measurement-card animate-fade-in">
+            <div class="flex items-center justify-between">
+              <div class="measurement-number">BM-006</div>
+            </div>
+            <div class="text-xs text-muted mt-1">Jun/2024</div>
+            
+            <div class="measurement-status">
+              <div class="status-step current" data-label="Rascunho"></div>
+              <div class="status-step" data-label="Aprovado"></div>
+              <div class="status-step" data-label="Faturado"></div>
+            </div>
+            
+            <div class="measurement-values">
+              <div class="measurement-value">
+                <span>Fisico</span>
+                <strong>5%</strong>
+              </div>
+              <div class="measurement-value">
+                <span>Valor</span>
+                <strong>R$ 625K</strong>
+              </div>
+            </div>
+            
+            <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center;">
+              <span class="badge badge-warning">Rascunho</span>
+              <button class="btn btn-secondary btn-sm" style="margin-left: auto;">Editar</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="card" style="margin-top: 1.5rem;">
+          <div class="card-header">
+            <h3 class="card-title">Resumo Acumulado</h3>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-cols-4" style="gap: 1.5rem; text-align: center;">
+              <div>
+                <div class="text-xs text-muted mb-1">Total de Medicoes</div>
+                <div class="text-2xl font-bold">6</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted mb-1">Fisico Acumulado</div>
+                <div class="text-2xl font-bold" style="color: var(--primary);">72%</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted mb-1">Valor Medido</div>
+                <div class="text-2xl font-bold">R$ 9.0M</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted mb-1">Valor Faturado</div>
+                <div class="text-2xl font-bold" style="color: var(--success);">R$ 6.875M</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Meu Perfil</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="avatar-upload">
+            <div class="avatar-preview">
+              <span>HC</span>
+              <div class="avatar-preview-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+              </div>
+            </div>
+            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('avatar-input').click()">
+              Alterar foto
+            </button>
+          </div>
+          
+          <div class="form-group" style="margin-top: 1.5rem;">
+            <label class="form-label">Nome completo</label>
+            <input type="text" id="profile-name" class="form-input" value="Heca Admin">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="profile-email" class="form-input" value="admin@heca.com.br">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Cargo</label>
+            <select id="profile-role" class="form-input form-select">
+              <option value="Diretor">Diretor</option>
+              <option value="Gerente">Gerente</option>
+              <option value="Engenheiro">Engenheiro</option>
+              <option value="Analista">Analista</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" form="profile-form" class="btn btn-primary">Salvar</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../js/main.js"></script>
+</body>
+</html>

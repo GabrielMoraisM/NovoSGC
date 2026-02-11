@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGC - Recuperar Senha</title>
+    
+    <link rel="stylesheet" href="../css/style.login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="building-section">
+            <img src="../../publico/building-hologram.jpg" alt="Holograma de prédio em construção" class="building-image">
+            <div class="building-windows"></div>
+        </div>
+
+        <div class="login-section">
+            <div class="header-content">
+                <h1 class="logo">SGC</h1>
+                <p class="subtitle">Recuperação de Acesso</p>
+            </div>
+
+            <div id="successMessage" class="success-message">
+                <strong>E-mail enviado com sucesso!</strong><br>
+                Verifique sua caixa de entrada para redefinir a senha.
+            </div>
+
+            <form id="recoveryForm">
+                <p class="instruction-text">
+                    Informe o e-mail corporativo associado à sua conta. Enviaremos um link seguro para você criar uma nova senha.
+                </p>
+
+                <div class="form-group">
+                    <label for="email">E-mail Corporativo</label>
+                    <input type="email" id="email" name="email" required autocomplete="email" placeholder="seu.nome@heca.com.br">
+                </div>
+
+                <button type="submit" class="login-btn" id="submitBtn">
+                    Enviar Link de Recuperação
+                </button>
+
+                <a href="index.html" class="forgot-password">
+                    &larr; Voltar para o Login
+                </a>
+            </form>
+
+            <div class="construction-indicator">
+                <p>Segurança e confiabilidade em primeiro lugar</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

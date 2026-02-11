@@ -1,0 +1,235 @@
+/* =========================================
+   RESET E CONFIGURAÇÕES GERAIS
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0f172a; /* Fundo base escuro */
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =========================================
+   LAYOUT PRINCIPAL (SPLIT SCREEN)
+   ========================================= */
+.login-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+/* --- LADO ESQUERDO: IMAGEM (55%) --- */
+.building-section {
+    flex: 0 0 55%;
+    position: relative;
+    overflow: hidden;
+    /* Uma borda sutil na direita para separar suavemente as seções */
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.building-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* Um leve filtro para harmonizar a imagem com o novo fundo */
+    filter: brightness(0.9) contrast(1.1); 
+}
+
+/* --- LADO DIREITO: FORMULÁRIO (45%) --- */
+.login-section {
+    flex: 0 0 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 80px;
+    
+    /* AQUI ESTÁ A MÁGICA DA COR: */
+    /* Gradiente saindo do azul escuro da foto para um azul um pouco mais claro */
+    background: linear-gradient(135deg, #0a2540 0%, #113054 100%);
+    color: white; /* Texto agora é branco */
+    position: relative;
+}
+
+/* =========================================
+   ESTILIZAÇÃO DO CONTEÚDO
+   ========================================= */
+
+.header-content {
+    margin-bottom: 50px;
+    text-align: left;
+}
+
+.logo {
+    font-size: 3.5rem;
+    font-weight: 800;
+    /* Gradiente no texto do Logo para dar efeito metálico/tech */
+    background: linear-gradient(to right, #60a5fa, #3b82f6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.subtitle {
+    color: #94a3b8; /* Cinza azulado claro */
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+.form-group {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    color: #cbd5e1; /* Texto quase branco */
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* INPUTS MODERNOS (Estilo Glass) */
+.form-group input {
+    width: 100%;
+    padding: 18px 20px;
+    
+    /* Fundo translúcido (efeito vidro) */
+    background: rgba(255, 255, 255, 0.05);
+    
+    /* Bordas sutis */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px; /* Cantos arredondados modernos */
+    
+    color: white; /* Texto digitado branco */
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Efeito ao clicar no input */
+.form-group input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #3b82f6; /* Borda azul brilhante */
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); /* Brilho externo */
+}
+
+/* Cor do texto de preenchimento automático do navegador */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0 30px #0f2642 inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* BOTÃO MODERNO */
+.login-btn {
+    width: 100%;
+    padding: 20px;
+    
+    /* Gradiente Vibrante */
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    
+    color: white;
+    border: none;
+    border-radius: 50px; /* Formato Pílula (bem arredondado) */
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); /* Sombra azul */
+}
+
+.login-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.forgot-password {
+    color: #64748b;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+}
+
+.forgot-password:hover {
+    color: #60a5fa; /* Azul claro ao passar o mouse */
+    text-decoration: none;
+}
+
+/* RODAPÉ */
+.construction-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.construction-indicator p {
+    color: #475569;
+    font-size: 0.8rem;
+    font-family: monospace; /* Fonte estilo código/técnico */
+    opacity: 0.7;
+}
+
+/* MENSAGENS DE ERRO/SUCESSO (Recuperar Senha) */
+.instruction-text {
+    color: #cbd5e1;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.success-message {
+    display: none;
+    text-align: center;
+    color: #86efac; /* Verde claro neon */
+    background: rgba(22, 101, 52, 0.2); /* Fundo verde translúcido */
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(134, 239, 172, 0.2);
+}
+
+/* RESPONSIVO */
+@media (max-width: 1000px) {
+    .login-container {
+        flex-direction: column;
+    }
+    
+    .building-section {
+        flex: none;
+        height: 35vh;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .login-section {
+        flex: 1; /* Ocupa o resto da tela */
+        padding: 40px 30px;
+        background: #0a2540; /* Cor sólida no mobile */
+    }
+
+    .header-content {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+}

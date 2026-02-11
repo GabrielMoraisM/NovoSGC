@@ -1,0 +1,119 @@
+/* Importa as configurações de Reset e Body do Login */
+@import url('./style.login.css');
+
+/* Reutilizamos as classes .login-container, .building-section, etc. 
+   Apenas adicionamos as especificidades do Registro abaixo */
+
+/* Ajuste para o formulário de registro (pode ter mais campos) */
+.login-section {
+    background: linear-gradient(135deg, #0a2540 0%, #113054 100%) !important;
+    color: white !important; /* Força o texto geral a ser branco */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 80px;
+    min-height: 100vh;
+}
+
+.form-group label {
+    color: #cbd5e1 !important; /* Um cinza claro azulado bem visível no escuro */
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-group input, .form-group select {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-radius: 12px;
+    padding: 15px;
+    width: 100%;
+}   
+
+/* Cor do texto dentro do Select (Opções) */
+.form-group select option {
+    background-color: #0a2540; /* Fundo escuro para as opções */
+    color: white;
+}
+
+.logo {
+    background: linear-gradient(to right, #60a5fa, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* Estilização específica para o SELECT (Perfil de Acesso) */
+.form-group select {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    appearance: none; /* Remove a seta padrão do navegador */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Adicionando uma seta customizada para o select */
+.form-group.select-group::after {
+    content: '▼';
+    font-size: 0.8rem;
+    color: #60a5fa;
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    pointer-events: none;
+}
+
+.form-group select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #3b82f6;
+}
+
+/* Estilo para as opções do select (limitado pelo navegador, mas ajuda) */
+.form-group select option {
+    background: #0a2540;
+    color: white;
+}
+
+/* Ajuste no botão para indicar "Cadastrar" */
+.register-btn {
+    /* Reutiliza o estilo do .login-btn */
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
+.register-btn:hover {
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5) !important;
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+}
+
+/* Link de voltar ao login */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    color: #3b82f6;
+}
+
+/* Ajuste de espaçamento para caber tudo na tela */
+.header-content {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
