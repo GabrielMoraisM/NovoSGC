@@ -47,7 +47,7 @@ class ParticipanteService:
                 detail="Apenas contratos do tipo CONSORCIO ou SCP podem ter participantes."
             )
 
-        # 3. Validar se todas as empresas existem e são do tipo PARCEIRO_CONSORCIO ou SCP
+        # 3. Validar se as empresas existem e se são elegíveis
         for p in participante_list.participantes:
             empresa = self.empresa_repo.get(p.empresa_id)
             if not empresa:
@@ -55,17 +55,29 @@ class ParticipanteService:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail=f"Empresa ID {p.empresa_id} não encontrada."
                 )
-            if contrato.tipo_obra == 'CONSORCIO' and empresa.tipo != 'PARCEIRO_CONSORCIO':
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Empresa {empresa.razao_social} não é um parceiro de consórcio válido."
-                )
-            # Para SCP, pode ter outro tipo? Vamos simplificar: aceitamos PARCEIRO_CONSORCIO ou SCP
-            if contrato.tipo_obra == 'SCP' and empresa.tipo not in ['PARCEIRO_CONSORCIO', 'SCP']:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Empresa {empresa.razao_social} não é um participante SCP válido."
-                )
+
+            # Se for o líder, pode ser MATRIZ (a própria Heca) ou PARCEIRO_CONSORCIO
+            if p.is_lider:
+                # Líder: permitir MATRIZ ou PARCEIRO_CONSORCIO
+                if empresa.tipo not in ['MATRIZ', 'PARCEIRO_CONSORCIO']:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Empresa líder deve ser MATRIZ ou PARCEIRO_CONSORCIO (tipo atual: {empresa.tipo})."
+                    )
+            else:
+                # Participante comum: deve ser PARCEIRO_CONSORCIO ou SCP (depende do tipo de obra)
+                if contrato.tipo_obra == 'CONSORCIO':
+                    if empresa.tipo != 'PARCEIRO_CONSORCIO':
+                        raise HTTPException(
+                            status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Empresa {empresa.razao_social} não é um parceiro de consórcio válido."
+                        )
+                elif contrato.tipo_obra == 'SCP':
+                    if empresa.tipo not in ['PARCEIRO_CONSORCIO', 'SCP']:
+                        raise HTTPException(
+                            status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Empresa {empresa.razao_social} não é um participante SCP válido."
+                        )
 
         # 4. Remover todos os participantes antigos
         self.repo.delete_by_contrato(contrato_id)
