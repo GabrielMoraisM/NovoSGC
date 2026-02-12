@@ -11,3 +11,14 @@ class ContratoParticipanteRepository(BaseRepository[ContratoParticipante]):
             ContratoParticipante.contrato_id == contrato_id,
             ContratoParticipante.empresa_id == empresa_id
         ).first()
+
+    def get_by_contrato(self, contrato_id: int) -> list[ContratoParticipante]:
+        """Retorna todos os participantes de um contrato."""
+        return self.db.query(ContratoParticipante).filter(
+            ContratoParticipante.contrato_id == contrato_id
+        ).all()
+
+    def delete_by_contrato(self, contrato_id: int) -> None:
+        self.db.query(ContratoParticipante).filter(
+            ContratoParticipante.contrato_id == contrato_id
+        ).delete(synchronize_session=False)

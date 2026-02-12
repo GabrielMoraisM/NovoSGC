@@ -11,3 +11,10 @@ class BoletimMedicaoRepository(BaseRepository[BoletimMedicao]):
             BoletimMedicao.contrato_id == contrato_id,
             BoletimMedicao.numero_sequencial == numero_sequencial
         ).first()
+
+    def get_ultimo_sequencial(self, contrato_id: int) -> int:
+        """Retorna o maior número sequencial para um contrato (usado pelo listener)."""
+        result = self.db.query(BoletimMedicao.numero_sequencial).filter(
+            BoletimMedicao.contrato_id == contrato_id
+        ).order_by(BoletimMedicao.numero_sequencial.desc()).first()
+        return result[0] if result else 0

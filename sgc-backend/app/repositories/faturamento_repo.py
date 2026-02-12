@@ -8,3 +8,6 @@ class FaturamentoRepository(BaseRepository[Faturamento]):
 
     def get_by_numero_nf(self, numero_nf: str) -> Faturamento | None:
         return self.db.query(Faturamento).filter(Faturamento.numero_nf == numero_nf).first()
+
+    def get_by_bm_id(self, bm_id: int) -> list[Faturamento]:
+        return self.db.query(Faturamento).filter(Faturamento.bm_id == bm_id).all()
