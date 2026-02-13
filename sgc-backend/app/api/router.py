@@ -8,6 +8,9 @@ from app.api.routes.aditivos import router as aditivos_router
 from app.api.routes.boletins import router as boletins_router 
 from app.api.routes.faturamentos import router as faturamentos_router  
 from app.api.routes.pagamentos import router as pagamentos_router      
+from app.api.routes.seguros import router as seguros_router
+from app.api.routes.arts import router as arts_router
+
 
 
 api_router = APIRouter()
@@ -21,4 +24,6 @@ api_router.include_router(aditivos_router, prefix="", tags=["aditivos"])
 api_router.include_router(boletins_router, prefix="", tags=["boletins"])
 api_router.include_router(faturamentos_router, prefix="/faturamentos", tags=["faturamentos"])  
 api_router.include_router(pagamentos_router, prefix="/pagamentos", tags=["pagamentos"])  
+api_router.include_router(seguros_router, prefix="", tags=["seguros"])
+api_router.include_router(arts_router, prefix="", tags=["arts"])
 

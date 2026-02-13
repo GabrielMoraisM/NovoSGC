@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SGC - Gestão de Contratos">
+  <meta name="theme-color" content="#1e3a5f">
+  <title>Contratos | SGC - Heca Engenharia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/sgc-frontend/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+    
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">HC</div>
+        <div class="sidebar-brand">
+          <h1>Heca Engenharia</h1>
+          <span>SGC Protótipo</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a href="empresas.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>Empresas</span>
+          </a>
+          <a href="contratos.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14,2 14,8 20,8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>Contratos</span>
+          </a>
+          <a href="medicoes.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="20" x2="12" y2="10"></line>
+              <line x1="18" y1="20" x2="18" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="16"></line>
+            </svg>
+            <span>Medições</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Financeiro</div>
+          <a href="financeiro.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            <span>Financeiro</span>
+          </a>
+          <a href="alertas.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>Alertas</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="configuracoes.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Configurações</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button id="sidebar-toggle" class="sidebar-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <polyline points="11 17 6 12 11 7"></polyline>
+            <polyline points="18 17 13 12 18 7"></polyline>
+          </svg>
+          <span>Recolher</span>
+        </button>
+      </div>
+    </aside>
+    
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          
+          <div class="breadcrumb">
+            <a href="/sgc-frontend/pages/dashboard.html">SGC</a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <span>Contratos</span>
+          </div>
+        </div>
+        
+        <div class="topbar-right">
+          <button id="theme-toggle" class="topbar-btn" data-tooltip="Alternar tema">
+            <svg id="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg id="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          
+          <button class="topbar-btn" data-dropdown="notifications-dropdown">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge"></span>
+          </button>
+          
+          <div class="user-menu">
+            <div class="user-avatar" data-dropdown="user-dropdown">HC</div>
+            <div id="user-dropdown" class="dropdown">
+              <div class="dropdown-header">
+                <h4 class="user-display-name">Heca Admin</h4>
+                <p>admin@heca.com.br</p>
+              </div>
+              <a href="#" class="dropdown-item" data-modal-open="profile-modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Meu Perfil
+              </a>
+              <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <div class="page-content">
+        <div class="page-header flex items-center justify-between">
+          <div>
+            <h1>Contratos</h1>
+            <p>Gerencie todos os contratos da empresa</p>
+          </div>
+          <button class="btn btn-primary" data-modal-open="new-contract-modal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Novo Contrato
+          </button>
+        </div>
+        
+        <div class="filter-bar">
+          <div class="search-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="search-contracts" class="form-input" placeholder="Buscar contratos...">
+          </div>
+          
+          <select class="form-input form-select" style="width: auto;" id="filter-type">
+            <option value="">Todos os tipos</option>
+            <option value="heca">Heca 100%</option>
+            <option value="consorcio">Consórcio</option>
+            <option value="scp">SCP</option>
+          </select>
+          
+          <select class="form-input form-select" style="width: auto;" id="filter-status">
+            <option value="">Todos os status</option>
+            <option value="em-dia">Em dia</option>
+            <option value="atencao">Atenção</option>
+            <option value="critico">Crítico</option>
+          </select>
+          
+          <button class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Exportar
+          </button>
+        </div>
+        
+        <div class="card">
+          <div class="table-container" style="border: none;">
+            <table class="table" id="contratos-table">
+              <thead>
+                <tr>
+                  <th>Contrato</th>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                  <th>Progresso</th>
+                  <th>Prazo</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- preenchido via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer flex items-center justify-between">
+            <span class="text-sm text-muted" id="contratos-count">Mostrando 0 de 0 contratos</span>
+            <div class="flex gap-2">
+              <button class="btn btn-secondary btn-sm" disabled>Anterior</button>
+              <button class="btn btn-secondary btn-sm">Próximo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Modal Novo Contrato -->
+  <div id="new-contract-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Novo Contrato</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="new-contract-form">
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Número do Contrato</label>
+              <input type="text" class="form-input" name="numero" placeholder="CT-2024-XXX" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo</label>
+              <select class="form-input form-select" name="tipo" required>
+                <option value="">Selecione...</option>
+                <option value="heca">Heca 100%</option>
+                <option value="consorcio">Consórcio</option>
+                <option value="scp">SCP</option>
+              </select>
+            </div>
+          </div>
+          <!-- Seção de Participantes (inicialmente oculta) -->
+          <div id="participantes-section" style="display: none; margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+            <h4 class="text-sm font-semibold mb-2">Participantes do Consórcio/SCP</h4>
+            <p class="text-xs text-muted mb-3">Adicione as empresas participantes e seus percentuais. A soma deve ser 100%.</p>
+            
+            <div id="participantes-list" style="margin-bottom: 1rem;">
+              <!-- Linhas de participantes serão inseridas aqui -->
+            </div>
+            
+            <div class="flex items-center gap-2 mb-3">
+              <select id="participante-empresa" class="form-input form-select" style="flex: 2;">
+                <option value="">Selecione uma empresa</option>
+              </select>
+              <input type="number" id="participante-percentual" class="form-input" style="flex: 1;" placeholder="%" step="0.01" min="0" max="100">
+              <button type="button" id="add-participante-btn" class="btn btn-secondary">Adicionar</button>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-sm">Total: <span id="soma-percentuais">0.00%</span></span>
+              <span id="soma-valid" style="color: var(--success); font-size: 0.75rem;">✓ Válido</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Nome do Projeto</label>
+            <input type="text" class="form-input" name="nome" placeholder="Nome do projeto" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Cliente</label>
+            <input type="text" class="form-input" name="cliente" placeholder="Nome do cliente" required>
+          </div>
+          
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+                <label class="form-label">Data Inicial</label>
+                <input type="date" class="form-input" name="dataInicio" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Data Final</label>
+              <input type="date" class="form-input" name="dataFim" required>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+             <div class="form-group">
+                <label class="form-label">Valor do Contrato (R$)</label>
+                <input type="number" class="form-input" name="valor" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">ISS Padrão (%)</label>
+                <div style="position: relative;">
+                  <input type="number" class="form-input" name="iss" step="0.01" min="0" max="100" style="padding-right: 2rem;">
+                  <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.875rem;">%</span>
+                </div>
+              </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Objeto</label>
+            <textarea class="form-input" name="objeto" rows="3" placeholder="Descreva o objeto do contrato..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" form="new-contract-form" class="btn btn-primary">Criar Contrato</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Detalhes do Contrato -->
+  <div id="contract-details-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 800px; width: 95%;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="detail-modal-title">Detalhes do Contrato</h3>
+          <p class="text-sm text-muted" id="detail-modal-subtitle">Visualização completa</p>
+        </div>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="detail-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="detail-label text-xs text-muted">Valor Total</div>
+            <div class="detail-value text-lg font-bold" id="detail-valor">R$ 0</div>
+          </div>
+          <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="detail-label text-xs text-muted">Executado</div>
+            <div class="detail-value text-lg font-bold" style="color: var(--success);" id="detail-executado">R$ 0</div>
+          </div>
+          <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="detail-label text-xs text-muted">Saldo</div>
+            <div class="detail-value text-lg font-bold" style="color: var(--primary);" id="detail-saldo">R$ 0</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div>
+            <h4 class="text-sm font-semibold mb-3">Informações Gerais</h4>
+            <table style="width: 100%; font-size: 0.875rem; color: #334155;">
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;">Cliente:</td>
+                <td class="font-semibold" id="detail-cliente"></td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;">Início:</td>
+                <td id="detail-inicio"></td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;">Término:</td>
+                <td id="detail-termino"></td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;">Gestor:</td>
+                <td id="detail-gestor"></td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold mb-3">Progresso Físico</h4>
+            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+              <div class="progress" style="width: 100%; height: 10px;">
+                <div class="progress-bar success" id="detail-progresso" style="width: 0%;"></div>
+              </div>
+              <span class="text-sm font-bold" id="detail-progresso-texto">0%</span>
+            </div>
+            <p class="text-xs text-muted">Avanço físico medido até a última medição aprovada.</p>
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-semibold">Histórico de Aditivos</h4>
+          <div style="display: flex; gap: 0.5rem;">
+            <h4 class="text-sm font-semibold">ARTs (Responsáveis Técnicos)</h4>
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalArts()">
+              Gerenciar ARTs
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalParticipantes()">
+              Gerenciar Participantes
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalSeguros()">
+              Gerenciar Seguros
+            </button>
+            <button class="btn btn-sm btn-primary" onclick="document.getElementById('aditivo-modal').classList.add('active')">
+              + Novo Aditivo
+            </button>
+          </div>
+          </div>
+          
+          <div style="background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+              <thead style="background: var(--background);">
+                <tr>
+                  <th style="padding: 0.5rem 1rem; text-align: left;">Nº</th>
+                  <th style="padding: 0.5rem 1rem; text-align: left;">Tipo</th>
+                  <th style="padding: 0.5rem 1rem; text-align: left;">Data</th>
+                  <th style="padding: 0.5rem 1rem; text-align: left;">Valor Adicionado</th>
+                  <th style="padding: 0.5rem 1rem; text-align: left;">Prazo Adicionado</th>
+                  <th style="padding: 0.5rem 1rem; text-align: left;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="aditivos-list">
+                <!-- preenchido via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Fechar</button>
+        <button type="button" class="btn btn-primary">Editar Contrato</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Aditivo -->
+  <div id="aditivo-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Novo Termo Aditivo</h3>
+          <p class="text-sm text-muted">Adicionar prazo ou valor ao contrato</p>
+        </div>
+        <button class="modal-close" onclick="document.getElementById('aditivo-modal').classList.remove('active')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="aditivo-form">
+          <div class="form-group">
+            <label class="form-label">Número do Aditivo</label>
+            <input type="text" class="form-input" name="numero" placeholder="Ex: TA-03" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tipo de Alteração</label>
+            <select class="form-input form-select" name="tipo" id="tipo-aditivo" required>
+              <option value="prazo">Prorrogação de Prazo</option>
+              <option value="valor">Acréscimo de Valor</option>
+              <option value="ambos">Prazo e Valor</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="prazo-group">
+            <label class="form-label">Dias Adicionados</label>
+            <input type="number" class="form-input" name="dias" placeholder="Ex: 60">
+          </div>
+
+          <div class="form-group" id="valor-group">
+            <label class="form-label">Valor Adicionado (R$)</label>
+            <input type="number" class="form-input" name="valor" step="0.01">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Justificativa</label>
+            <textarea class="form-input" name="justificativa" rows="3" placeholder="Motivo da alteração..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('aditivo-modal').classList.remove('active')">Cancelar</button>
+        <button type="submit" form="aditivo-form" class="btn btn-primary">Registrar Aditivo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Perfil (já existente) -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Meu Perfil</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="avatar-upload">
+            <div class="avatar-preview">
+              <span>HC</span>
+              <div class="avatar-preview-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+              </div>
+            </div>
+            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('avatar-input').click()">
+              Alterar foto
+            </button>
+          </div>
+          
+          <div class="form-group" style="margin-top: 1.5rem;">
+            <label class="form-label">Nome completo</label>
+            <input type="text" id="profile-name" class="form-input" value="Heca Admin">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="profile-email" class="form-input" value="admin@heca.com.br">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Cargo</label>
+            <select id="profile-role" class="form-input form-select">
+              <option value="Diretor">Diretor</option>
+              <option value="Gerente">Gerente</option>
+              <option value="Engenheiro">Engenheiro</option>
+              <option value="Analista">Analista</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" form="profile-form" class="btn btn-primary">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/sgc-frontend/js/main.js"></script>
+  <script src="/sgc-frontend/js/contratos.js"></script>
+<!-- Modal Gerenciar Seguros -->
+<div id="seguros-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 800px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Gerenciar Seguros</h3>
+      <button class="modal-close" data-modal-close>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="text-sm text-muted mb-3">Gerencie as apólices de seguro vinculadas a este contrato. Podem ser múltiplos seguros (garantia contratual, risco de engenharia, etc.).</p>
+      
+      <!-- Lista de seguros atuais -->
+      <h4 class="text-sm font-semibold mb-2">Apólices Cadastradas</h4>
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <table class="table" id="seguros-table">
+          <thead>
+            <tr>
+              <th>Apólice</th>
+              <th>Seguradora</th>
+              <th>Tipo</th>
+              <th>Vencimento</th>
+              <th>Valor</th>
+              <th>Cliente</th>
+              <th>Tomador</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="seguros-list">
+            <!-- preenchido via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Formulário para adicionar novo seguro -->
+      <h4 class="text-sm font-semibold mb-2">Adicionar Seguro</h4>
+      <form id="add-seguro-form">
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Seguradora</label>
+            <select class="form-input form-select" id="seguro-seguradora" required>
+              <option value="">Selecione...</option>
+              <!-- Opções serão carregadas via JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Número da Apólice</label>
+            <input type="text" class="form-input" id="seguro-apolice" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select class="form-input form-select" id="seguro-tipo" required>
+              <option value="">Selecione...</option>
+              <option value="GARANTIA_CONTRATUAL">Garantia Contratual</option>
+              <option value="RISCO_ENGENHARIA">Risco de Engenharia</option>
+              <option value="RC">Responsabilidade Civil</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Valor (R$)</label>
+            <input type="number" class="form-input" id="seguro-valor" step="0.01" min="0" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Data de Vencimento</label>
+            <input type="date" class="form-input" id="seguro-vencimento" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cliente (segurado)</label>
+            <select class="form-input form-select" id="seguro-cliente" required>
+              <option value="">Selecione...</option>
+              <!-- Opções serão carregadas via JS -->
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Tomador</label>
+            <select class="form-input form-select" id="seguro-tomador" required>
+              <option value="">Selecione...</option>
+              <!-- Opções serão carregadas via JS (geralmente a Heca) -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Objeto Segurado</label>
+            <input type="text" class="form-input" id="seguro-objeto" placeholder="Ex: Execução da obra, RC profissional..." required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" id="seguro-clausula-retomada"> Possui cláusula de retomada
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observações</label>
+          <textarea class="form-input" id="seguro-observacoes" rows="2"></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn btn-secondary" onclick="fecharModalSeguros()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Adicionar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal Gerenciar ARTs -->
+<div id="arts-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 700px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Gerenciar ARTs</h3>
+      <button class="modal-close" onclick="fecharModalArts()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Lista de ARTs -->
+      <h4 class="text-sm font-semibold mb-2">ARTs Cadastradas</h4>
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <table class="table" id="arts-table">
+          <thead>
+            <tr>
+              <th>Profissional</th>
+              <th>Nº ART</th>
+              <th>Finalizado</th>
+              <th>Data Finalização</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="arts-list">
+            <!-- preenchido via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Formulário para adicionar nova ART -->
+      <h4 class="text-sm font-semibold mb-2">Nova ART</h4>
+      <form id="add-art-form" onsubmit="adicionarArt(event)">
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Profissional</label>
+            <input type="text" id="art-nome" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Número da ART</label>
+            <input type="text" id="art-numero" class="form-input" required>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 mb-3">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="art-finalizado"> Finalizado
+          </label>
+          <div class="form-group" style="flex:1;" id="art-data-container" style="display: none;">
+            <label class="form-label">Data de Finalização</label>
+            <input type="date" id="art-data" class="form-input">
+          </div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn btn-secondary" onclick="fecharModalArts()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Adicionar ART</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

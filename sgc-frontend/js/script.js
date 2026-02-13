@@ -25,32 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Evento de Login
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = usernameInput.value;
-            const password = passwordInput.value;
-            
-            if (username && password) {
-                // Simula login bem sucedido
-                localStorage.setItem('sgc_logged_in', 'true');
-                localStorage.setItem('sgc_username', username);
-                
-                // Redireciona para o painel (Ajuste o nome do arquivo se necessário)
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('Por favor, preencha usuário e senha.');
-            }
-        });
-
-        // Botão "Esqueci minha senha"
-        if (forgotPassword) {
-            forgotPassword.addEventListener('click', function(e) {
-                // Redireciona para o novo HTML de redefinição
-                window.location.href = 'redefinir.html';
-            });
-        }
     }
 
     // ----------------------------------------------------------------

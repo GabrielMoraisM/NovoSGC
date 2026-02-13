@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SGC - Alertas e Notificações">
+  <meta name="theme-color" content="#1e3a5f">
+  <title>Alertas | SGC - Heca Engenharia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/sgc-frontend/css/styles.css">
+  <style>
+    .alert-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: var(--transition);
+      margin-bottom: 0.75rem;
+    }
+    .alert-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+    .alert-card.unread {
+      border-left: 4px solid var(--primary);
+      background: rgba(30, 58, 95, 0.02);
+    }
+    .alert-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .alert-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .alert-icon.danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .alert-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .alert-icon.info { background: rgba(30, 58, 95, 0.1); color: var(--primary); }
+    .alert-content {
+      flex: 1;
+    }
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .alert-title .badge {
+      font-size: 0.6rem;
+    }
+    .alert-message {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+    .alert-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .alert-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .filter-bar {
+      margin-bottom: 1.5rem;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      stroke: var(--border);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">HC</div>
+        <div class="sidebar-brand">
+          <h1>Heca Engenharia</h1>
+          <span>SGC Protótipo</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a href="empresas.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>Empresas</span>
+          </a>
+          <a href="contratos.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14,2 14,8 20,8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>Contratos</span>
+          </a>
+          <a href="medicoes.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="20" x2="12" y2="10"></line>
+              <line x1="18" y1="20" x2="18" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="16"></line>
+            </svg>
+            <span>Medições</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Financeiro</div>
+          <a href="financeiro.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            <span>Financeiro</span>
+          </a>
+          <a href="alertas.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>Alertas</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="configuracoes.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Configurações</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button id="sidebar-toggle" class="sidebar-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <polyline points="11 17 6 12 11 7"></polyline>
+            <polyline points="18 17 13 12 18 7"></polyline>
+          </svg>
+          <span>Recolher</span>
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          
+          <div class="breadcrumb">
+            <a href="dashboard.html">SGC</a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <span>Alertas</span>
+          </div>
+        </div>
+        
+        <div class="topbar-right">
+          <button id="theme-toggle" class="topbar-btn" data-tooltip="Alternar tema">
+            <svg id="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg id="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          
+          <button class="topbar-btn" data-dropdown="notifications-dropdown">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge"></span>
+          </button>
+          
+          <div class="user-menu">
+            <div class="user-avatar" data-dropdown="user-dropdown">HC</div>
+            
+            <div id="user-dropdown" class="dropdown">
+              <div class="dropdown-header">
+                <h4 class="user-display-name">Heca Admin</h4>
+                <p>admin@heca.com.br</p>
+              </div>
+              <a href="#" class="dropdown-item" data-modal-open="profile-modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Meu Perfil
+              </a>
+              <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="page-header flex items-center justify-between">
+          <div>
+            <h1>Alertas e Notificações</h1>
+            <p>Acompanhe os eventos importantes do sistema</p>
+          </div>
+          <button class="btn btn-secondary" onclick="marcarTodosLidos()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 12 9 20 23 4"></polyline>
+            </svg>
+            Marcar todos como lidos
+          </button>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="filter-bar">
+          <div class="search-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="search-alerts" class="form-input" placeholder="Buscar alertas...">
+          </div>
+          
+          <select class="form-input form-select" style="width: auto;" id="filter-type">
+            <option value="">Todos os tipos</option>
+            <option value="warning">Atenção</option>
+            <option value="danger">Crítico</option>
+            <option value="success">Sucesso</option>
+            <option value="info">Informativo</option>
+          </select>
+          
+          <select class="form-input form-select" style="width: auto;" id="filter-read">
+            <option value="">Todos</option>
+            <option value="unread">Não lidos</option>
+            <option value="read">Lidos</option>
+          </select>
+        </div>
+        
+        <!-- Lista de Alertas -->
+        <div id="alerts-list" class="alerts-container">
+          <!-- Os alertas serão inseridos via JavaScript -->
+          <div class="empty-state" id="alerts-empty" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3>Nenhum alerta encontrado</h3>
+            <p>Tudo tranquilo por aqui!</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Modal Perfil (já existente) -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Meu Perfil</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="avatar-upload">
+            <div class="avatar-preview">
+              <span>HC</span>
+              <div class="avatar-preview-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+              </div>
+            </div>
+            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('avatar-input').click()">
+              Alterar foto
+            </button>
+          </div>
+          
+          <div class="form-group" style="margin-top: 1.5rem;">
+            <label class="form-label">Nome completo</label>
+            <input type="text" id="profile-name" class="form-input" value="Heca Admin">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="profile-email" class="form-input" value="admin@heca.com.br">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Cargo</label>
+            <select id="profile-role" class="form-input form-select">
+              <option value="Diretor">Diretor</option>
+              <option value="Gerente">Gerente</option>
+              <option value="Engenheiro">Engenheiro</option>
+              <option value="Analista">Analista</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" form="profile-form" class="btn btn-primary">Salvar</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/sgc-frontend/js/alertas.js"></script>
+  <script src="/sgc-frontend/js/main.js"></script>
+</body>
+</html>

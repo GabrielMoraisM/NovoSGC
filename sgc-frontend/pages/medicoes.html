@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SGC - Boletins de Medicao">
+  <meta name="description" content="SGC - Boletins de Medição">
   <meta name="theme-color" content="#1e3a5f">
-  <title>Medicoes | SGC - Heca Engenharia</title>
+  <title>Medições | SGC - Heca Engenharia</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/sgc-frontend/css/styles.css">
   <style>
+    /* Estilos específicos para a página de medições */
     .measurement-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -124,6 +125,13 @@
             </svg>
             <span>Dashboard</span>
           </a>
+          <a href="empresas.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>Empresas</span>
+          </a>
           <a href="contratos.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -139,7 +147,7 @@
               <line x1="18" y1="20" x2="18" y2="4"></line>
               <line x1="6" y1="20" x2="6" y2="16"></line>
             </svg>
-            <span>Medicoes</span>
+            <span>Medições</span>
           </a>
         </div>
         
@@ -163,12 +171,12 @@
         
         <div class="nav-section">
           <div class="nav-section-title">Sistema</div>
-          <a href="configuraçoes.html" class="nav-item">
+          <a href="configuracoes.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
-            <span>Configuracoes</span>
+            <span>Configurações</span>
           </a>
         </div>
       </nav>
@@ -202,7 +210,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
-            <span>Medicoes</span>
+            <span>Medições</span>
           </div>
         </div>
         
@@ -224,7 +232,7 @@
             </svg>
           </button>
           
-          <button class="topbar-btn">
+          <button class="topbar-btn" data-dropdown="notifications-dropdown">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -234,6 +242,7 @@
           
           <div class="user-menu">
             <div class="user-avatar" data-dropdown="user-dropdown">HC</div>
+            
             <div id="user-dropdown" class="dropdown">
               <div class="dropdown-header">
                 <h4 class="user-display-name">Heca Admin</h4>
@@ -246,29 +255,14 @@
                 </svg>
                 Meu Perfil
               </a>
-              <div class="dropdown-divider"></div>
               <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-    <polyline points="16 17 21 12 16 7"></polyline>
-    <line x1="21" y1="12" x2="9" y2="12"></line>
-  </svg>
-  Sair
-</a>
-
-<script>
-  function fazerLogout(event) {
-    // 1. Previne o comportamento padrão do link
-    event.preventDefault();
-
-    // 2. (Opcional) Limpa dados salvos no navegador (se você usar tokens)
-    sessionStorage.clear();
-    localStorage.clear();
-
-    // 3. Substitui a página atual no histórico pela index.html
-    window.location.replace("index.html");
-  }
-</script>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+              </a>
             </div>
           </div>
         </div>
@@ -278,244 +272,47 @@
       <div class="page-content">
         <div class="page-header flex items-center justify-between">
           <div>
-            <h1>Boletins de Medicao</h1>
-            <p>Acompanhe o progresso das medicoes por contrato</p>
+            <h1>Boletins de Medição</h1>
+            <p>Acompanhe e gerencie todas as medições dos contratos</p>
           </div>
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" data-modal-open="new-measurement-modal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            Nova Medicao
+            Nova Medição
           </button>
         </div>
         
-        <!-- Contract Selector -->
-        <div class="card" style="margin-bottom: 1.5rem;">
-          <div class="card-body">
-            <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
-              <div class="flex items-center gap-3">
-                <select class="form-input form-select" style="width: auto; min-width: 200px;" id="contract-selector">
-                  <option value="CT-2024-001">CT-2024-001 - Plataforma P-80</option>
-                  <option value="CT-2024-002">CT-2024-002 - Terminal Portuario</option>
-                  <option value="CT-2024-003">CT-2024-003 - Subestacao 230kV</option>
-                </select>
-                <div>
-                  <div class="text-sm font-semibold">Petrobras</div>
-                  <div class="text-xs text-muted">Valor: R$ 12.500.000,00</div>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-center">
-                  <div class="text-xs text-muted">Acumulado Fisico</div>
-                  <div class="font-bold" style="color: var(--primary);">72%</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-xs text-muted">Acumulado Financeiro</div>
-                  <div class="font-bold" style="color: var(--success);">68%</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-xs text-muted">Faturado</div>
-                  <div class="font-bold">R$ 8.5M</div>
-                </div>
-              </div>
-            </div>
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="search-measurements" class="form-input" placeholder="Buscar medições...">
           </div>
+          
+          <select class="form-input form-select" style="width: auto;" id="filter-contract">
+            <option value="">Todos os contratos</option>
+            <option value="CT-2024-001">CT-2024-001 - Petrobras</option>
+            <option value="CT-2024-002">CT-2024-002 - Vale</option>
+            <option value="CT-2024-003">CT-2024-003 - Eletrobras</option>
+          </select>
+          
+          <select class="form-input form-select" style="width: auto;" id="filter-status">
+            <option value="">Todos os status</option>
+            <option value="RASCUNHO">Rascunho</option>
+            <option value="APROVADO">Aprovado</option>
+            <option value="FATURADO">Faturado</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
         </div>
         
         <!-- Measurements Grid -->
-        <div class="grid grid-cols-4" style="gap: 1rem;">
-          <!-- BM-001 - Faturado -->
-          <div class="measurement-card locked animate-fade-in">
-            <div class="flex items-center justify-between">
-              <div class="measurement-number">BM-001</div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-            </div>
-            <div class="text-xs text-muted mt-1">Jan/2024</div>
-            
-            <div class="measurement-status">
-              <div class="status-step completed" data-label="Rascunho"></div>
-              <div class="status-step completed" data-label="Aprovado"></div>
-              <div class="status-step completed" data-label="Faturado"></div>
-            </div>
-            
-            <div class="measurement-values">
-              <div class="measurement-value">
-                <span>Fisico</span>
-                <strong>12%</strong>
-              </div>
-              <div class="measurement-value">
-                <span>Valor</span>
-                <strong>R$ 1.5M</strong>
-              </div>
-            </div>
-            
-            <div style="margin-top: 0.75rem;">
-              <span class="badge badge-success">Faturado</span>
-            </div>
-          </div>
-          
-          <!-- BM-002 - Faturado -->
-          <div class="measurement-card locked animate-fade-in stagger-1">
-            <div class="flex items-center justify-between">
-              <div class="measurement-number">BM-002</div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-            </div>
-            <div class="text-xs text-muted mt-1">Fev/2024</div>
-            
-            <div class="measurement-status">
-              <div class="status-step completed" data-label="Rascunho"></div>
-              <div class="status-step completed" data-label="Aprovado"></div>
-              <div class="status-step completed" data-label="Faturado"></div>
-            </div>
-            
-            <div class="measurement-values">
-              <div class="measurement-value">
-                <span>Fisico</span>
-                <strong>10%</strong>
-              </div>
-              <div class="measurement-value">
-                <span>Valor</span>
-                <strong>R$ 1.25M</strong>
-              </div>
-            </div>
-            
-            <div style="margin-top: 0.75rem;">
-              <span class="badge badge-success">Faturado</span>
-            </div>
-          </div>
-          
-          <!-- BM-003 - Faturado -->
-          <div class="measurement-card locked animate-fade-in stagger-2">
-            <div class="flex items-center justify-between">
-              <div class="measurement-number">BM-003</div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-            </div>
-            <div class="text-xs text-muted mt-1">Mar/2024</div>
-            
-            <div class="measurement-status">
-              <div class="status-step completed" data-label="Rascunho"></div>
-              <div class="status-step completed" data-label="Aprovado"></div>
-              <div class="status-step completed" data-label="Faturado"></div>
-            </div>
-            
-            <div class="measurement-values">
-              <div class="measurement-value">
-                <span>Fisico</span>
-                <strong>15%</strong>
-              </div>
-              <div class="measurement-value">
-                <span>Valor</span>
-                <strong>R$ 1.875M</strong>
-              </div>
-            </div>
-            
-            <div style="margin-top: 0.75rem;">
-              <span class="badge badge-success">Faturado</span>
-            </div>
-          </div>
-          
-          <!-- BM-004 - Faturado -->
-          <div class="measurement-card locked animate-fade-in stagger-3">
-            <div class="flex items-center justify-between">
-              <div class="measurement-number">BM-004</div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-            </div>
-            <div class="text-xs text-muted mt-1">Abr/2024</div>
-            
-            <div class="measurement-status">
-              <div class="status-step completed" data-label="Rascunho"></div>
-              <div class="status-step completed" data-label="Aprovado"></div>
-              <div class="status-step completed" data-label="Faturado"></div>
-            </div>
-            
-            <div class="measurement-values">
-              <div class="measurement-value">
-                <span>Fisico</span>
-                <strong>18%</strong>
-              </div>
-              <div class="measurement-value">
-                <span>Valor</span>
-                <strong>R$ 2.25M</strong>
-              </div>
-            </div>
-            
-            <div style="margin-top: 0.75rem;">
-              <span class="badge badge-success">Faturado</span>
-            </div>
-          </div>
-          
-          <!-- BM-005 - Aprovado -->
-          <div class="measurement-card animate-fade-in stagger-4">
-            <div class="flex items-center justify-between">
-              <div class="measurement-number">BM-005</div>
-            </div>
-            <div class="text-xs text-muted mt-1">Mai/2024</div>
-            
-            <div class="measurement-status">
-              <div class="status-step completed" data-label="Rascunho"></div>
-              <div class="status-step completed" data-label="Aprovado"></div>
-              <div class="status-step" data-label="Faturado"></div>
-            </div>
-            
-            <div class="measurement-values">
-              <div class="measurement-value">
-                <span>Fisico</span>
-                <strong>12%</strong>
-              </div>
-              <div class="measurement-value">
-                <span>Valor</span>
-                <strong>R$ 1.5M</strong>
-              </div>
-            </div>
-            
-            <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center;">
-              <span class="badge badge-primary">Aprovado</span>
-              <button class="btn btn-success btn-sm" style="margin-left: auto;">Faturar</button>
-            </div>
-          </div>
-          
-          <!-- BM-006 - Em Elaboracao -->
-          <div class="measurement-card animate-fade-in">
-            <div class="flex items-center justify-between">
-              <div class="measurement-number">BM-006</div>
-            </div>
-            <div class="text-xs text-muted mt-1">Jun/2024</div>
-            
-            <div class="measurement-status">
-              <div class="status-step current" data-label="Rascunho"></div>
-              <div class="status-step" data-label="Aprovado"></div>
-              <div class="status-step" data-label="Faturado"></div>
-            </div>
-            
-            <div class="measurement-values">
-              <div class="measurement-value">
-                <span>Fisico</span>
-                <strong>5%</strong>
-              </div>
-              <div class="measurement-value">
-                <span>Valor</span>
-                <strong>R$ 625K</strong>
-              </div>
-            </div>
-            
-            <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center;">
-              <span class="badge badge-warning">Rascunho</span>
-              <button class="btn btn-secondary btn-sm" style="margin-left: auto;">Editar</button>
-            </div>
-          </div>
+        <div id="measurements-grid" class="grid grid-cols-4" style="gap: 1rem;">
+          <!-- Cards serão preenchidos via JavaScript -->
         </div>
         
         <!-- Summary -->
@@ -526,20 +323,20 @@
           <div class="card-body">
             <div class="grid grid-cols-4" style="gap: 1.5rem; text-align: center;">
               <div>
-                <div class="text-xs text-muted mb-1">Total de Medicoes</div>
-                <div class="text-2xl font-bold">6</div>
+                <div class="text-xs text-muted mb-1">Total de Medições</div>
+                <div class="text-2xl font-bold" id="total-medicoes">0</div>
               </div>
               <div>
-                <div class="text-xs text-muted mb-1">Fisico Acumulado</div>
-                <div class="text-2xl font-bold" style="color: var(--primary);">72%</div>
+                <div class="text-xs text-muted mb-1">Valor Total Medido</div>
+                <div class="text-2xl font-bold" id="valor-total-medido">R$ 0</div>
               </div>
               <div>
-                <div class="text-xs text-muted mb-1">Valor Medido</div>
-                <div class="text-2xl font-bold">R$ 9.0M</div>
+                <div class="text-xs text-muted mb-1">Valor Aprovado</div>
+                <div class="text-2xl font-bold" id="valor-total-aprovado">R$ 0</div>
               </div>
               <div>
-                <div class="text-xs text-muted mb-1">Valor Faturado</div>
-                <div class="text-2xl font-bold" style="color: var(--success);">R$ 6.875M</div>
+                <div class="text-xs text-muted mb-1">Faturado</div>
+                <div class="text-2xl font-bold" id="valor-total-faturado">R$ 0</div>
               </div>
             </div>
           </div>
@@ -548,7 +345,129 @@
     </main>
   </div>
   
-  <!-- Profile Modal -->
+  <!-- Modal Nova Medição -->
+  <div id="new-measurement-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Novo Boletim de Medição</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="new-measurement-form">
+          <div class="form-group">
+            <label class="form-label">Contrato</label>
+            <select class="form-input form-select" name="contrato" required>
+              <option value="">Selecione um contrato</option>
+              <option value="CT-2024-001">CT-2024-001 - Plataforma P-80 (Petrobras)</option>
+              <option value="CT-2024-002">CT-2024-002 - Terminal Portuário (Vale)</option>
+              <option value="CT-2024-003">CT-2024-003 - Subestação 230kV (Eletrobras)</option>
+            </select>
+          </div>
+          
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Período Início</label>
+              <input type="date" class="form-input" name="periodoInicio" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Período Fim</label>
+              <input type="date" class="form-input" name="periodoFim" required>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Valor Medido (R$)</label>
+              <input type="number" class="form-input" name="valorMedido" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Glosa (R$)</label>
+              <input type="number" class="form-input" name="glosa" step="0.01" min="0" value="0">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea class="form-input" name="observacoes" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" form="new-measurement-form" class="btn btn-primary">Criar Medição</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Detalhes da Medição -->
+  <div id="measurement-details-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 700px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="detail-measurement-title">Detalhes da Medição</h3>
+          <p class="text-sm text-muted" id="detail-measurement-subtitle">BM-001 - CT-2024-001</p>
+        </div>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Informações resumidas -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="text-xs text-muted">Valor Medido</div>
+            <div class="text-lg font-bold" id="detail-valor-medido">R$ 0</div>
+          </div>
+          <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="text-xs text-muted">Glosa</div>
+            <div class="text-lg font-bold" id="detail-glosa">R$ 0</div>
+          </div>
+          <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="text-xs text-muted">Valor Aprovado</div>
+            <div class="text-lg font-bold" id="detail-valor-aprovado">R$ 0</div>
+          </div>
+        </div>
+        
+        <!-- Detalhes completos -->
+        <div style="margin-bottom: 1.5rem;">
+          <h4 class="text-sm font-semibold mb-3">Informações da Medição</h4>
+          <table style="width: 100%; font-size: 0.875rem;">
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted); width: 120px;">Contrato:</td>
+              <td class="font-semibold" id="detail-contrato">CT-2024-001</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Período:</td>
+              <td id="detail-periodo">01/01/2024 a 31/01/2024</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Status:</td>
+              <td><span class="badge" id="detail-status">Rascunho</span></td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Observações:</td>
+              <td id="detail-observacoes">-</td>
+            </tr>
+          </table>
+        </div>
+        
+        <!-- Ações conforme status -->
+        <div id="detail-actions" style="display: flex; gap: 0.5rem; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+          <!-- Botões serão inseridos via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Perfil (já existente) -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
@@ -606,6 +525,7 @@
     </div>
   </div>
   
-  <script src="/main.js"></script>
+  <script src="/sgc-frontend/js/main.js"></script>
+  <script src="/sgc-frontend/js/medicoes.js"></script>
 </body>
 </html>

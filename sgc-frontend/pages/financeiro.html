@@ -9,7 +9,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/sgc-frontend/css/styles.css">
+  <style>
+    /* Estilos específicos para a página financeira */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .badge-pago { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .badge-pendente { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .badge-vencido { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .tax-summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+  </style>
 </head>
 <body>
   <div class="app-container">
@@ -38,6 +56,13 @@
             </svg>
             <span>Dashboard</span>
           </a>
+          <a href="empresas.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>Empresas</span>
+          </a>
           <a href="contratos.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -53,7 +78,7 @@
               <line x1="18" y1="20" x2="18" y2="4"></line>
               <line x1="6" y1="20" x2="6" y2="16"></line>
             </svg>
-            <span>Medicoes</span>
+            <span>Medições</span>
           </a>
         </div>
         
@@ -82,7 +107,7 @@
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
-            <span>Configuracoes</span>
+            <span>Configurações</span>
           </a>
         </div>
       </nav>
@@ -181,7 +206,7 @@
             <h1>Controle Financeiro</h1>
             <p>Gestão de notas fiscais, recebimentos e impostos</p>
           </div>
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" data-modal-open="new-invoice-modal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -190,7 +215,7 @@
           </button>
         </div>
         
-        <!-- KPI Cards -->
+        <!-- KPI Cards (resumo) -->
         <div class="kpi-grid">
           <div class="kpi-card animate-fade-in stagger-1">
             <div class="kpi-header">
@@ -200,7 +225,7 @@
                 </svg>
               </div>
             </div>
-            <div class="kpi-value">R$ 28.7M</div>
+            <div class="kpi-value" id="total-recebido">R$ 0</div>
             <div class="kpi-label">Total Recebido</div>
           </div>
           
@@ -213,7 +238,7 @@
                 </svg>
               </div>
             </div>
-            <div class="kpi-value">R$ 4.2M</div>
+            <div class="kpi-value" id="total-pendente">R$ 0</div>
             <div class="kpi-label">Aguardando Pagamento</div>
           </div>
           
@@ -227,7 +252,7 @@
                 </svg>
               </div>
             </div>
-            <div class="kpi-value">R$ 850K</div>
+            <div class="kpi-value" id="total-vencido">R$ 0</div>
             <div class="kpi-label">Vencidas</div>
           </div>
           
@@ -240,7 +265,7 @@
                 </svg>
               </div>
             </div>
-            <div class="kpi-value">48</div>
+            <div class="kpi-value" id="total-notas">0</div>
             <div class="kpi-label">Notas Emitidas</div>
           </div>
         </div>
@@ -252,22 +277,22 @@
           <button class="tab" data-tab-target="taxes-panel">Impostos</button>
         </div>
         
-        <!-- Invoices Panel -->
-        <div id="invoices-panel" data-tab-panel="financial">
+        <!-- Panel: Notas Fiscais -->
+        <div id="invoices-panel" class="tab-content active">
           <div class="filter-bar">
             <div class="search-input">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input type="text" class="form-input" placeholder="Buscar notas fiscais..." data-search=".invoice-row">
+              <input type="text" id="search-invoices" class="form-input" placeholder="Buscar notas fiscais...">
             </div>
             
-            <select class="form-input form-select" style="width: auto;">
+            <select class="form-input form-select" style="width: auto;" id="filter-invoice-status">
               <option value="">Todos os status</option>
-              <option value="pago">Pago</option>
-              <option value="pendente">Pendente</option>
-              <option value="vencido">Vencido</option>
+              <option value="PAGO">Pago</option>
+              <option value="PENDENTE">Pendente</option>
+              <option value="VENCIDO">Vencido</option>
             </select>
             
             <button class="btn btn-secondary">
@@ -282,7 +307,7 @@
           
           <div class="card">
             <div class="table-container" style="border: none;">
-              <table class="table">
+              <table class="table" id="invoices-table">
                 <thead>
                   <tr>
                     <th>Nota Fiscal</th>
@@ -293,110 +318,16 @@
                     <th>Valor Bruto</th>
                     <th>Valor Líquido</th>
                     <th>Status</th>
-                    <th></th>
+                    <th style="text-align: right;">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="invoice-row" data-status="pago">
-                    <td class="font-semibold">NF-2024-0125</td>
-                    <td>CT-2024-001</td>
-                    <td>Petrobras</td>
-                    <td>15/01/2024</td>
-                    <td>15/02/2024</td>
-                    <td>R$ 1.500.000</td>
-                    <td>R$ 1.282.500</td>
-                    <td><span class="badge badge-success">Pago</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-sm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                          <circle cx="12" cy="12" r="1"></circle>
-                          <circle cx="19" cy="12" r="1"></circle>
-                          <circle cx="5" cy="12" r="1"></circle>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="invoice-row" data-status="pago">
-                    <td class="font-semibold">NF-2024-0126</td>
-                    <td>CT-2024-001</td>
-                    <td>Petrobras</td>
-                    <td>15/02/2024</td>
-                    <td>15/03/2024</td>
-                    <td>R$ 1.250.000</td>
-                    <td>R$ 1.068.750</td>
-                    <td><span class="badge badge-success">Pago</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-sm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                          <circle cx="12" cy="12" r="1"></circle>
-                          <circle cx="19" cy="12" r="1"></circle>
-                          <circle cx="5" cy="12" r="1"></circle>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="invoice-row" data-status="pendente">
-                    <td class="font-semibold">NF-2024-0127</td>
-                    <td>CT-2024-002</td>
-                    <td>Vale S.A.</td>
-                    <td>01/03/2024</td>
-                    <td>01/04/2024</td>
-                    <td>R$ 2.100.000</td>
-                    <td>R$ 1.795.500</td>
-                    <td><span class="badge badge-warning">Pendente</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-sm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                          <circle cx="12" cy="12" r="1"></circle>
-                          <circle cx="19" cy="12" r="1"></circle>
-                          <circle cx="5" cy="12" r="1"></circle>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="invoice-row" data-status="vencido">
-                    <td class="font-semibold">NF-2024-0128</td>
-                    <td>CT-2024-004</td>
-                    <td>CDHU</td>
-                    <td>15/01/2024</td>
-                    <td>15/02/2024</td>
-                    <td>R$ 850.000</td>
-                    <td>R$ 726.750</td>
-                    <td><span class="badge badge-danger">Vencida</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-sm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                          <circle cx="12" cy="12" r="1"></circle>
-                          <circle cx="19" cy="12" r="1"></circle>
-                          <circle cx="5" cy="12" r="1"></circle>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="invoice-row" data-status="pendente">
-                    <td class="font-semibold">NF-2024-0129</td>
-                    <td>CT-2024-003</td>
-                    <td>Eletrobras</td>
-                    <td>20/03/2024</td>
-                    <td>20/04/2024</td>
-                    <td>R$ 3.200.000</td>
-                    <td>R$ 2.736.000</td>
-                    <td><span class="badge badge-warning">Pendente</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-sm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                          <circle cx="12" cy="12" r="1"></circle>
-                          <circle cx="19" cy="12" r="1"></circle>
-                          <circle cx="5" cy="12" r="1"></circle>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
+                  <!-- preenchido via JavaScript -->
                 </tbody>
               </table>
             </div>
             <div class="card-footer flex items-center justify-between">
-              <span class="text-sm text-muted">Mostrando 5 de 48 notas fiscais</span>
+              <span class="text-sm text-muted" id="invoices-count">Mostrando 0 de 0 notas</span>
               <div class="flex gap-2">
                 <button class="btn btn-secondary btn-sm" disabled>Anterior</button>
                 <button class="btn btn-secondary btn-sm">Próximo</button>
@@ -405,70 +336,82 @@
           </div>
         </div>
         
-        <!-- Payments Panel -->
-        <div id="payments-panel" data-tab-panel="financial" style="display: none;">
+        <!-- Panel: Pagamentos -->
+        <div id="payments-panel" class="tab-content">
           <div class="card">
-            <div class="card-body">
-              <div class="empty-state">
+            <div class="card-header">
+              <h3 class="card-title">Histórico de Pagamentos</h3>
+              <button class="btn btn-primary btn-sm" data-modal-open="new-payment-modal">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-                <h3>Controle de Pagamentos</h3>
-                <p>Visualize e gerencie todos os recebimentos por nota fiscal.</p>
-                <button class="btn btn-primary">Ver Pagamentos</button>
+                Novo Pagamento
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="table" id="payments-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Nota Fiscal</th>
+                      <th>Contrato</th>
+                      <th>Cliente</th>
+                      <th>Valor Pago</th>
+                      <th>Forma</th>
+                      <th>Observação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- preenchido via JavaScript -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Taxes Panel -->
-        <div id="taxes-panel" data-tab-panel="financial" style="display: none;">
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Resumo de Impostos Retidos</h3>
-            </div>
-            <div class="card-body">
-              <div class="grid grid-cols-2" style="gap: 1.5rem;">
-                <div>
-                  <h4 class="text-sm font-semibold mb-3">Impostos Federais</h4>
-                  <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm">IRRF (1,5%)</span>
-                      <span class="font-medium">R$ 430.500</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm">PIS (0,65%)</span>
-                      <span class="font-medium">R$ 186.550</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm">COFINS (3%)</span>
-                      <span class="font-medium">R$ 861.000</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm">CSLL (1%)</span>
-                      <span class="font-medium">R$ 287.000</span>
-                    </div>
-                  </div>
+        <!-- Panel: Impostos -->
+        <div id="taxes-panel" class="tab-content">
+          <div class="grid grid-cols-2" style="gap: 1.5rem;">
+            <div class="tax-summary-card">
+              <h4 class="text-sm font-semibold mb-3">Impostos Federais</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm">IRRF (1,5%)</span>
+                  <span class="font-medium" id="tax-irrf">R$ 0</span>
                 </div>
-                <div>
-                  <h4 class="text-sm font-semibold mb-3">Impostos Municipais / Outros</h4>
-                  <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm">ISS (5%)</span>
-                      <span class="font-medium">R$ 1.435.000</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm">INSS (11%)</span>
-                      <span class="font-medium">R$ 3.157.000</span>
-                    </div>
-                  </div>
-                  <div class="mt-4 pt-4" style="border-top: 1px solid var(--border);">
-                    <div class="flex items-center justify-between">
-                      <span class="font-semibold">Total Retido</span>
-                      <span class="font-bold text-lg" style="color: var(--danger);">R$ 6.357.050</span>
-                    </div>
-                  </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm">PIS (0,65%)</span>
+                  <span class="font-medium" id="tax-pis">R$ 0</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm">COFINS (3%)</span>
+                  <span class="font-medium" id="tax-cofins">R$ 0</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm">CSLL (1%)</span>
+                  <span class="font-medium" id="tax-csll">R$ 0</span>
+                </div>
+              </div>
+            </div>
+            <div class="tax-summary-card">
+              <h4 class="text-sm font-semibold mb-3">Outros Impostos</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm">ISS (5%)</span>
+                  <span class="font-medium" id="tax-iss">R$ 0</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm">INSS (11%)</span>
+                  <span class="font-medium" id="tax-inss">R$ 0</span>
+                </div>
+              </div>
+              <div class="mt-4 pt-4" style="border-top: 1px solid var(--border);">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold">Total Retido</span>
+                  <span class="font-bold text-lg" id="tax-total">R$ 0</span>
                 </div>
               </div>
             </div>
@@ -478,7 +421,226 @@
     </main>
   </div>
   
-  <!-- Profile Modal -->
+  <!-- Modal Nova Nota Fiscal -->
+  <div id="new-invoice-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Nova Nota Fiscal</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="new-invoice-form">
+          <div class="form-group">
+            <label class="form-label">Contrato / BM</label>
+            <select class="form-input form-select" name="bmId" required>
+              <option value="">Selecione...</option>
+              <option value="1">CT-2024-001 - BM-005 (Aprovado) - R$ 1.500.000</option>
+              <option value="2">CT-2024-002 - BM-003 (Aprovado) - R$ 2.000.000</option>
+              <option value="3">CT-2024-003 - BM-003 (Aprovado) - R$ 2.100.000</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Número da NF</label>
+            <input type="text" class="form-input" name="numeroNf" placeholder="Ex: NF-2024-0127" required>
+          </div>
+          
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Data Emissão</label>
+              <input type="date" class="form-input" name="dataEmissao" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Data Vencimento</label>
+              <input type="date" class="form-input" name="dataVencimento" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Valor Bruto (R$)</label>
+            <input type="number" class="form-input" name="valorBruto" step="0.01" min="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Empresa Emissora</label>
+            <select class="form-input form-select" name="empresaEmissoraId" required>
+              <option value="1">Heca Engenharia (MATRIZ)</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" form="new-invoice-form" class="btn btn-primary">Emitir NF</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Novo Pagamento -->
+  <div id="new-payment-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Novo Pagamento</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="new-payment-form">
+          <div class="form-group">
+            <label class="form-label">Nota Fiscal</label>
+            <select class="form-input form-select" name="faturamentoId" required>
+              <option value="">Selecione...</option>
+              <option value="1">NF-2024-0125 - Petrobras - R$ 1.282.500 (PENDENTE)</option>
+              <option value="2">NF-2024-0126 - Petrobras - R$ 1.068.750 (PENDENTE)</option>
+              <option value="3">NF-2024-0127 - Vale - R$ 1.795.500 (PENDENTE)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Data do Pagamento</label>
+            <input type="date" class="form-input" name="dataPagamento" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Valor Pago (R$)</label>
+            <input type="number" class="form-input" name="valorPago" step="0.01" min="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Observação</label>
+            <textarea class="form-input" name="observacao" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" form="new-payment-form" class="btn btn-primary">Registrar Pagamento</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Detalhes da NF -->
+  <div id="invoice-details-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 700px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="detail-invoice-title">Detalhes da NF</h3>
+          <p class="text-sm text-muted" id="detail-invoice-subtitle">NF-2024-0125</p>
+        </div>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="text-xs text-muted">Valor Bruto</div>
+            <div class="text-lg font-bold" id="detail-valor-bruto">R$ 0</div>
+          </div>
+          <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="text-xs text-muted">Valor Líquido</div>
+            <div class="text-lg font-bold" id="detail-valor-liquido">R$ 0</div>
+          </div>
+          <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="text-xs text-muted">Status</div>
+            <div id="detail-status"></div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <h4 class="text-sm font-semibold mb-3">Informações da NF</h4>
+          <table style="width: 100%; font-size: 0.875rem;">
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Contrato / BM:</td>
+              <td class="font-semibold" id="detail-bm">CT-2024-001 / BM-005</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Cliente:</td>
+              <td id="detail-cliente">Petrobras</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Emissão:</td>
+              <td id="detail-emissao">15/01/2024</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Vencimento:</td>
+              <td id="detail-vencimento">15/02/2024</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: var(--text-muted);">Empresa Emissora:</td>
+              <td id="detail-emissora">Heca Engenharia</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <h4 class="text-sm font-semibold mb-3">Retenções</h4>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+            <div class="flex items-center justify-between">
+              <span class="text-sm">ISS:</span>
+              <span id="detail-iss">R$ 0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">INSS:</span>
+              <span id="detail-inss">R$ 0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">IRRF:</span>
+              <span id="detail-irrf">R$ 0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">CSLL:</span>
+              <span id="detail-csll">R$ 0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">PIS:</span>
+              <span id="detail-pis">R$ 0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">COFINS:</span>
+              <span id="detail-cofins">R$ 0</span>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-sm font-semibold mb-2">Pagamentos</h4>
+          <div class="table-container" style="max-height: 200px; overflow-y: auto;">
+            <table class="table" style="font-size: 0.75rem;">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Valor</th>
+                  <th>Observação</th>
+                </tr>
+              </thead>
+              <tbody id="detail-pagamentos">
+                <!-- preenchido via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Fechar</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Perfil -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
@@ -507,17 +669,14 @@
               Alterar foto
             </button>
           </div>
-          
           <div class="form-group" style="margin-top: 1.5rem;">
             <label class="form-label">Nome completo</label>
             <input type="text" id="profile-name" class="form-input" value="Heca Admin">
           </div>
-          
           <div class="form-group">
             <label class="form-label">E-mail</label>
             <input type="email" id="profile-email" class="form-input" value="admin@heca.com.br">
           </div>
-          
           <div class="form-group">
             <label class="form-label">Cargo</label>
             <select id="profile-role" class="form-input form-select">
@@ -536,15 +695,7 @@
     </div>
   </div>
   
-  <script>
-    // Função de logout global (também definida no main.js, mas garantia)
-    function fazerLogout(event) {
-      event.preventDefault();
-      sessionStorage.clear();
-      localStorage.clear();
-      window.location.replace("index.html");
-    }
-  </script>
-  <script src="/main.js"></script>
+  <script src="/sgc-frontend/js/main.js"></script>
+  <script src="/sgc-frontend/js/financeiro.js"></script>
 </body>
 </html>

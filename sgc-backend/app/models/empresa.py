@@ -18,7 +18,7 @@ class Empresa(Base):
     razao_social = Column(String(200), nullable=False)
     cnpj = Column(String(18), unique=True, nullable=False)
     tipo = Column(
-        Enum("MATRIZ", "FILIAL", "PARCEIRO_CONSORCIO", "SCP", "CLIENTE", name="tipo_empresa"),
+        Enum("MATRIZ", "FILIAL", "PARCEIRO_CONSORCIO", "SCP", "CLIENTE","SEGURADORA", name="tipo_empresa"),
         nullable=False
     )
     created_at = Column(DateTime(timezone=True), server_default=func.now())
