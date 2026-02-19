@@ -73,6 +73,7 @@ class ContratoUpdate(BaseModel):
 class ContratoInDB(ContratoBase):
     id: int
     data_fim_prevista: Optional[date]
+    valor_total: Optional[Decimal]  # novo campo
     created_at: datetime
     updated_at: Optional[datetime]
 

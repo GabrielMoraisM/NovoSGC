@@ -9,30 +9,54 @@ async function apiRequest(endpoint, options = {}) {
     ...options.headers
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers
+    });
 
-  // Se a resposta for 204 No Content, retorna null
-  if (response.status === 204) {
-    return null;
+    // Se a resposta for 204 No Content, retorna null
+    if (response.status === 204) {
+      return null;
+    }
+
+    // Tenta parsear o JSON, se falhar, assume objeto vazio
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      // Log detalhado do erro
+      console.error('❌ Erro na requisição:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: `${API_BASE_URL}${endpoint}`,
+        data: data
+      });
+
+      // Monta mensagem de erro legível
+      let message = `Erro ${response.status}: ${response.statusText}`;
+      if (data.detail) {
+        if (Array.isArray(data.detail)) {
+          message = data.detail.map(e => e.msg).join('; ');
+        } else if (typeof data.detail === 'string') {
+          message = data.detail;
+        } else {
+          message = JSON.stringify(data.detail);
+        }
+      }
+      throw new Error(message);
+    }
+
+    return data;
+  } catch (error) {
+    // Se já for um erro tratado (com message), apenas repassa
+    if (error.message) throw error;
+    // Caso contrário, envolve em um erro genérico
+    throw new Error('Erro de rede ou servidor indisponível');
   }
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    // Se o erro tiver detalhes, usa; senão, mensagem genérica
-    const message = data.detail || `Erro ${response.status}: ${response.statusText}`;
-    throw new Error(message);
-  }
-
-  return data;
 }
 
 // ==================== AUTENTICAÇÃO ====================
 export async function login(email, password) {
-  // O endpoint /auth/login espera application/x-www-form-urlencoded
   const formData = new URLSearchParams();
   formData.append('username', email);
   formData.append('password', password);
@@ -46,6 +70,7 @@ export async function login(email, password) {
   const data = await response.json();
 
   if (!response.ok) {
+    console.error('Erro no login:', data);
     throw new Error(data.detail || 'Erro no login');
   }
 
@@ -123,46 +148,6 @@ export async function updateParticipantes(contratoId, participantes) {
   });
 }
 
-// ==================== MEDIÇÕES (BOLETINS) ====================
-export async function getBoletins(contratoId) {
-  return apiRequest(`/contratos/${contratoId}/boletins`);
-}
-
-export async function createBoletim(contratoId, boletimData) {
-  return apiRequest(`/contratos/${contratoId}/boletins`, {
-    method: 'POST',
-    body: JSON.stringify(boletimData)
-  });
-}
-
-// (outros métodos conforme necessidade)
-
-// ==================== FATURAMENTO ====================
-export async function getFaturamentos(filtros) {
-  // Exemplo: /faturamentos/?skip=0&limit=100
-  const params = new URLSearchParams(filtros).toString();
-  return apiRequest(`/faturamentos/?${params}`);
-}
-
-export async function createFaturamento(faturamentoData) {
-  return apiRequest('/faturamentos/', {
-    method: 'POST',
-    body: JSON.stringify(faturamentoData)
-  });
-}
-
-// ==================== PAGAMENTOS ====================
-export async function getPagamentos(faturamentoId) {
-  return apiRequest(`/pagamentos/?faturamento_id=${faturamentoId}`);
-}
-
-export async function createPagamento(pagamentoData) {
-  return apiRequest('/pagamentos/', {
-    method: 'POST',
-    body: JSON.stringify(pagamentoData)
-  });
-}
-
 // ==================== ARTs ====================
 export async function getArts(contratoId) {
   return apiRequest(`/contratos/${contratoId}/arts`);
@@ -199,4 +184,78 @@ export async function createSeguro(contratoId, seguroData) {
     body: JSON.stringify(seguroData)
   });
 }
-// etc.
+
+export async function updateSeguro(seguroId, seguroData) {
+  return apiRequest(`/seguros/${seguroId}`, {
+    method: 'PUT',
+    body: JSON.stringify(seguroData)
+  });
+}
+
+export async function deleteSeguro(seguroId) {
+  return apiRequest(`/seguros/${seguroId}`, {
+    method: 'DELETE'
+  });
+}
+
+// ==================== ADITIVOS ====================
+export async function getAditivos(contratoId) {
+  return apiRequest(`/contratos/${contratoId}/aditivos`);
+}
+
+export async function createAditivo(contratoId, aditivoData) {
+  return apiRequest(`/contratos/${contratoId}/aditivos`, {
+    method: 'POST',
+    body: JSON.stringify(aditivoData)
+  });
+}
+
+export async function updateAditivo(aditivoId, aditivoData) {
+  return apiRequest(`/aditivos/${aditivoId}`, {
+    method: 'PUT',
+    body: JSON.stringify(aditivoData)
+  });
+}
+
+export async function deleteAditivo(aditivoId) {
+  return apiRequest(`/aditivos/${aditivoId}`, {
+    method: 'DELETE'
+  });
+}
+
+// ==================== MEDIÇÕES (BOLETINS) ====================
+export async function getBoletins(contratoId) {
+  return apiRequest(`/contratos/${contratoId}/boletins`);
+}
+
+export async function createBoletim(contratoId, boletimData) {
+  return apiRequest(`/contratos/${contratoId}/boletins`, {
+    method: 'POST',
+    body: JSON.stringify(boletimData)
+  });
+}
+
+// ==================== FATURAMENTO ====================
+export async function getFaturamentos(filtros) {
+  const params = new URLSearchParams(filtros).toString();
+  return apiRequest(`/faturamentos/?${params}`);
+}
+
+export async function createFaturamento(faturamentoData) {
+  return apiRequest('/faturamentos/', {
+    method: 'POST',
+    body: JSON.stringify(faturamentoData)
+  });
+}
+
+// ==================== PAGAMENTOS ====================
+export async function getPagamentos(faturamentoId) {
+  return apiRequest(`/pagamentos/?faturamento_id=${faturamentoId}`);
+}
+
+export async function createPagamento(pagamentoData) {
+  return apiRequest('/pagamentos/', {
+    method: 'POST',
+    body: JSON.stringify(pagamentoData)
+  });
+}

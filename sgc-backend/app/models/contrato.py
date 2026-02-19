@@ -56,6 +56,11 @@ class Contrato(Base):
         nullable=True,
         comment="Data prevista de término (calculada: data_inicio + prazo_original + soma dos aditivos de prazo)"
     )
+    
+    valor_total = Column(
+        DECIMAL(15,2), nullable=True
+    )  # valor original + aditivos
+
 
     # ------------------------------------------------------------
     # Status e configurações

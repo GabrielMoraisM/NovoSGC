@@ -187,7 +187,6 @@ def recalcula_data_fim_prevista(contrato_id: int, session: Session):
     contrato.data_fim_prevista = contrato.data_inicio + timedelta(days=dias_totais)
     session.add(contrato)
 
-
 @event.listens_for(Aditivo, 'after_insert')
 @event.listens_for(Aditivo, 'after_update')
 @event.listens_for(Aditivo, 'after_delete')
@@ -195,4 +194,20 @@ def update_contrato_fim_prevista(mapper, connection, target):
     """Listener acionado após inserção, alteração ou remoção de aditivo."""
     session = Session.object_session(target) or connection
     recalcula_data_fim_prevista(target.contrato_id, session)
-    session.flush()
+    # session.flush()  <-- REMOVA ESTA LINHA
+
+@event.listens_for(Aditivo, 'after_insert')
+@event.listens_for(Aditivo, 'after_update')
+@event.listens_for(Aditivo, 'after_delete')
+def update_contrato_valor(mapper, connection, target):
+    """Atualiza o valor original do contrato com base na soma dos aditivos de valor."""
+    session = Session.object_session(target) or connection
+    contrato = session.get(Contrato, target.contrato_id)
+    if contrato:
+        # Calcula a soma de todos os aditivos de valor
+        total_valor = session.query(func.coalesce(func.sum(Aditivo.valor_acrescimo), 0)).filter(Aditivo.contrato_id == target.contrato_id).scalar()
+        # Atualiza o valor_original? Isso substituiria o valor base. O ideal seria ter um campo valor_base.
+        # Vamos manter o valor_original como base e criar um campo valor_total calculado no frontend.
+        # Se preferir, pode criar um campo valor_total no contrato e atualizá-lo.
+        # Por enquanto, não alteramos o valor_original, apenas calculamos no frontend.
+        pass

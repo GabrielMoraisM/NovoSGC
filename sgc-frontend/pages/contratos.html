@@ -15,6 +15,7 @@
   <div class="app-container">
     <div id="mobile-overlay" class="mobile-overlay"></div>
     
+    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">HC</div>
@@ -113,7 +114,6 @@
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          
           <div class="breadcrumb">
             <a href="/sgc-frontend/pages/dashboard.html">SGC</a>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -122,7 +122,6 @@
             <span>Contratos</span>
           </div>
         </div>
-        
         <div class="topbar-right">
           <button id="theme-toggle" class="topbar-btn" data-tooltip="Alternar tema">
             <svg id="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -140,7 +139,6 @@
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
           </button>
-          
           <button class="topbar-btn" data-dropdown="notifications-dropdown">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -148,7 +146,6 @@
             </svg>
             <span class="notification-badge"></span>
           </button>
-          
           <div class="user-menu">
             <div class="user-avatar" data-dropdown="user-dropdown">HC</div>
             <div id="user-dropdown" class="dropdown">
@@ -191,6 +188,7 @@
           </button>
         </div>
         
+        <!-- Filtros -->
         <div class="filter-bar">
           <div class="search-input">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -199,21 +197,18 @@
             </svg>
             <input type="text" id="search-contracts" class="form-input" placeholder="Buscar contratos...">
           </div>
-          
           <select class="form-input form-select" style="width: auto;" id="filter-type">
             <option value="">Todos os tipos</option>
-            <option value="heca">Heca 100%</option>
-            <option value="consorcio">Consórcio</option>
-            <option value="scp">SCP</option>
+            <option value="HECA_100">Heca 100%</option>
+            <option value="CONSORCIO">Consórcio</option>
+            <option value="SCP">SCP</option>
           </select>
-          
           <select class="form-input form-select" style="width: auto;" id="filter-status">
             <option value="">Todos os status</option>
             <option value="em-dia">Em dia</option>
             <option value="atencao">Atenção</option>
             <option value="critico">Crítico</option>
           </select>
-          
           <button class="btn btn-secondary">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -224,6 +219,7 @@
           </button>
         </div>
         
+        <!-- Tabela de Contratos -->
         <div class="card">
           <div class="table-container" style="border: none;">
             <table class="table" id="contratos-table">
@@ -273,15 +269,15 @@
           <div class="grid grid-cols-2" style="gap: 1rem;">
             <div class="form-group">
               <label class="form-label">Número do Contrato</label>
-              <input type="text" class="form-input" name="numero" placeholder="CT-2024-XXX" required>
+              <input type="text" class="form-input" name="numero_contrato" placeholder="CT-2024-XXX" required>
             </div>
             <div class="form-group">
               <label class="form-label">Tipo</label>
-              <select class="form-input form-select" name="tipo" required>
+              <select class="form-input form-select" name="tipo_obra" required>
                 <option value="">Selecione...</option>
-                <option value="heca">Heca 100%</option>
-                <option value="consorcio">Consórcio</option>
-                <option value="scp">SCP</option>
+                <option value="HECA_100">Heca 100%</option>
+                <option value="CONSORCIO">Consórcio</option>
+                <option value="SCP">SCP</option>
               </select>
             </div>
           </div>
@@ -291,7 +287,7 @@
             <p class="text-xs text-muted mb-3">Adicione as empresas participantes e seus percentuais. A soma deve ser 100%.</p>
             
             <div id="participantes-list" style="margin-bottom: 1rem;">
-              <!-- Linhas de participantes serão inseridas aqui -->
+              <!-- Lista de participantes adicionados -->
             </div>
             
             <div class="flex items-center gap-2 mb-3">
@@ -299,6 +295,9 @@
                 <option value="">Selecione uma empresa</option>
               </select>
               <input type="number" id="participante-percentual" class="form-input" style="flex: 1;" placeholder="%" step="0.01" min="0" max="100">
+              <label style="display: flex; align-items: center; gap: 0.25rem;">
+                <input type="checkbox" id="participante-lider"> Líder
+              </label>
               <button type="button" id="add-participante-btn" class="btn btn-secondary">Adicionar</button>
             </div>
             
@@ -310,34 +309,42 @@
           
           <div class="form-group">
             <label class="form-label">Nome do Projeto</label>
-            <input type="text" class="form-input" name="nome" placeholder="Nome do projeto" required>
+            <input type="text" class="form-input" name="nome_projeto" placeholder="Nome do projeto" required>
           </div>
           
           <div class="form-group">
             <label class="form-label">Cliente</label>
-            <input type="text" class="form-input" name="cliente" placeholder="Nome do cliente" required>
+            <select class="form-input form-select" name="cliente_id" required>
+              <option value="">Selecione um cliente</option>
+            </select>
           </div>
           
-          <div class="grid grid-cols-2" style="gap: 1rem;">
-            <div class="form-group">
+            <div class="grid grid-cols-2" style="gap: 1rem;">
+              <div class="form-group">
                 <label class="form-label">Data Inicial</label>
-                <input type="date" class="form-input" name="dataInicio" required>
+                <input type="date" class="form-input" name="data_inicio" id="data_inicio" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Duração (dias)</label>
+                <input type="number" class="form-input" name="dias_duracao" id="dias_duracao" min="1" required>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Data Final</label>
-              <input type="date" class="form-input" name="dataFim" required>
-            </div>
-          </div>
+
+              <!-- Opcional: mostrar a data prevista de término calculada -->
+              <div class="form-group" id="previsao-container" style="display: none;">
+                <label class="form-label">Previsão de Término</label>
+                <input type="text" class="form-input" id="previsao-termino" readonly disabled>
+              </div>
           
           <div class="grid grid-cols-2" style="gap: 1rem;">
              <div class="form-group">
                 <label class="form-label">Valor do Contrato (R$)</label>
-                <input type="number" class="form-input" name="valor" step="0.01" required>
+                <input type="number" class="form-input" name="valor_original" step="0.01" required>
               </div>
               <div class="form-group">
                 <label class="form-label">ISS Padrão (%)</label>
                 <div style="position: relative;">
-                  <input type="number" class="form-input" name="iss" step="0.01" min="0" max="100" style="padding-right: 2rem;">
+                  <input type="number" class="form-input" name="iss_percentual_padrao" step="0.01" min="0" max="100" style="padding-right: 2rem;">
                   <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.875rem;">%</span>
                 </div>
               </div>
@@ -372,7 +379,6 @@
         </button>
       </div>
       <div class="modal-body">
-        
         <div class="detail-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
           <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
             <div class="detail-label text-xs text-muted">Valor Total</div>
@@ -392,22 +398,10 @@
           <div>
             <h4 class="text-sm font-semibold mb-3">Informações Gerais</h4>
             <table style="width: 100%; font-size: 0.875rem; color: #334155;">
-              <tr>
-                <td style="padding: 4px 0; color: #64748b;">Cliente:</td>
-                <td class="font-semibold" id="detail-cliente"></td>
-              </tr>
-              <tr>
-                <td style="padding: 4px 0; color: #64748b;">Início:</td>
-                <td id="detail-inicio"></td>
-              </tr>
-              <tr>
-                <td style="padding: 4px 0; color: #64748b;">Término:</td>
-                <td id="detail-termino"></td>
-              </tr>
-              <tr>
-                <td style="padding: 4px 0; color: #64748b;">Gestor:</td>
-                <td id="detail-gestor"></td>
-              </tr>
+              <tr><td style="padding: 4px 0; color: #64748b;">Cliente:</td><td class="font-semibold" id="detail-cliente"></td></tr>
+              <tr><td style="padding: 4px 0; color: #64748b;">Início:</td><td id="detail-inicio"></td></tr>
+              <tr><td style="padding: 4px 0; color: #64748b;">Término:</td><td id="detail-termino"></td></tr>
+              <tr><td style="padding: 4px 0; color: #64748b;">Gestor:</td><td id="detail-gestor"></td></tr>
             </table>
           </div>
           <div>
@@ -427,21 +421,12 @@
         <div>
           <div class="flex items-center justify-between mb-3">
             <h4 class="text-sm font-semibold">Histórico de Aditivos</h4>
-          <div style="display: flex; gap: 0.5rem;">
-            <h4 class="text-sm font-semibold">ARTs (Responsáveis Técnicos)</h4>
-            <button class="btn btn-sm btn-secondary" onclick="abrirModalArts()">
-              Gerenciar ARTs
-            </button>
-            <button class="btn btn-sm btn-secondary" onclick="abrirModalParticipantes()">
-              Gerenciar Participantes
-            </button>
-            <button class="btn btn-sm btn-secondary" onclick="abrirModalSeguros()">
-              Gerenciar Seguros
-            </button>
-            <button class="btn btn-sm btn-primary" onclick="document.getElementById('aditivo-modal').classList.add('active')">
-              + Novo Aditivo
-            </button>
-          </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-sm btn-secondary" onclick="abrirModalArts()">Gerenciar ARTs</button>
+              <button class="btn btn-sm btn-secondary" onclick="abrirModalParticipantes()">Gerenciar Participantes</button>
+              <button class="btn btn-sm btn-secondary" onclick="abrirModalSeguros()">Gerenciar Seguros</button>
+              <button class="btn btn-sm btn-primary" onclick="document.getElementById('aditivo-modal').classList.add('active')">+ Novo Aditivo</button>
+            </div>
           </div>
           
           <div style="background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
@@ -487,12 +472,11 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="aditivo-form">
+        <form id="aditivo-form" onsubmit="salvarAditivo(event)">
           <div class="form-group">
             <label class="form-label">Número do Aditivo</label>
             <input type="text" class="form-input" name="numero" placeholder="Ex: TA-03" required>
           </div>
-
           <div class="form-group">
             <label class="form-label">Tipo de Alteração</label>
             <select class="form-input form-select" name="tipo" id="tipo-aditivo" required>
@@ -501,17 +485,14 @@
               <option value="ambos">Prazo e Valor</option>
             </select>
           </div>
-
           <div class="form-group" id="prazo-group">
             <label class="form-label">Dias Adicionados</label>
             <input type="number" class="form-input" name="dias" placeholder="Ex: 60">
           </div>
-
           <div class="form-group" id="valor-group">
             <label class="form-label">Valor Adicionado (R$)</label>
             <input type="number" class="form-input" name="valor" step="0.01">
           </div>
-
           <div class="form-group">
             <label class="form-label">Justificativa</label>
             <textarea class="form-input" name="justificativa" rows="3" placeholder="Motivo da alteração..."></textarea>
@@ -520,12 +501,12 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('aditivo-modal').classList.remove('active')">Cancelar</button>
-        <button type="submit" form="aditivo-form" class="btn btn-primary">Registrar Aditivo</button>
+        <button type="submit" form="aditivo-form" class="btn btn-primary">Registrar Aditivo</button>      
       </div>
     </div>
   </div>
 
-  <!-- Modal Perfil (já existente) -->
+  <!-- Modal Perfil -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
@@ -540,31 +521,18 @@
       <div class="modal-body">
         <form id="profile-form">
           <div class="avatar-upload">
-            <div class="avatar-preview">
-              <span>HC</span>
-              <div class="avatar-preview-overlay">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                  <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-              </div>
-            </div>
+            <div class="avatar-preview"><span>HC</span></div>
             <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('avatar-input').click()">
-              Alterar foto
-            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('avatar-input').click()">Alterar foto</button>
           </div>
-          
           <div class="form-group" style="margin-top: 1.5rem;">
             <label class="form-label">Nome completo</label>
             <input type="text" id="profile-name" class="form-input" value="Heca Admin">
           </div>
-          
           <div class="form-group">
             <label class="form-label">E-mail</label>
             <input type="email" id="profile-email" class="form-input" value="admin@heca.com.br">
           </div>
-          
           <div class="form-group">
             <label class="form-label">Cargo</label>
             <select id="profile-role" class="form-input form-select">
@@ -583,175 +551,168 @@
     </div>
   </div>
 
+  <!-- Modal Gerenciar Seguros -->
+  <div id="seguros-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Gerenciar Seguros</h3>
+        <button class="modal-close" data-modal-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-muted mb-3">Gerencie as apólices de seguro vinculadas a este contrato. Podem ser múltiplos seguros.</p>
+        <h4 class="text-sm font-semibold mb-2">Apólices Cadastradas</h4>
+        <div class="table-container" style="margin-bottom: 1.5rem;">
+          <table class="table" id="seguros-table">
+            <thead>
+              <tr>
+                <th>Apólice</th>
+                <th>Seguradora</th>
+                <th>Tipo</th>
+                <th>Vencimento</th>
+                <th>Valor</th>
+                <th>Cliente</th>
+                <th>Tomador</th>
+                <th style="text-align: right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="seguros-list">
+              <!-- preenchido via JS -->
+            </tbody>
+          </table>
+        </div>
+        <h4 class="text-sm font-semibold mb-2">Adicionar Seguro</h4>
+        <form id="add-seguro-form">
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Seguradora</label>
+              <select class="form-input form-select" id="seguro-seguradora" required>
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Número da Apólice</label>
+              <input type="text" class="form-input" id="seguro-apolice" required>
+            </div>
+          </div>
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Tipo</label>
+              <select class="form-input form-select" id="seguro-tipo" required>
+                <option value="">Selecione...</option>
+                <option value="GARANTIA_CONTRATUAL">Garantia Contratual</option>
+                <option value="RISCO_ENGENHARIA">Risco de Engenharia</option>
+                <option value="RC">Responsabilidade Civil</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Valor (R$)</label>
+              <input type="number" class="form-input" id="seguro-valor" step="0.01" min="0" required>
+            </div>
+          </div>
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Data de Vencimento</label>
+              <input type="date" class="form-input" id="seguro-vencimento" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cliente (segurado)</label>
+              <select class="form-input form-select" id="seguro-cliente" required>
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Tomador</label>
+              <select class="form-input form-select" id="seguro-tomador" required>
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Objeto Segurado</label>
+              <input type="text" class="form-input" id="seguro-objeto" placeholder="Ex: Execução da obra, RC profissional..." required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <input type="checkbox" id="seguro-clausula-retomada"> Possui cláusula de retomada
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea class="form-input" id="seguro-observacoes" rows="2"></textarea>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button type="button" class="btn btn-secondary" onclick="fecharModalSeguros()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Adicionar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Gerenciar ARTs -->
+  <div id="arts-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Gerenciar ARTs</h3>
+        <button class="modal-close" onclick="fecharModalArts()">×</button>
+      </div>
+      <div class="modal-body">
+        <h4 class="text-sm font-semibold mb-2">ARTs Cadastradas</h4>
+        <div class="table-container" style="margin-bottom: 1.5rem;">
+          <table class="table" id="arts-table">
+            <thead>
+              <tr>
+                <th>Profissional</th>
+                <th>Nº ART</th>
+                <th>Finalizado</th>
+                <th>Data Finalização</th>
+                <th style="text-align: right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="arts-list">
+              <!-- preenchido via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <h4 class="text-sm font-semibold mb-2">Nova ART</h4>
+        <form id="add-art-form" onsubmit="adicionarArt(event)">
+          <div class="grid grid-cols-2" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Profissional</label>
+              <input type="text" id="art-nome" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Número da ART</label>
+              <input type="text" id="art-numero" class="form-input" required>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 mb-3">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="art-finalizado"> Finalizado
+            </label>
+            <div class="form-group" style="flex:1;" id="art-data-container" style="display: none;">
+              <label class="form-label">Data de Finalização</label>
+              <input type="date" id="art-data" class="form-input">
+            </div>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button type="button" class="btn btn-secondary" onclick="fecharModalArts()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Adicionar ART</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="/sgc-frontend/js/main.js"></script>
-  <script src="/sgc-frontend/js/contratos.js"></script>
-<!-- Modal Gerenciar Seguros -->
-<div id="seguros-modal" class="modal-overlay">
-  <div class="modal" style="max-width: 800px;">
-    <div class="modal-header">
-      <h3 class="modal-title">Gerenciar Seguros</h3>
-      <button class="modal-close" data-modal-close>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p class="text-sm text-muted mb-3">Gerencie as apólices de seguro vinculadas a este contrato. Podem ser múltiplos seguros (garantia contratual, risco de engenharia, etc.).</p>
-      
-      <!-- Lista de seguros atuais -->
-      <h4 class="text-sm font-semibold mb-2">Apólices Cadastradas</h4>
-      <div class="table-container" style="margin-bottom: 1.5rem;">
-        <table class="table" id="seguros-table">
-          <thead>
-            <tr>
-              <th>Apólice</th>
-              <th>Seguradora</th>
-              <th>Tipo</th>
-              <th>Vencimento</th>
-              <th>Valor</th>
-              <th>Cliente</th>
-              <th>Tomador</th>
-              <th style="text-align: right;">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="seguros-list">
-            <!-- preenchido via JS -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Formulário para adicionar novo seguro -->
-      <h4 class="text-sm font-semibold mb-2">Adicionar Seguro</h4>
-      <form id="add-seguro-form">
-        <div class="grid grid-cols-2" style="gap: 1rem;">
-          <div class="form-group">
-            <label class="form-label">Seguradora</label>
-            <select class="form-input form-select" id="seguro-seguradora" required>
-              <option value="">Selecione...</option>
-              <!-- Opções serão carregadas via JS -->
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Número da Apólice</label>
-            <input type="text" class="form-input" id="seguro-apolice" required>
-          </div>
-        </div>
-        <div class="grid grid-cols-2" style="gap: 1rem;">
-          <div class="form-group">
-            <label class="form-label">Tipo</label>
-            <select class="form-input form-select" id="seguro-tipo" required>
-              <option value="">Selecione...</option>
-              <option value="GARANTIA_CONTRATUAL">Garantia Contratual</option>
-              <option value="RISCO_ENGENHARIA">Risco de Engenharia</option>
-              <option value="RC">Responsabilidade Civil</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Valor (R$)</label>
-            <input type="number" class="form-input" id="seguro-valor" step="0.01" min="0" required>
-          </div>
-        </div>
-        <div class="grid grid-cols-2" style="gap: 1rem;">
-          <div class="form-group">
-            <label class="form-label">Data de Vencimento</label>
-            <input type="date" class="form-input" id="seguro-vencimento" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Cliente (segurado)</label>
-            <select class="form-input form-select" id="seguro-cliente" required>
-              <option value="">Selecione...</option>
-              <!-- Opções serão carregadas via JS -->
-            </select>
-          </div>
-        </div>
-        <div class="grid grid-cols-2" style="gap: 1rem;">
-          <div class="form-group">
-            <label class="form-label">Tomador</label>
-            <select class="form-input form-select" id="seguro-tomador" required>
-              <option value="">Selecione...</option>
-              <!-- Opções serão carregadas via JS (geralmente a Heca) -->
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Objeto Segurado</label>
-            <input type="text" class="form-input" id="seguro-objeto" placeholder="Ex: Execução da obra, RC profissional..." required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">
-            <input type="checkbox" id="seguro-clausula-retomada"> Possui cláusula de retomada
-          </label>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Observações</label>
-          <textarea class="form-input" id="seguro-observacoes" rows="2"></textarea>
-        </div>
-        <div class="flex justify-end gap-2">
-          <button type="button" class="btn btn-secondary" onclick="fecharModalSeguros()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Adicionar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- Modal Gerenciar ARTs -->
-<div id="arts-modal" class="modal-overlay">
-  <div class="modal" style="max-width: 700px;">
-    <div class="modal-header">
-      <h3 class="modal-title">Gerenciar ARTs</h3>
-      <button class="modal-close" onclick="fecharModalArts()">×</button>
-    </div>
-    <div class="modal-body">
-      <!-- Lista de ARTs -->
-      <h4 class="text-sm font-semibold mb-2">ARTs Cadastradas</h4>
-      <div class="table-container" style="margin-bottom: 1.5rem;">
-        <table class="table" id="arts-table">
-          <thead>
-            <tr>
-              <th>Profissional</th>
-              <th>Nº ART</th>
-              <th>Finalizado</th>
-              <th>Data Finalização</th>
-              <th style="text-align: right;">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="arts-list">
-            <!-- preenchido via JavaScript -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Formulário para adicionar nova ART -->
-      <h4 class="text-sm font-semibold mb-2">Nova ART</h4>
-      <form id="add-art-form" onsubmit="adicionarArt(event)">
-        <div class="grid grid-cols-2" style="gap: 1rem;">
-          <div class="form-group">
-            <label class="form-label">Profissional</label>
-            <input type="text" id="art-nome" class="form-input" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Número da ART</label>
-            <input type="text" id="art-numero" class="form-input" required>
-          </div>
-        </div>
-        <div class="flex items-center gap-4 mb-3">
-          <label class="flex items-center gap-2">
-            <input type="checkbox" id="art-finalizado"> Finalizado
-          </label>
-          <div class="form-group" style="flex:1;" id="art-data-container" style="display: none;">
-            <label class="form-label">Data de Finalização</label>
-            <input type="date" id="art-data" class="form-input">
-          </div>
-        </div>
-        <div class="flex justify-end gap-2">
-          <button type="button" class="btn btn-secondary" onclick="fecharModalArts()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Adicionar ART</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+  <script src="/sgc-frontend/js/api.js" type="module"></script>
+  <script src="/sgc-frontend/js/contratos.js" type="module"></script>
 </body>
 </html>
