@@ -5,17 +5,24 @@ from decimal import Decimal
 
 class ContratoSeguroBase(BaseModel):
     seguradora_id: int
-    tipo: str  # 'GARANTIA_CONTRATUAL', 'RISCO_ENGENHARIA', 'RC'
     numero_apolice: str
-    data_vencimento: date
+    tipo: str
     valor: Decimal
-    objeto: Optional[str] = None  # descrição do que está sendo segurado
+    data_vencimento: date
+    cliente_id: int
+    tomador_id: int
+    objeto_segurado: str
+    possui_clausula_retomada: Optional[bool] = False
+    observacoes: Optional[str] = None
 
     @validator('tipo')
     def valida_tipo(cls, v):
-        allowed = ('GARANTIA_CONTRATUAL', 'RISCO_ENGENHARIA', 'RC')
-        if v not in allowed:
-            raise ValueError(f'Tipo deve ser um de {allowed}')
+        valores_aceitos = {
+            'LICITACAO', 'CONTRATO', 'RESPONSABILIDADE_CIVIL',
+            'RISCO_PROFISSIONAL', 'RISCO_ENGENHARIA', 'GARANTIA_CONTRATUAL_RETOMADA'
+        }
+        if v not in valores_aceitos:
+            raise ValueError(f'Tipo inválido. Valores aceitos: {", ".join(sorted(valores_aceitos))}')
         return v
 
 class ContratoSeguroCreate(ContratoSeguroBase):
@@ -23,19 +30,26 @@ class ContratoSeguroCreate(ContratoSeguroBase):
 
 class ContratoSeguroUpdate(BaseModel):
     seguradora_id: Optional[int] = None
-    tipo: Optional[str] = None
     numero_apolice: Optional[str] = None
-    data_vencimento: Optional[date] = None
+    tipo: Optional[str] = None
     valor: Optional[Decimal] = None
-    objeto: Optional[str] = None
+    data_vencimento: Optional[date] = None
+    cliente_id: Optional[int] = None
+    tomador_id: Optional[int] = None
+    objeto_segurado: Optional[str] = None
+    possui_clausula_retomada: Optional[bool] = None
+    observacoes: Optional[str] = None
 
     @validator('tipo')
     def valida_tipo(cls, v):
         if v is None:
             return v
-        allowed = ('GARANTIA_CONTRATUAL', 'RISCO_ENGENHARIA', 'RC')
-        if v not in allowed:
-            raise ValueError(f'Tipo deve ser um de {allowed}')
+        valores_aceitos = {
+            'LICITACAO', 'CONTRATO', 'RESPONSABILIDADE_CIVIL',
+            'RISCO_PROFISSIONAL', 'RISCO_ENGENHARIA', 'GARANTIA_CONTRATUAL_RETOMADA'
+        }
+        if v not in valores_aceitos:
+            raise ValueError(f'Tipo inválido. Valores aceitos: {", ".join(sorted(valores_aceitos))}')
         return v
 
 class ContratoSeguroInDB(ContratoSeguroBase):

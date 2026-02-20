@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from sqlalchemy import func
+from sqlalchemy import func,update
 from datetime import timedelta
-
+from app.models.contrato import Contrato
 from app.repositories.aditivo_repo import AditivoRepository
 from app.repositories.contrato_repo import ContratoRepository
 from app.schemas.aditivo import AditivoCreate, AditivoUpdate
@@ -13,63 +13,33 @@ class AditivoService:
         self.db = db
         self.repo = AditivoRepository(db)
         self.contrato_repo = ContratoRepository(db)
-
-
-    def _atualizar_contrato(self, contrato_id: int):
-        """Recalcula data_fim_prevista e valor_total do contrato baseado nos aditivos."""
-        contrato = self.contrato_repo.get(contrato_id)
-        if not contrato:
-            return
-
-        # Soma dos dias e valores de todos os aditivos do contrato
-        soma_dias = self.db.query(func.coalesce(func.sum(Aditivo.dias_acrescimo), 0)).filter(Aditivo.contrato_id == contrato_id).scalar()
-        soma_valores = self.db.query(func.coalesce(func.sum(Aditivo.valor_acrescimo), 0)).filter(Aditivo.contrato_id == contrato_id).scalar()
-
-        # Atualiza a data fim prevista
-        dias_totais = contrato.prazo_original_dias + soma_dias
-        contrato.data_fim_prevista = contrato.data_inicio + timedelta(days=dias_totais)
-
-        # Atualiza o valor total
-        contrato.valor_total = contrato.valor_original + soma_valores
-
-        self.db.add(contrato)
-
-        
-    # ------------------------------------------------------------------
+        # ------------------------------------------------------------------
     # CRIAR ADITIVO
     # ------------------------------------------------------------------
     def create_aditivo(self, aditivo_data: AditivoCreate) -> Aditivo:
-        # 1. Verificar se o contrato existe
+        # 1. Verificar contrato
         contrato = self.contrato_repo.get(aditivo_data.contrato_id)
         if not contrato:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Contrato não encontrado."
-            )
+            raise HTTPException(status_code=404, detail="Contrato não encontrado")
 
-        # 2. (Opcional) Verificar se número de emenda já existe para este contrato
+        # 2. Verificar emenda duplicada
         if aditivo_data.numero_emenda:
-            existing = self.repo.get_by_emenda(
-                aditivo_data.contrato_id,
-                aditivo_data.numero_emenda
-            )
+            existing = self.repo.get_by_emenda(aditivo_data.contrato_id, aditivo_data.numero_emenda)
             if existing:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Emenda nº {aditivo_data.numero_emenda} já cadastrada para este contrato."
-                )
-
+                raise HTTPException(status_code=400, detail="Emenda já cadastrada")
         # 3. Criar aditivo
         aditivo_dict = aditivo_data.model_dump()
         aditivo = self.repo.create(**aditivo_dict)
+        self.db.flush()   # envia o INSERT, mas não commita
 
-        # 4. Commit e refresh
+        # 4. Atualizar o contrato
+        self._atualizar_contrato(aditivo_data.contrato_id)  # <--- ESSENCIAL
+
+        # 5. Commit final
         self.db.commit()
         self.db.refresh(aditivo)
         return aditivo
     
-
-
     # ------------------------------------------------------------------
     # BUSCAR ADITIVO POR ID
     # ------------------------------------------------------------------
@@ -120,3 +90,31 @@ class AditivoService:
         self.db.flush()
         self._atualizar_contrato(contrato_id)
         self.db.commit()
+    
+    # ------------------------------------------------------------------
+    # FUNÇÃO INTERNA PARA ATUALIZAR CONTRATO
+    # ------------------------------------------------------------------
+    def _atualizar_contrato(self, contrato_id: int):
+        # Busca o contrato para obter os valores originais
+        contrato = self.db.query(Contrato).filter(Contrato.id == contrato_id).first()
+        if not contrato:
+            return
+
+        # Calcula somas dos aditivos
+        soma_dias = self.db.query(func.coalesce(func.sum(Aditivo.dias_acrescimo), 0)).filter(Aditivo.contrato_id == contrato_id).scalar()
+        soma_valores = self.db.query(func.coalesce(func.sum(Aditivo.valor_acrescimo), 0)).filter(Aditivo.contrato_id == contrato_id).scalar()
+
+        # Calcula novos valores
+        novo_valor_total = contrato.valor_original + soma_valores
+        dias_totais = contrato.prazo_original_dias + soma_dias
+        nova_data_fim = contrato.data_inicio + timedelta(days=dias_totais)
+
+        # Executa a atualização direta
+        self.db.execute(
+            update(Contrato)
+            .where(Contrato.id == contrato_id)
+            .values(
+                valor_total=novo_valor_total,
+                data_fim_prevista=nova_data_fim
+            )
+        )

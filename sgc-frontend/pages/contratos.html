@@ -365,97 +365,113 @@
   </div>
   
   <!-- Modal Detalhes do Contrato -->
-  <div id="contract-details-modal" class="modal-overlay">
-    <div class="modal" style="max-width: 800px; width: 95%;">
-      <div class="modal-header">
+<div id="contract-details-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 800px; width: 95%;">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title" id="detail-modal-title">Detalhes do Contrato</h3>
+        <p class="text-sm text-muted" id="detail-modal-subtitle">Visualização completa</p>
+      </div>
+      <button class="modal-close" data-modal-close>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Cards de valores -->
+      <div class="detail-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+          <div class="detail-label text-xs text-muted">Valor Total</div>
+          <div class="detail-value text-lg font-bold" id="detail-valor">R$ 0</div>
+        </div>
+        <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+          <div class="detail-label text-xs text-muted">Executado</div>
+          <div class="detail-value text-lg font-bold" style="color: var(--success);" id="detail-executado">R$ 0</div>
+        </div>
+        <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+          <div class="detail-label text-xs text-muted">Saldo</div>
+          <div class="detail-value text-lg font-bold" style="color: var(--primary);" id="detail-saldo">R$ 0</div>
+        </div>
+      </div>
+
+      <!-- Informações Gerais e Progresso -->
+      <div class="grid grid-cols-2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
         <div>
-          <h3 class="modal-title" id="detail-modal-title">Detalhes do Contrato</h3>
-          <p class="text-sm text-muted" id="detail-modal-subtitle">Visualização completa</p>
+          <h4 class="text-sm font-semibold mb-3">Informações Gerais</h4>
+          <table style="width: 100%; font-size: 0.875rem; color: #334155;">
+            <tr><td style="padding: 4px 0; color: #64748b;">Cliente:</td><td class="font-semibold" id="detail-cliente"></td></tr>
+            <tr><td style="padding: 4px 0; color: #64748b;">Início:</td><td id="detail-inicio"></td></tr>
+            <tr><td style="padding: 4px 0; color: #64748b;">Término:</td><td id="detail-termino"></td></tr>
+            <tr><td style="padding: 4px 0; color: #64748b;">Gestor:</td><td id="detail-gestor"></td></tr>
+          </table>
         </div>
-        <button class="modal-close" data-modal-close>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="detail-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-          <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
-            <div class="detail-label text-xs text-muted">Valor Total</div>
-            <div class="detail-value text-lg font-bold" id="detail-valor">R$ 0</div>
-          </div>
-          <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
-            <div class="detail-label text-xs text-muted">Executado</div>
-            <div class="detail-value text-lg font-bold" style="color: var(--success);" id="detail-executado">R$ 0</div>
-          </div>
-          <div class="detail-card" style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
-            <div class="detail-label text-xs text-muted">Saldo</div>
-            <div class="detail-value text-lg font-bold" style="color: var(--primary);" id="detail-saldo">R$ 0</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
-          <div>
-            <h4 class="text-sm font-semibold mb-3">Informações Gerais</h4>
-            <table style="width: 100%; font-size: 0.875rem; color: #334155;">
-              <tr><td style="padding: 4px 0; color: #64748b;">Cliente:</td><td class="font-semibold" id="detail-cliente"></td></tr>
-              <tr><td style="padding: 4px 0; color: #64748b;">Início:</td><td id="detail-inicio"></td></tr>
-              <tr><td style="padding: 4px 0; color: #64748b;">Término:</td><td id="detail-termino"></td></tr>
-              <tr><td style="padding: 4px 0; color: #64748b;">Gestor:</td><td id="detail-gestor"></td></tr>
-            </table>
-          </div>
-          <div>
-            <h4 class="text-sm font-semibold mb-3">Progresso Físico</h4>
-            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
-              <div class="progress" style="width: 100%; height: 10px;">
-                <div class="progress-bar success" id="detail-progresso" style="width: 0%;"></div>
-              </div>
-              <span class="text-sm font-bold" id="detail-progresso-texto">0%</span>
-            </div>
-            <p class="text-xs text-muted">Avanço físico medido até a última medição aprovada.</p>
-          </div>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0;">
-
         <div>
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="text-sm font-semibold">Histórico de Aditivos</h4>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="btn btn-sm btn-secondary" onclick="abrirModalArts()">Gerenciar ARTs</button>
-              <button class="btn btn-sm btn-secondary" onclick="abrirModalParticipantes()">Gerenciar Participantes</button>
-              <button class="btn btn-sm btn-secondary" onclick="abrirModalSeguros()">Gerenciar Seguros</button>
-              <button class="btn btn-sm btn-primary" onclick="document.getElementById('aditivo-modal').classList.add('active')">+ Novo Aditivo</button>
+          <h4 class="text-sm font-semibold mb-3">Progresso Físico</h4>
+          <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+            <div class="progress" style="width: 100%; height: 10px;">
+              <div class="progress-bar success" id="detail-progresso" style="width: 0%;"></div>
             </div>
+            <span class="text-sm font-bold" id="detail-progresso-texto">0%</span>
           </div>
-          
-          <div style="background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
-              <thead style="background: var(--background);">
-                <tr>
-                  <th style="padding: 0.5rem 1rem; text-align: left;">Nº</th>
-                  <th style="padding: 0.5rem 1rem; text-align: left;">Tipo</th>
-                  <th style="padding: 0.5rem 1rem; text-align: left;">Data</th>
-                  <th style="padding: 0.5rem 1rem; text-align: left;">Valor Adicionado</th>
-                  <th style="padding: 0.5rem 1rem; text-align: left;">Prazo Adicionado</th>
-                  <th style="padding: 0.5rem 1rem; text-align: left;">Status</th>
-                </tr>
-              </thead>
-              <tbody id="aditivos-list">
-                <!-- preenchido via JavaScript -->
-              </tbody>
-            </table>
+          <p class="text-xs text-muted">Avanço físico medido até a última medição aprovada.</p>
+        </div>
+      </div>
+
+      <!-- Seção da Ordem de Serviço -->
+      <div class="mb-3">
+        <h4 class="text-sm font-semibold mb-2">Ordem de Serviço</h4>
+        <table style="width: 100%; font-size: 0.875rem;">
+          <tr><td style="padding: 4px 0; color: #64748b;">Número:</td><td id="detail-os-numero">—</td></tr>
+          <tr><td style="padding: 4px 0; color: #64748b;">Data:</td><td id="detail-os-data">—</td></tr>
+          <tr><td style="padding: 4px 0; color: #64748b;">Descrição:</td><td id="detail-os-descricao">—</td></tr>
+        </table>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+
+      <!-- Histórico de Aditivos e botões de ação -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-sm font-semibold">Histórico de Aditivos</h4>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalOS()">Gerenciar OS</button>
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalArts()">Gerenciar ARTs</button>
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalGestor()">Gerenciar Gestor</button>
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalParticipantes()">Gerenciar Participantes</button>
+            <button class="btn btn-sm btn-secondary" onclick="abrirModalSeguros()">Gerenciar Seguros</button>
+            <button class="btn btn-sm btn-primary" onclick="document.getElementById('aditivo-modal').classList.add('active')">+ Novo Aditivo</button>
           </div>
         </div>
+        
+        <div style="background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+            <thead style="background: var(--background);">
+              <tr>
+                <th style="padding: 0.5rem 1rem; text-align: left;">Nº</th>
+                <th style="padding: 0.5rem 1rem; text-align: left;">Tipo</th>
+                <th style="padding: 0.5rem 1rem; text-align: left;">Data</th>
+                <th style="padding: 0.5rem 1rem; text-align: left;">Valor Adicionado</th>
+                <th style="padding: 0.5rem 1rem; text-align: left;">Prazo Adicionado</th>
+                <th style="padding: 0.5rem 1rem; text-align: left;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="aditivos-list">
+              <!-- preenchido via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-modal-close>Fechar</button>
-        <button type="button" class="btn btn-primary">Editar Contrato</button>
-      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-modal-close>Fechar</button>
+      <button type="button" class="btn btn-primary">Editar Contrato</button>
     </div>
   </div>
+</div>
 
   <!-- Modal Aditivo -->
   <div id="aditivo-modal" class="modal-overlay">
@@ -552,166 +568,199 @@
     </div>
   </div>
 
-  <!-- Modal Gerenciar Seguros -->
-  <div id="seguros-modal" class="modal-overlay">
-    <div class="modal" style="max-width: 800px;">
-      <div class="modal-header">
-        <h3 class="modal-title">Gerenciar Seguros</h3>
-        <button class="modal-close" data-modal-close>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+<!-- Modal Gerenciar Seguros -->
+<div id="seguros-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 800px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Gerenciar Seguros</h3>
+      <button class="modal-close" onclick="fecharModalSeguros()">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="text-sm text-muted mb-3">Gerencie as apólices de seguro vinculadas a este contrato. Podem ser múltiplos seguros (garantia contratual, risco de engenharia, etc.).</p>
+      
+      <!-- Lista de seguros -->
+      <h4 class="text-sm font-semibold mb-2">Apólices Cadastradas</h4>
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <table class="table" id="seguros-table">
+          <thead>
+            <tr>
+              <th>Apólice</th>
+              <th>Seguradora</th>
+              <th>Tipo</th>
+              <th>Vencimento</th>
+              <th>Valor</th>
+              <th>Cliente</th>
+              <th>Tomador</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="seguros-list">
+            <!-- preenchido via JS -->
+          </tbody>
+        </table>
       </div>
-      <div class="modal-body">
-        <p class="text-sm text-muted mb-3">Gerencie as apólices de seguro vinculadas a este contrato. Podem ser múltiplos seguros.</p>
-        <h4 class="text-sm font-semibold mb-2">Apólices Cadastradas</h4>
-        <div class="table-container" style="margin-bottom: 1.5rem;">
-          <table class="table" id="seguros-table">
-            <thead>
-              <tr>
-                <th>Apólice</th>
-                <th>Seguradora</th>
-                <th>Tipo</th>
-                <th>Vencimento</th>
-                <th>Valor</th>
-                <th>Cliente</th>
-                <th>Tomador</th>
-                <th style="text-align: right;">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="seguros-list">
-              <!-- preenchido via JS -->
-            </tbody>
-          </table>
-        </div>
-        <h4 class="text-sm font-semibold mb-2">Adicionar Seguro</h4>
-        <form id="add-seguro-form">
-          <div class="grid grid-cols-2" style="gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Seguradora</label>
-              <select class="form-input form-select" id="seguro-seguradora" required>
-                <option value="">Selecione...</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Número da Apólice</label>
-              <input type="text" class="form-input" id="seguro-apolice" required>
-            </div>
+
+      <!-- Formulário para adicionar seguro -->
+      <h4 class="text-sm font-semibold mb-2">Adicionar Seguro</h4>
+      <form id="add-seguro-form" onsubmit="adicionarSeguro(event)">
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Seguradora</label>
+            <select class="form-input form-select" id="seguro-seguradora" required>
+              <option value="">Selecione...</option>
+            </select>
           </div>
-          <div class="grid grid-cols-2" style="gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Tipo</label>
+          <div class="form-group">
+            <label class="form-label">Número da Apólice</label>
+            <input type="text" class="form-input" id="seguro-apolice" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
               <select class="form-input form-select" id="seguro-tipo" required>
                 <option value="">Selecione...</option>
-                <option value="GARANTIA_CONTRATUAL">Garantia Contratual</option>
+                <option value="LICITACAO">Licitação</option>
+                <option value="CONTRATO">Contrato</option>
+                <option value="RESPONSABILIDADE_CIVIL">Responsabilidade Civil</option>
+                <option value="RISCO_PROFISSIONAL">Risco Profissional</option>
                 <option value="RISCO_ENGENHARIA">Risco de Engenharia</option>
-                <option value="RC">Responsabilidade Civil</option>
+                <option value="GARANTIA_CONTRATUAL_RETOMADA">Garantia Contratual com Cláusula de Retomada</option>
               </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Valor (R$)</label>
-              <input type="number" class="form-input" id="seguro-valor" step="0.01" min="0" required>
-            </div>
-          </div>
-          <div class="grid grid-cols-2" style="gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Data de Vencimento</label>
-              <input type="date" class="form-input" id="seguro-vencimento" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Cliente (segurado)</label>
-              <select class="form-input form-select" id="seguro-cliente" required>
-                <option value="">Selecione...</option>
-              </select>
-            </div>
-          </div>
-          <div class="grid grid-cols-2" style="gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Tomador</label>
-              <select class="form-input form-select" id="seguro-tomador" required>
-                <option value="">Selecione...</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Objeto Segurado</label>
-              <input type="text" class="form-input" id="seguro-objeto" placeholder="Ex: Execução da obra, RC profissional..." required>
-            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">
-              <input type="checkbox" id="seguro-clausula-retomada"> Possui cláusula de retomada
-            </label>
+            <label class="form-label">Valor (R$)</label>
+            <input type="number" class="form-input" id="seguro-valor" step="0.01" min="0" required>
           </div>
-          <div class="form-group">
-            <label class="form-label">Observações</label>
-            <textarea class="form-input" id="seguro-observacoes" rows="2"></textarea>
-          </div>
-          <div class="flex justify-end gap-2">
-            <button type="button" class="btn btn-secondary" onclick="fecharModalSeguros()">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Adicionar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Gerenciar ARTs -->
-  <div id="arts-modal" class="modal-overlay">
-    <div class="modal" style="max-width: 700px;">
-      <div class="modal-header">
-        <h3 class="modal-title">Gerenciar ARTs</h3>
-        <button class="modal-close" onclick="fecharModalArts()">×</button>
-      </div>
-      <div class="modal-body">
-        <h4 class="text-sm font-semibold mb-2">ARTs Cadastradas</h4>
-        <div class="table-container" style="margin-bottom: 1.5rem;">
-          <table class="table" id="arts-table">
-            <thead>
-              <tr>
-                <th>Profissional</th>
-                <th>Nº ART</th>
-                <th>Finalizado</th>
-                <th>Data Finalização</th>
-                <th style="text-align: right;">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="arts-list">
-              <!-- preenchido via JavaScript -->
-            </tbody>
-          </table>
         </div>
-        <h4 class="text-sm font-semibold mb-2">Nova ART</h4>
-        <form id="add-art-form" onsubmit="adicionarArt(event)">
-          <div class="grid grid-cols-2" style="gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Profissional</label>
-              <input type="text" id="art-nome" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Número da ART</label>
-              <input type="text" id="art-numero" class="form-input" required>
-            </div>
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Data de Vencimento</label>
+            <input type="date" class="form-input" id="seguro-vencimento" required>
           </div>
-          <div class="flex items-center gap-4 mb-3">
-            <label class="flex items-center gap-2">
-              <input type="checkbox" id="art-finalizado"> Finalizado
-            </label>
-            <div class="form-group" style="flex:1;" id="art-data-container" style="display: none;">
-              <label class="form-label">Data de Finalização</label>
-              <input type="date" id="art-data" class="form-input">
-            </div>
+          <div class="form-group">
+            <label class="form-label">Cliente (segurado)</label>
+            <select class="form-input form-select" id="seguro-cliente" required>
+              <option value="">Selecione...</option>
+            </select>
           </div>
-          <div class="flex justify-end gap-2">
-            <button type="button" class="btn btn-secondary" onclick="fecharModalArts()">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Adicionar ART</button>
+        </div>
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Tomador</label>
+            <select class="form-input form-select" id="seguro-tomador" required>
+              <option value="">Selecione...</option>
+            </select>
           </div>
-        </form>
-      </div>
+          <div class="form-group">
+            <label class="form-label">Objeto Segurado</label>
+            <input type="text" class="form-input" id="seguro-objeto" placeholder="Ex: Execução da obra, RC profissional..." required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" id="seguro-clausula-retomada"> Possui cláusula de retomada
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observações</label>
+          <textarea class="form-input" id="seguro-observacoes" rows="2"></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn btn-secondary" onclick="fecharModalSeguros()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Adicionar</button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 
+<!-- Modal Gerenciar ARTs -->
+<div id="arts-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 700px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Gerenciar ARTs</h3>
+      <button class="modal-close" onclick="fecharModalArts()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Lista de ARTs -->
+      <h4 class="text-sm font-semibold mb-2">ARTs Cadastradas</h4>
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <table class="table" id="arts-table">
+          <thead>
+            <tr>
+              <th>Profissional</th>
+              <th>Nº ART</th>
+              <th>Finalizado</th>
+              <th>Data Finalização</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="arts-list">
+            <!-- preenchido via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Formulário para adicionar nova ART -->
+      <h4 class="text-sm font-semibold mb-2">Nova ART</h4>
+      <form id="add-art-form" onsubmit="adicionarArt(event)">
+        <div class="grid grid-cols-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Profissional</label>
+            <input type="text" id="art-nome" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Número da ART</label>
+            <input type="text" id="art-numero" class="form-input" required>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 mb-3">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="art-finalizado"> Finalizado
+          </label>
+          <div class="form-group" style="flex:1;" id="art-data-container" style="display: none;">
+            <label class="form-label">Data de Finalização</label>
+            <input type="date" id="art-data" class="form-input">
+          </div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn btn-secondary" onclick="fecharModalArts()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Adicionar ART</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal Gerenciar Ordem de Serviço -->
+<div id="os-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Ordem de Serviço</h3>
+      <button class="modal-close" onclick="fecharModalOS()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="os-form" onsubmit="salvarOS(event)">
+        <div class="form-group">
+          <label class="form-label">Número da OS</label>
+          <input type="text" class="form-input" id="os-numero" placeholder="Ex: OS-001/2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data da OS</label>
+          <input type="date" class="form-input" id="os-data">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descrição</label>
+          <textarea class="form-input" id="os-descricao" rows="3" placeholder="Descreva a ordem de serviço..."></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn btn-secondary" onclick="fecharModalOS()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
   <script src="/sgc-frontend/js/main.js"></script>
   <script src="/sgc-frontend/js/api.js" type="module"></script>
   <script src="/sgc-frontend/js/contratos.js" type="module"></script>

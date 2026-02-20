@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, DateTime, Enum, DECIMAL, ForeignKey, Index
+from sqlalchemy import Column, Integer, String, Date, DateTime, Enum, DECIMAL, ForeignKey, Index, Text
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -57,9 +57,8 @@ class Contrato(Base):
         comment="Data prevista de término (calculada: data_inicio + prazo_original + soma dos aditivos de prazo)"
     )
     
-    valor_total = Column(
-        DECIMAL(15,2), nullable=True
-    )  # valor original + aditivos
+    valor_total = Column(DECIMAL(15,2), nullable=True)   # valor original + soma dos aditivos
+ # valor original + aditivos
 
 
     # ------------------------------------------------------------
@@ -87,7 +86,13 @@ class Contrato(Base):
         nullable=False,
         comment="ID do cliente (tomador do serviço) – deve ser uma empresa com tipo = 'CLIENTE'"
     )
+    
+    numero_os = Column(String(50), nullable=True)
+    data_os = Column(Date, nullable=True)
+    descricao_os = Column(Text, nullable=True)
 
+    gestor = Column(String(100), nullable=True)
+    
     # ------------------------------------------------------------
     # Auditoria
     # ------------------------------------------------------------

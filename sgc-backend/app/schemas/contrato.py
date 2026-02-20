@@ -16,6 +16,7 @@ class ContratoBase(BaseModel):
     iss_percentual_padrao: Optional[Decimal] = None
     status: Optional[str] = "ATIVO"
 
+
     @validator('tipo_obra')
     def valida_tipo_obra(cls, v):
         allowed = ('HECA_100', 'CONSORCIO', 'SCP')
@@ -48,6 +49,10 @@ class ContratoUpdate(BaseModel):
     cliente_id: Optional[int] = None
     iss_percentual_padrao: Optional[Decimal] = None
     status: Optional[str] = None
+    numero_os: Optional[str] = None
+    data_os: Optional[date] = None
+    descricao_os: Optional[str] = None
+    gestor: Optional[str] = None  
 
     @validator('tipo_obra')
     def valida_tipo_obra(cls, v):
@@ -73,9 +78,14 @@ class ContratoUpdate(BaseModel):
 class ContratoInDB(ContratoBase):
     id: int
     data_fim_prevista: Optional[date]
-    valor_total: Optional[Decimal]  # novo campo
+    valor_total: Optional[Decimal]
+    numero_os: Optional[str]          # <-- adicione
+    data_os: Optional[date]           # <-- adicione
+    descricao_os: Optional[str]       # <-- adicione
     created_at: datetime
     updated_at: Optional[datetime]
+    gestor: Optional[str] = None
+
 
     class Config:
         from_attributes = True
