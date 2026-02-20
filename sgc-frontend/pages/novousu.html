@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SGC - Cadastrar novo usuário" />
+  <meta name="theme-color" content="#1e3a5f" />
+  <title>Novo Usuário | SGC - Heca Engenharia</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/novo-usuario.css" />
+</head>
+
+<body>
+  <div class="app-container">
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+
+    <!-- SIDEBAR (igual a sua) -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">HC</div>
+        <div class="sidebar-brand">
+          <h1>Heca Engenharia</h1>
+          <span>SGC Protótipo</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+
+          <a href="dashboard.html" class="nav-item">
+            <span>Dashboard</span>
+          </a>
+
+          <a href="empresas.html" class="nav-item">
+            <span>Empresas</span>
+          </a>
+
+          <a href="contratos.html" class="nav-item">
+            <span>Contratos</span>
+          </a>
+
+          <a href="medicoes.html" class="nav-item">
+            <span>Medições</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+
+          <a href="configuraçoes.html" class="nav-item active">
+            <span>Configurações</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="sidebar-toggle" class="sidebar-toggle" type="button">
+          <span>Recolher</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <!-- TOPBAR (igual a sua) -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Abrir menu">
+            <span>☰</span>
+          </button>
+
+          <div class="breadcrumb">
+            <a href="dashboard.html">SGC</a>
+            <span>›</span>
+            <a href="configuraçoes.html">Sistema</a>
+            <span>›</span>
+            <span>Novo Usuário</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button id="theme-toggle" class="topbar-btn" type="button" aria-label="Alternar tema">
+            <span id="theme-icon">🌙</span>
+          </button>
+
+          <div class="user-menu">
+            <div class="user-avatar" data-dropdown="user-dropdown">HC</div>
+            <div id="user-dropdown" class="dropdown">
+              <div class="dropdown-header">
+                <h4 class="user-display-name">Heca Admin</h4>
+                <p>admin@heca.com.br</p>
+              </div>
+              <a href="#" class="dropdown-item">Meu Perfil</a>
+              <a href="#" class="dropdown-item">Sair</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h1>Cadastrar novo usuário</h1>
+          <p>Crie um novo acesso e defina o nível de permissão.</p>
+        </div>
+
+        <div class="nu-layout">
+          <!-- Coluna: Form -->
+          <section class="card">
+            <div class="card-header">
+              <h3 class="card-title">Dados do usuário</h3>
+              <p class="text-sm text-muted">Campos com * são obrigatórios.</p>
+            </div>
+
+            <div class="card-body">
+              <form id="newUserForm" novalidate>
+                <div class="grid grid-cols-2 nu-grid">
+                  <div class="form-group">
+                    <label class="form-label">Nome completo *</label>
+                    <input id="name" type="text" class="form-input" placeholder="Ex: Carlos Silva" required />
+                    <small class="nu-help">Use o nome que aparecerá nas auditorias e logs.</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">E-mail *</label>
+                    <input id="email" type="email" class="form-input" placeholder="ex: carlos@heca.com.br" required />
+                    <small class="nu-help">Será o login do usuário.</small>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 nu-grid" style="margin-top: 1rem;">
+                  <div class="form-group">
+                    <label class="form-label">Telefone</label>
+                    <input id="phone" type="tel" class="form-input" placeholder="(XX) XXXXX-XXXX" />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="status" class="form-input form-select">
+                      <option value="ativo" selected>Ativo</option>
+                      <option value="bloqueado">Bloqueado</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 nu-grid" style="margin-top: 1rem;">
+                  <div class="form-group">
+                    <label class="form-label">Perfil (cargo) *</label>
+                    <select id="role" class="form-input form-select" required>
+                      <option value="" disabled selected>Selecione...</option>
+                      <option value="admin">Administrador</option>
+                      <option value="engenheiro">Engenheiro</option>
+                      <option value="financeiro">Financeiro</option>
+                      <option value="gestor">Gestor</option>
+                      <option value="leitura">Somente leitura</option>
+                    </select>
+                    <small class="nu-help">O perfil define permissões-base.</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Empresa / Unidade</label>
+                    <select id="org" class="form-input form-select">
+                      <option value="heca" selected>Heca Engenharia</option>
+                      <option value="obra-alfa">Obra Alfa</option>
+                      <option value="obra-beta">Obra Beta</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="nu-divider"></div>
+
+                <div class="grid grid-cols-2 nu-grid">
+                  <div class="form-group">
+                    <label class="form-label">Senha *</label>
+                    <div class="nu-password">
+                      <input id="password" type="password" class="form-input" placeholder="Mínimo 8 caracteres" required minlength="8" />
+                      <button id="togglePass" type="button" class="btn btn-secondary btn-sm nu-pass-btn">Mostrar</button>
+                    </div>
+                    <small class="nu-help">Recomendado: letras + números + símbolo.</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Confirmar senha *</label>
+                    <input id="confirmPassword" type="password" class="form-input" required minlength="8" />
+                    <small id="passHint" class="nu-help"></small>
+                  </div>
+                </div>
+
+                <div class="nu-divider"></div>
+
+                <div class="form-group">
+                  <label class="flex items-center gap-2" style="cursor:pointer;">
+                    <input id="sendInvite" type="checkbox" checked style="accent-color: var(--primary);" />
+                    <span style="font-size:.9rem; color: var(--text);">Enviar convite por e-mail com instruções de acesso</span>
+                  </label>
+                </div>
+
+                <div class="card-footer nu-actions">
+                  <a href="configuracoes.html" class="btn btn-secondary">Cancelar</a>
+                  <button id="submitBtn" type="submit" class="btn btn-primary">Criar usuário</button>
+                </div>
+
+                <div id="toast" class="nu-toast" role="status" aria-live="polite"></div>
+              </form>
+            </div>
+          </section>
+
+          <!-- Coluna: Preview -->
+          <aside class="card nu-side">
+            <div class="card-header">
+              <h3 class="card-title">Prévia</h3>
+              <p class="text-sm text-muted">Como o usuário aparece no sistema.</p>
+            </div>
+
+            <div class="card-body">
+              <div class="nu-preview">
+                <div id="avatarPreview" class="user-avatar nu-avatar">NU</div>
+                <div>
+                  <div id="namePreview" class="nu-name">Novo Usuário</div>
+                  <div id="emailPreview" class="nu-email text-sm text-muted">email@exemplo.com</div>
+                </div>
+              </div>
+
+              <div class="nu-mini">
+                <div class="nu-mini-row">
+                  <span class="text-sm text-muted">Perfil</span>
+                  <span id="roleBadge" class="badge badge-secondary">—</span>
+                </div>
+                <div class="nu-mini-row">
+                  <span class="text-sm text-muted">Status</span>
+                  <span id="statusBadge" class="badge badge-success">Ativo</span>
+                </div>
+                <div class="nu-mini-row">
+                  <span class="text-sm text-muted">Unidade</span>
+                  <span id="orgPreview" class="text-sm">Heca Engenharia</span>
+                </div>
+              </div>
+
+              <div class="nu-perms">
+                <div class="font-semibold text-sm" style="margin-bottom:.5rem;">Permissões (base)</div>
+                <ul id="permList" class="nu-perm-list">
+                  <li>Selecione um perfil para ver as permissões.</li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/novo-usuario.js" defer></script>
+</body>
+</html>
