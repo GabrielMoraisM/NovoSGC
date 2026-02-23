@@ -1,3 +1,6 @@
+from typing import Optional
+from unittest import skip
+
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
@@ -86,3 +89,9 @@ class BoletimService:
     
     def get_all_boletins(self, skip: int = 0, limit: int = 100) -> list[BoletimMedicao]:
         return self.repo.get_multi(skip, limit)
+    
+    def list_boletins(self, status: Optional[str] = None, skip: int = 0, limit: int = 100):
+        query = self.db.query(BoletimMedicao)
+        if status:
+            query = query.filter(BoletimMedicao.status == status)
+        return query.offset(skip).limit(limit).all()

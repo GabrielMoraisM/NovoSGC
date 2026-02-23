@@ -10,6 +10,50 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    /* Estilos adicionais para abas e componentes do dashboard */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    .badge-secondary { background: var(--secondary-light); color: var(--text-secondary); }
+    .project-selector-wrapper {
+      margin-left: 1rem;
+    }
+    #contrato-selector {
+      min-width: 250px;
+      border-radius: var(--radius);
+    }
+  </style>
 </head>
 <body>
   <div class="app-container">
@@ -21,7 +65,7 @@
       <div class="sidebar-header">
         <div class="sidebar-logo">HC</div>
         <div class="sidebar-brand">
-          <h1>Heca ssEngenharia</h1>
+          <h1>Heca Engenharia</h1>
           <span>SGC Protótipo</span>
         </div>
       </div>
@@ -60,7 +104,7 @@
               <line x1="18" y1="20" x2="18" y2="4"></line>
               <line x1="6" y1="20" x2="6" y2="16"></line>
             </svg>
-            <span>Medicoes</span>
+            <span>Medições</span>
           </a>
         </div>
         
@@ -84,13 +128,12 @@
         
         <div class="nav-section">
           <div class="nav-section-title">Sistema</div>
-        <a href="configuracoes.html" class="nav-item">
-
+          <a href="configuracoes.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
-            <span>Configuracoes</span>
+            <span>Configurações</span>
           </a>
         </div>
       </nav>
@@ -127,15 +170,12 @@
             <span>Dashboard</span>
           </div>
           
-          <button class="project-selector">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <span>Todos os Projetos</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
+          <!-- Seletor de Contrato -->
+          <div class="project-selector-wrapper">
+            <select id="contrato-selector" class="form-input form-select">
+              <option value="">Todos os Projetos</option>
+            </select>
+          </div>
         </div>
         
         <div class="topbar-right">
@@ -184,81 +224,16 @@
                   <circle cx="12" cy="12" r="3"></circle>
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                 </svg>
-                Configuracoes
+                Configurações
               </a>
-             <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-    <polyline points="16 17 21 12 16 7"></polyline>
-    <line x1="21" y1="12" x2="9" y2="12"></line>
-  </svg>
-  Sair
-</a>
-
-<script>
-  function fazerLogout(event) {
-    // 1. Previne o comportamento padrão do link
-    event.preventDefault();
-
-    // 2. (Opcional) Limpa dados salvos no navegador (se você usar tokens)
-    sessionStorage.clear();
-    localStorage.clear();
-
-    // 3. Substitui a página atual no histórico pela index.html
-    window.location.replace("index.html");
-  }
-</script>
-            
-            <div id="notifications-dropdown" class="dropdown" style="width: 320px; right: 0;">
-              <div class="dropdown-header">
-                <h4>Notificacoes</h4>
-              </div>
-              <div class="notification-list">
-                <div class="notification-item">
-                  <div class="notification-icon warning">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                      <line x1="12" y1="9" x2="12" y2="13"></line>
-                      <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-title">Desequilibrio Fisico-Financeiro</div>
-                    <div class="notification-text">Contrato CT-2024-003 com variacao de 8.5%</div>
-                    <div class="notification-time">Há 2 horas</div>
-                  </div>
-                </div>
-                <div class="notification-item">
-                  <div class="notification-icon danger">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="8" x2="12" y2="12"></line>
-                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-title">Seguro Prestes a Vencer</div>
-                    <div class="notification-text">Seguro do contrato CT-2024-001 vence em 15 dias</div>
-                    <div class="notification-time">Há 5 horas</div>
-                  </div>
-                </div>
-                <div class="notification-item">
-                  <div class="notification-icon success">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-title">Medicao Aprovada</div>
-                    <div class="notification-text">BM-006 do contrato CT-2024-002 foi aprovado</div>
-                    <div class="notification-time">Há 1 dia</div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer" style="text-align: center;">
-                <a href="alertas.html" class="text-sm" style="color: var(--primary);">Ver todas as notificacoes</a>
-              </div>
+              <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+              </a>
             </div>
           </div>
         </div>
@@ -268,12 +243,12 @@
       <div class="page-content">
         <div class="page-header">
           <h1>Dashboard</h1>
-          <p>Visao geral do portfólio de contratos</p>
+          <p>Visão geral do portfólio de contratos ou detalhamento por obra</p>
         </div>
         
-        <!-- KPI Cards -->
+        <!-- KPI Cards Dinâmicos -->
         <div class="kpi-grid">
-          <div class="kpi-card animate-fade-in stagger-1">
+          <div class="kpi-card" id="kpi-valor-total">
             <div class="kpi-header">
               <div class="kpi-icon primary">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -281,38 +256,24 @@
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
               </div>
-              <div class="kpi-trend up">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                  <polyline points="17 6 23 6 23 12"></polyline>
-                </svg>
-                +12%
-              </div>
             </div>
-            <div class="kpi-value">R$ 45.2M</div>
+            <div class="kpi-value">R$ 0</div>
             <div class="kpi-label">Valor Total Contratado</div>
           </div>
           
-          <div class="kpi-card animate-fade-in stagger-2">
+          <div class="kpi-card" id="kpi-executado">
             <div class="kpi-header">
               <div class="kpi-icon success">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </div>
-              <div class="kpi-trend up">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                  <polyline points="17 6 23 6 23 12"></polyline>
-                </svg>
-                +8%
-              </div>
             </div>
-            <div class="kpi-value">R$ 28.7M</div>
-            <div class="kpi-label">Total Faturado</div>
+            <div class="kpi-value">R$ 0</div>
+            <div class="kpi-label">Valor Executado</div>
           </div>
           
-          <div class="kpi-card animate-fade-in stagger-3">
+          <div class="kpi-card" id="kpi-faturado">
             <div class="kpi-header">
               <div class="kpi-icon warning">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -320,19 +281,12 @@
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
               </div>
-              <div class="kpi-trend down">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-                  <polyline points="17 18 23 18 23 12"></polyline>
-                </svg>
-                -3%
-              </div>
             </div>
-            <div class="kpi-value">R$ 16.5M</div>
-            <div class="kpi-label">A Faturar</div>
+            <div class="kpi-value">R$ 0</div>
+            <div class="kpi-label">Total Faturado</div>
           </div>
           
-          <div class="kpi-card animate-fade-in stagger-4">
+          <div class="kpi-card" id="kpi-recebido">
             <div class="kpi-header">
               <div class="kpi-icon danger">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -343,197 +297,160 @@
                 </svg>
               </div>
             </div>
-            <div class="kpi-value">58%</div>
-            <div class="kpi-label">Prazo Médio Consumido</div>
-          </div>
-        </div>
-        
-        <!-- Charts and Panels -->
-        <div class="grid grid-cols-3" style="margin-bottom: 1.5rem;">
-          <!-- Progress Chart -->
-          <div class="card" style="grid-column: span 2;">
-            <div class="card-header">
-              <h3 class="card-title">Progresso Fisico x Financeiro</h3>
-              <select class="form-input form-select" style="width: auto;">
-                <option>Ultimos 6 meses</option>
-                <option>Ultimo ano</option>
-                <option>Todo periodo</option>
-              </select>
-            </div>
-            <div class="card-body">
-              <div id="progress-chart"></div>
-            </div>
+            <div class="kpi-value">R$ 0</div>
+            <div class="kpi-label">Total Recebido</div>
           </div>
           
-          <!-- Risk Indicator -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Indicador de Risco</h3>
+          <div class="kpi-card" id="kpi-perc-fisico">
+            <div class="kpi-header">
+              <div class="kpi-icon primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 12h-4l-3 9-4-18-3 9H2"></path>
+                </svg>
+              </div>
             </div>
-            <div class="card-body">
-              <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
-                  <svg viewBox="0 0 120 120" width="120" height="120">
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--border)" stroke-width="12"/>
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--warning)" stroke-width="12" 
-                            stroke-dasharray="339.3" stroke-dashoffset="101.8" 
-                            transform="rotate(-90 60 60)" stroke-linecap="round"/>
-                  </svg>
-                  <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <span style="font-size: 1.75rem; font-weight: 700;">70%</span>
-                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Score</span>
-                  </div>
-                </div>
-                <div class="badge badge-warning" style="margin-top: 1rem;">Atencao Moderada</div>
+            <div class="kpi-value">0%</div>
+            <div class="kpi-label">Progresso Físico</div>
+          </div>
+          
+          <div class="kpi-card" id="kpi-perc-financeiro">
+            <div class="kpi-header">
+              <div class="kpi-icon success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
               </div>
-              
-              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <div class="flex items-center justify-between">
-                  <span class="text-sm">Contratos em dia</span>
-                  <span class="text-sm font-semibold">8/12</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-sm">Com alerta</span>
-                  <span class="text-sm font-semibold" style="color: var(--warning);">3</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-sm">Críticos</span>
-                  <span class="text-sm font-semibold" style="color: var(--danger);">1</span>
-                </div>
-              </div>
+            </div>
+            <div class="kpi-value">0%</div>
+            <div class="kpi-label">Progresso Financeiro</div>
+          </div>
+        </div>
+        
+        <!-- Gráfico de Progresso (placeholder) -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="card-header">
+            <h3 class="card-title">Progresso Físico x Financeiro</h3>
+            <select class="form-input form-select" style="width: auto;">
+              <option>Últimos 6 meses</option>
+              <option>Último ano</option>
+              <option>Todo período</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div id="progress-chart" style="height: 250px; background: var(--bg-secondary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+              [Gráfico de evolução]
             </div>
           </div>
         </div>
         
-        <!-- Recent Contracts & Notifications -->
-        <div class="grid grid-cols-2">
-          <!-- Recent Contracts -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Contratos Recentes</h3>
-              <a href="contratos.html" class="btn btn-ghost btn-sm">Ver todos</a>
+        <!-- Detalhamento do Contrato (aparece quando um contrato é selecionado) -->
+        <div class="card" id="contrato-detalhes" style="display: none;">
+          <div class="card-header">
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="medicoes">Boletins de Medição</button>
+              <button class="tab-btn" data-tab="financeiro">Financeiro</button>
+              <button class="tab-btn" data-tab="alertas">Alertas</button>
             </div>
-            <div class="card-body" style="padding: 0;">
-              <div class="table-container" style="border: none; border-radius: 0;">
-                <table class="table">
+          </div>
+          <div class="card-body">
+            <!-- Aba Medições -->
+            <div class="tab-pane active" id="tab-medicoes">
+              <div class="table-container">
+                <table class="table" id="tabela-boletins">
                   <thead>
                     <tr>
-                      <th>Contrato</th>
-                      <th>Cliente</th>
-                      <th>Progresso</th>
+                      <th>Nº BM</th>
+                      <th>Data</th>
+                      <th>Valor Medido</th>
+                      <th>Valor Aprovado</th>
                       <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td class="font-medium">CT-2024-001</td>
-                      <td>Petrobras</td>
-                      <td>
-                        <div class="flex items-center gap-2">
-                          <div class="progress" style="width: 60px;">
-                            <div class="progress-bar success" style="width: 72%;"></div>
-                          </div>
-                          <span class="text-xs">72%</span>
-                        </div>
-                      </td>
-                      <td><span class="badge badge-success">Em dia</span></td>
-                    </tr>
-                    <tr>
-                      <td class="font-medium">CT-2024-002</td>
-                      <td>Vale S.A.</td>
-                      <td>
-                        <div class="flex items-center gap-2">
-                          <div class="progress" style="width: 60px;">
-                            <div class="progress-bar primary" style="width: 45%;"></div>
-                          </div>
-                          <span class="text-xs">45%</span>
-                        </div>
-                      </td>
-                      <td><span class="badge badge-success">Em dia</span></td>
-                    </tr>
-                    <tr>
-                      <td class="font-medium">CT-2024-003</td>
-                      <td>Eletrobras</td>
-                      <td>
-                        <div class="flex items-center gap-2">
-                          <div class="progress" style="width: 60px;">
-                            <div class="progress-bar warning" style="width: 58%;"></div>
-                          </div>
-                          <span class="text-xs">58%</span>
-                        </div>
-                      </td>
-                      <td><span class="badge badge-warning">Atencao</span></td>
-                    </tr>
-                    <tr>
-                      <td class="font-medium">CT-2024-004</td>
-                      <td>CDHU</td>
-                      <td>
-                        <div class="flex items-center gap-2">
-                          <div class="progress" style="width: 60px;">
-                            <div class="progress-bar danger" style="width: 35%;"></div>
-                          </div>
-                          <span class="text-xs">35%</span>
-                        </div>
-                      </td>
-                      <td><span class="badge badge-danger">Critico</span></td>
-                    </tr>
+                    <tr><td colspan="5" class="text-center">Carregando...</td></tr>
                   </tbody>
                 </table>
               </div>
             </div>
-          </div>
-          
-          <!-- Recent Notifications -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Alertas Recentes</h3>
-              <a href="alertas.html" class="btn btn-ghost btn-sm">Ver todos</a>
-            </div>
-            <div class="card-body" style="padding: 0;">
-              <div class="notification-list">
-                <div class="notification-item">
-                  <div class="notification-icon danger">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="8" x2="12" y2="12"></line>
-                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-title">Prazo Critico</div>
-                    <div class="notification-text">CT-2024-004 com atraso de 15 dias</div>
-                    <div class="notification-time">Há 30 minutos</div>
-                  </div>
-                </div>
-                <div class="notification-item">
-                  <div class="notification-icon warning">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                      <line x1="12" y1="9" x2="12" y2="13"></line>
-                      <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-title">Desequilibrio Financeiro</div>
-                    <div class="notification-text">CT-2024-003 com variacao de 8.5%</div>
-                    <div class="notification-time">Há 2 horas</div>
-                  </div>
-                </div>
-                <div class="notification-item">
-                  <div class="notification-icon info">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="16" x2="12" y2="12"></line>
-                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-title">Seguro a Vencer</div>
-                    <div class="notification-text">Renovar seguro do CT-2024-001 em 15 dias</div>
-                    <div class="notification-time">Há 5 horas</div>
-                  </div>
-                </div>
+            <!-- Aba Financeiro -->
+            <div class="tab-pane" id="tab-financeiro">
+              <h4>Notas Fiscais</h4>
+              <div class="table-container">
+                <table class="table" id="tabela-nfs">
+                  <thead>
+                    <tr>
+                      <th>Nº NF</th>
+                      <th>Data Emissão</th>
+                      <th>Valor Bruto</th>
+                      <th>Valor Líquido</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="5" class="text-center">Carregando...</td></tr>
+                  </tbody>
+                </table>
               </div>
+              <h4 style="margin-top: 1.5rem;">Pagamentos</h4>
+              <div class="table-container">
+                <table class="table" id="tabela-pagamentos">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Valor</th>
+                      <th>NF</th>
+                      <th>Comprovante</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="4" class="text-center">Carregando...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- Aba Alertas -->
+            <div class="tab-pane" id="tab-alertas">
+              <div class="notification-list" id="lista-alertas-contrato">
+                <div class="notification-item">Carregando alertas...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Contratos Recentes (visível apenas quando "Todos" está selecionado) -->
+        <div class="card" id="recentes-container">
+          <div class="card-header">
+            <h3 class="card-title">Contratos Recentes</h3>
+            <a href="contratos.html" class="btn btn-ghost btn-sm">Ver todos</a>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-container" style="border: none; border-radius: 0;">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Contrato</th>
+                    <th>Cliente</th>
+                    <th>Progresso</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tabela-contratos-recentes">
+                  <tr><td colspan="4" class="text-center">Carregando...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Alertas Recentes (visível apenas quando "Todos" está selecionado) -->
+        <div class="card" id="alertas-recentes-container">
+          <div class="card-header">
+            <h3 class="card-title">Alertas Recentes</h3>
+            <a href="alertas.html" class="btn btn-ghost btn-sm">Ver todos</a>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="notification-list" id="lista-alertas-recentes">
+              <div class="notification-item">Carregando...</div>
             </div>
           </div>
         </div>
@@ -599,6 +516,17 @@
     </div>
   </div>
   
-  <script src="/main.js"></script>
+  <script>
+    // Função de logout simples (pode ser movida para main.js)
+    function fazerLogout(event) {
+      event.preventDefault();
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.replace("index.html");
+    }
+  </script>
+  <script src="/sgc-frontend/js/main.js"></script>
+  <script src="/sgc-frontend/js/api.js" type="module"></script>
+  <script src="/sgc-frontend/js/dashboard.js" type="module"></script>
 </body>
 </html>

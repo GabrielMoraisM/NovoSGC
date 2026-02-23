@@ -63,15 +63,16 @@ async function carregarContratos() {
 async function carregarBoletinsAprovados() {
   try {
     boletinsAprovados = await getBoletins({ status: 'APROVADO' });
-    console.log('Boletins aprovados:', boletinsAprovados.length);
+    console.log('✅ Boletins aprovados carregados:', boletinsAprovados);
   } catch (error) {
-    console.error('Erro ao carregar boletins aprovados:', error);
+    console.error('❌ Erro ao carregar boletins aprovados:', error);
   }
 }
 
 async function carregarFaturamentos() {
   try {
     faturas = await getFaturamentos({ limit: 1000 });
+    console.log('Faturas carregadas:', faturas);
     renderizarFaturamentos(faturas);
     atualizarKPIs();
     atualizarImpostos();
@@ -111,7 +112,7 @@ function renderizarFaturamentos(lista) {
 
 async function carregarPagamentos() {
   try {
-    pagamentos = await getPagamentos();
+    pagamentos = await getPagamentos({ limit: 1000 }); // ou skip:0, limit:100
     renderizarPagamentos(pagamentos);
   } catch (error) {
     console.error('Erro ao carregar pagamentos:', error);
@@ -267,8 +268,7 @@ async function salvarNovaNF(event) {
     cliente_id: contrato.cliente_id,
     valor_bruto_nf: parseFloat(formData.get('valorBruto')),
     data_emissao: formData.get('dataEmissao'),
-    data_vencimento: formData.get('dataVencimento'),
-    status: 'PENDENTE'
+    data_vencimento: formData.get('dataVencimento')
   };
 
   try {
@@ -284,15 +284,26 @@ async function salvarNovaNF(event) {
 }
 
 async function abrirModalNovoPagamento() {
-  const notasPendentes = faturas.filter(f => f.status !== 'QUITADO');
+  // Filtra notas não quitadas e não canceladas
+  const notasDisponiveis = faturas.filter(f => 
+    f.status !== 'QUITADO' && f.status !== 'CANCELADO'
+  );
+
+  if (notasDisponiveis.length === 0) {
+    alert('Não há notas fiscais disponíveis para pagamento.');
+    return;
+  }
+
   const selectNF = document.getElementById('payment-invoice');
   selectNF.innerHTML = '<option value="">Selecione...</option>';
-  notasPendentes.forEach(f => {
+  
+  notasDisponiveis.forEach(f => {
     const opt = document.createElement('option');
     opt.value = f.id;
-    opt.textContent = `${f.numero_nf} - R$ ${f.valor_liquido_nf} (${f.status})`;
+    opt.textContent = `${f.numero_nf} - ${formatarMoeda(f.valor_liquido_nf)} (${f.status})`;
     selectNF.appendChild(opt);
   });
+  
   document.getElementById('new-payment-modal').classList.add('active');
 }
 

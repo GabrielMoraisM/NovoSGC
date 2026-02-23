@@ -16,7 +16,6 @@ class ContratoBase(BaseModel):
     iss_percentual_padrao: Optional[Decimal] = None
     status: Optional[str] = "ATIVO"
 
-
     @validator('tipo_obra')
     def valida_tipo_obra(cls, v):
         allowed = ('HECA_100', 'CONSORCIO', 'SCP')
@@ -78,14 +77,33 @@ class ContratoUpdate(BaseModel):
 class ContratoInDB(ContratoBase):
     id: int
     data_fim_prevista: Optional[date]
-    valor_total: Optional[Decimal]
-    numero_os: Optional[str]          # <-- adicione
-    data_os: Optional[date]           # <-- adicione
-    descricao_os: Optional[str]       # <-- adicione
+    valor_total: Optional[Decimal]          # Valor atualizado com aditivos
+    numero_os: Optional[str]
+    data_os: Optional[date]
+    descricao_os: Optional[str]
     created_at: datetime
     updated_at: Optional[datetime]
     gestor: Optional[str] = None
 
+    # Campos do relacionamento (opcionais, preenchidos via join)
+    cliente_nome: Optional[str] = None
+
+    # Campos calculados para resumo financeiro e de desempenho (opcionais)
+    # Esses campos são preenchidos apenas quando solicitado (?incluir_resumo=true)
+    valor_executado: Optional[float] = None      # Soma dos BMs aprovados/faturados
+    valor_faturado: Optional[float] = None       # Soma das NFs não canceladas
+    valor_recebido: Optional[float] = None       # Soma dos pagamentos
+    percentual_fisico: Optional[float] = None    # (valor_executado / valor_total) * 100
+    percentual_financeiro: Optional[float] = None # (valor_recebido / valor_total) * 100
+    saldo_contratual: Optional[float] = None     # valor_total - valor_executado
+    saldo_a_faturar: Optional[float] = None      # valor_executado - valor_faturado
+    saldo_a_receber: Optional[float] = None      # valor_faturado - valor_recebido
+
+    # Campos de desempenho temporal
+    percentual_tempo: Optional[float] = None     # dias_decorridos / dias_totais * 100
+    status_desempenho: Optional[str] = None      # EM_DIA, ATRASADO, ADIANTADO, SEM_PRAZO, SEM_MEDICAO
+    dias_decorridos: Optional[int] = None        # dias desde data_inicio até hoje
+    dias_totais: Optional[int] = None            # prazo original (ou atualizado via aditivos)
 
     class Config:
         from_attributes = True

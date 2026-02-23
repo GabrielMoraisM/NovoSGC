@@ -131,7 +131,7 @@ def cancelar_boletim(
 
 @router.get("/boletins/", response_model=List[BoletimInDB])
 def list_boletins(
-    status: Optional[str] = Query(None),
+    status: Optional[str] = None,
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(deps.get_db),

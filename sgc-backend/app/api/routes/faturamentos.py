@@ -14,6 +14,7 @@ def create_faturamento(
     db: Session = Depends(deps.get_db),
     current_user: Usuario = Depends(deps.get_current_active_user)
 ):
+    print("🔵 faturamento_in recebido:", faturamento_in)
     service = FaturamentoService(db)
     return service.create_faturamento(faturamento_in)
 

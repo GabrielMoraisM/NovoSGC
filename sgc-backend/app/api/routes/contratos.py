@@ -6,6 +6,10 @@ from app.api import deps
 from app.schemas.contrato import ContratoCreate, ContratoInDB, ContratoUpdate
 from app.services.contrato_service import ContratoService
 from app.models.usuario import Usuario
+from app.core.exceptions import BusinessError
+from app.services import financeiro_service
+from app.api.deps import get_db, get_current_user
+
 
 router = APIRouter()
 
@@ -81,3 +85,19 @@ def delete_contrato(
     service = ContratoService(db)
     service.delete_contrato(contrato_id)
     return None
+
+@router.get("/{contrato_id}/resumo-financeiro")
+def get_resumo_financeiro_contrato(
+    contrato_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """
+    Retorna o resumo financeiro completo de um contrato específico.
+    """
+    try:
+        resumo = financeiro_service.calcular_resumo_contrato(db, contrato_id)
+        desempenho = financeiro_service.calcular_status_desempenho(db, contrato_id)
+        return {**resumo, **desempenho}
+    except BusinessError as e:
+        raise HTTPException(status_code=400, detail=str(e))
