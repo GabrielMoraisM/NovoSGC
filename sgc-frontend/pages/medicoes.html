@@ -270,79 +270,77 @@
       </header>
       
       <!-- Page Content -->
-      <div class="page-content">
-        <div class="page-header flex items-center justify-between">
-          <div>
-            <h1>Boletins de Medição</h1>
-            <p>Acompanhe e gerencie todas as medições dos contratos</p>
-          </div>
-          <button class="btn btn-primary" data-modal-open="new-measurement-modal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            Nova Medição
-          </button>
+<div class="page-content">
+  <div class="page-header flex items-center justify-between">
+    <div>
+      <h1>Boletins de Medição</h1>
+      <p>Acompanhe e gerencie todas as medições dos contratos</p>
+    </div>
+    <button class="btn btn-primary" data-modal-open="new-measurement-modal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Nova Medição
+    </button>
+  </div>
+  
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="search-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="search-measurements" class="form-input" placeholder="Buscar medições...">
+    </div>
+    
+    <select class="form-input form-select" style="width: auto;" id="filter-contract">
+      <option value="">Todos os contratos</option>
+      <!-- opções serão preenchidas via JavaScript -->
+    </select>
+    
+    <select class="form-input form-select" style="width: auto;" id="filter-status">
+      <option value="">Todos os status</option>
+      <option value="RASCUNHO">Rascunho</option>
+      <option value="APROVADO">Aprovado</option>
+      <option value="FATURADO">Faturado</option>
+      <option value="CANCELADO">Cancelado</option>
+    </select>
+  </div>
+
+  <!-- Summary (agora acima) -->
+  <div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+      <h3 class="card-title">Resumo Acumulado</h3>
+    </div>
+    <div class="card-body">
+      <div class="grid grid-cols-4" style="gap: 1.5rem; text-align: center;">
+        <div>
+          <div class="text-xs text-muted mb-1">Total de Medições</div>
+          <div class="text-2xl font-bold" id="total-medicoes">0</div>
         </div>
-        
-        <!-- Filter Bar -->
-        <div class="filter-bar">
-          <div class="search-input">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="search-measurements" class="form-input" placeholder="Buscar medições...">
-          </div>
-          
-          <select class="form-input form-select" style="width: auto;" id="filter-contract">
-            <option value="">Todos os contratos</option>
-            <option value="CT-2024-001">CT-2024-001 - Petrobras</option>
-            <option value="CT-2024-002">CT-2024-002 - Vale</option>
-            <option value="CT-2024-003">CT-2024-003 - Eletrobras</option>
-          </select>
-          
-          <select class="form-input form-select" style="width: auto;" id="filter-status">
-            <option value="">Todos os status</option>
-            <option value="RASCUNHO">Rascunho</option>
-            <option value="APROVADO">Aprovado</option>
-            <option value="FATURADO">Faturado</option>
-            <option value="CANCELADO">Cancelado</option>
-          </select>
+        <div>
+          <div class="text-xs text-muted mb-1">Valor Total Medido</div>
+          <div class="text-2xl font-bold" id="valor-total-medido">R$ 0</div>
         </div>
-        
-        <!-- Measurements Grid -->
-        <div id="measurements-grid" class="grid grid-cols-4" style="gap: 1rem;">
-          <!-- Cards serão preenchidos via JavaScript -->
+        <div>
+          <div class="text-xs text-muted mb-1">Valor Aprovado</div>
+          <div class="text-2xl font-bold" id="valor-total-aprovado">R$ 0</div>
         </div>
-        
-        <!-- Summary -->
-        <div class="card" style="margin-top: 1.5rem;">
-          <div class="card-header">
-            <h3 class="card-title">Resumo Acumulado</h3>
-          </div>
-          <div class="card-body">
-            <div class="grid grid-cols-4" style="gap: 1.5rem; text-align: center;">
-              <div>
-                <div class="text-xs text-muted mb-1">Total de Medições</div>
-                <div class="text-2xl font-bold" id="total-medicoes">0</div>
-              </div>
-              <div>
-                <div class="text-xs text-muted mb-1">Valor Total Medido</div>
-                <div class="text-2xl font-bold" id="valor-total-medido">R$ 0</div>
-              </div>
-              <div>
-                <div class="text-xs text-muted mb-1">Valor Aprovado</div>
-                <div class="text-2xl font-bold" id="valor-total-aprovado">R$ 0</div>
-              </div>
-              <div>
-                <div class="text-xs text-muted mb-1">Faturado</div>
-                <div class="text-2xl font-bold" id="valor-total-faturado">R$ 0</div>
-              </div>
-            </div>
-          </div>
+        <div>
+          <div class="text-xs text-muted mb-1">Faturado</div>
+          <div class="text-2xl font-bold" id="valor-total-faturado">R$ 0</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Measurements Grid -->
+  <div id="measurements-grid" class="grid grid-cols-4" style="gap: 1rem;">
+    <!-- Cards serão preenchidos via JavaScript -->
+  </div>
+</div>
     </main>
   </div>
   
@@ -362,7 +360,7 @@
         <form id="new-measurement-form">
           <div class="form-group">
             <label class="form-label">Contrato</label>
-            <select class="form-input form-select" name="contrato" required>
+            <select class="form-input form-select" name="contrato_id" required>
               <option value="">Selecione um contrato</option>
               <option value="CT-2024-001">CT-2024-001 - Plataforma P-80 (Petrobras)</option>
               <option value="CT-2024-002">CT-2024-002 - Terminal Portuário (Vale)</option>
@@ -373,22 +371,22 @@
           <div class="grid grid-cols-2" style="gap: 1rem;">
             <div class="form-group">
               <label class="form-label">Período Início</label>
-              <input type="date" class="form-input" name="periodoInicio" required>
+              <input type="date" class="form-input" name="periodo_inicio" required>
             </div>
             <div class="form-group">
               <label class="form-label">Período Fim</label>
-              <input type="date" class="form-input" name="periodoFim" required>
+              <input type="date" class="form-input" name="periodo_fim" required>
             </div>
           </div>
           
           <div class="grid grid-cols-2" style="gap: 1rem;">
             <div class="form-group">
               <label class="form-label">Valor Medido (R$)</label>
-              <input type="number" class="form-input" name="valorMedido" step="0.01" min="0" required>
+              <input type="number" class="form-input" name="valor_total_medido" step="0.01" min="0" required>
             </div>
             <div class="form-group">
               <label class="form-label">Glosa (R$)</label>
-              <input type="number" class="form-input" name="glosa" step="0.01" min="0" value="0">
+              <input type="number" class="form-input" name="valor_glosa" step="0.01" min="0" value="0">
             </div>
           </div>
           
@@ -527,6 +525,6 @@
   </div>
   
   <script src="/sgc-frontend/js/main.js"></script>
-  <script src="/sgc-frontend/js/medicoes.js"></script>
+  <script src="/sgc-frontend/js/medicoes.js" type="module"></script>
 </body>
 </html>

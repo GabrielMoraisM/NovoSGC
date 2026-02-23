@@ -6,11 +6,10 @@ class BoletimMedicaoRepository(BaseRepository[BoletimMedicao]):
     def __init__(self, db: Session):
         super().__init__(db, BoletimMedicao)
 
-    def get_by_contrato_sequencial(self, contrato_id: int, numero_sequencial: int) -> BoletimMedicao | None:
+    def get_by_contrato(self, contrato_id: int, skip: int = 0, limit: int = 100) -> list[BoletimMedicao]:
         return self.db.query(BoletimMedicao).filter(
-            BoletimMedicao.contrato_id == contrato_id,
-            BoletimMedicao.numero_sequencial == numero_sequencial
-        ).first()
+            BoletimMedicao.contrato_id == contrato_id
+        ).order_by(BoletimMedicao.numero_sequencial.asc()).offset(skip).limit(limit).all()
 
     def get_ultimo_sequencial(self, contrato_id: int) -> int:
         """Retorna o maior número sequencial para um contrato (usado pelo listener)."""

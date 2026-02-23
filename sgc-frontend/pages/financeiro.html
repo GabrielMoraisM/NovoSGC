@@ -437,12 +437,9 @@
       <div class="modal-body">
         <form id="new-invoice-form">
           <div class="form-group">
-            <label class="form-label">Contrato / BM</label>
-            <select class="form-input form-select" name="bmId" required>
+            <label class="form-label">Boletim de Medição (Aprovado)</label>
+            <select class="form-input form-select" name="bmId" id="invoice-bm" required>
               <option value="">Selecione...</option>
-              <option value="1">CT-2024-001 - BM-005 (Aprovado) - R$ 1.500.000</option>
-              <option value="2">CT-2024-002 - BM-003 (Aprovado) - R$ 2.000.000</option>
-              <option value="3">CT-2024-003 - BM-003 (Aprovado) - R$ 2.100.000</option>
             </select>
           </div>
           
@@ -469,8 +466,8 @@
           
           <div class="form-group">
             <label class="form-label">Empresa Emissora</label>
-            <select class="form-input form-select" name="empresaEmissoraId" required>
-              <option value="1">Heca Engenharia (MATRIZ)</option>
+            <select class="form-input form-select" name="empresaEmissoraId" id="invoice-emissora" required>
+              <option value="">Selecione...</option>
             </select>
           </div>
         </form>
@@ -498,11 +495,8 @@
         <form id="new-payment-form">
           <div class="form-group">
             <label class="form-label">Nota Fiscal</label>
-            <select class="form-input form-select" name="faturamentoId" required>
+            <select class="form-input form-select" name="faturamentoId" id="payment-invoice" required>
               <option value="">Selecione...</option>
-              <option value="1">NF-2024-0125 - Petrobras - R$ 1.282.500 (PENDENTE)</option>
-              <option value="2">NF-2024-0126 - Petrobras - R$ 1.068.750 (PENDENTE)</option>
-              <option value="3">NF-2024-0127 - Vale - R$ 1.795.500 (PENDENTE)</option>
             </select>
           </div>
           
@@ -697,6 +691,6 @@
   </div>
   
   <script src="/sgc-frontend/js/main.js"></script>
-  <script src="/sgc-frontend/js/financeiro.js"></script>
+  <script src="/sgc-frontend/js/financeiro.js" type="module"></script>
 </body>
 </html>

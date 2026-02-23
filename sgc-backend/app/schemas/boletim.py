@@ -3,9 +3,6 @@ from typing import Optional
 from datetime import date, datetime
 from decimal import Decimal
 
-# ----------------------------------------------------------------------
-# SCHEMA BASE
-# ----------------------------------------------------------------------
 class BoletimBase(BaseModel):
     periodo_inicio: date
     periodo_fim: date
@@ -21,16 +18,16 @@ class BoletimBase(BaseModel):
 
     @validator('valor_total_medido')
     def valida_valor(cls, v):
-        if v < 0:
-            raise ValueError('Valor total medido não pode ser negativo')
+        if v <= 0:
+            raise ValueError('Valor medido deve ser maior que zero')
         return v
 
     @validator('valor_glosa')
     def valida_glosa(cls, v, values):
         if v < 0:
-            raise ValueError('Valor de glosa não pode ser negativo')
+            raise ValueError('Glosa não pode ser negativa')
         if 'valor_total_medido' in values and v > values['valor_total_medido']:
-            raise ValueError('Glosa não pode ser maior que o valor total medido')
+            raise ValueError('Glosa não pode ser maior que o valor medido')
         return v
 
     @validator('status')
@@ -40,16 +37,9 @@ class BoletimBase(BaseModel):
             raise ValueError(f'Status deve ser um de {allowed}')
         return v
 
-# ----------------------------------------------------------------------
-# SCHEMA PARA CRIAÇÃO (POST)
-# ----------------------------------------------------------------------
 class BoletimCreate(BoletimBase):
-    contrato_id: Optional[int] = None  # ou apenas: contrato_id: int | None = None
-    # numero_sequencial NÃO é enviado – é gerado automaticamente pelo listener
+    contrato_id: int
 
-# ----------------------------------------------------------------------
-# SCHEMA PARA ATUALIZAÇÃO (PUT/PATCH)
-# ----------------------------------------------------------------------
 class BoletimUpdate(BaseModel):
     periodo_inicio: Optional[date] = None
     periodo_fim: Optional[date] = None
@@ -66,22 +56,6 @@ class BoletimUpdate(BaseModel):
             raise ValueError('Data fim não pode ser anterior à data início')
         return v
 
-    @validator('valor_total_medido')
-    def valida_valor(cls, v):
-        if v is not None and v < 0:
-            raise ValueError('Valor total medido não pode ser negativo')
-        return v
-
-    @validator('valor_glosa')
-    def valida_glosa(cls, v, values):
-        if v is None:
-            return v
-        if v < 0:
-            raise ValueError('Valor de glosa não pode ser negativo')
-        if 'valor_total_medido' in values and values['valor_total_medido'] and v > values['valor_total_medido']:
-            raise ValueError('Glosa não pode ser maior que o valor total medido')
-        return v
-
     @validator('status')
     def valida_status(cls, v):
         if v is None:
@@ -91,9 +65,6 @@ class BoletimUpdate(BaseModel):
             raise ValueError(f'Status deve ser um de {allowed}')
         return v
 
-# ----------------------------------------------------------------------
-# SCHEMA PARA RESPOSTA (GET)
-# ----------------------------------------------------------------------
 class BoletimInDB(BoletimBase):
     id: int
     contrato_id: int

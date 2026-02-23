@@ -14,59 +14,24 @@ async function apiRequest(endpoint, options = {}) {
     if (response.status === 204) return null;
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      const message = data.detail || `Erro ${response.status}`;
+      const errorData = await response.json().catch(() => ({}));
+      console.error('❌ Resposta de erro completa:', errorData);
+      let message = `Erro ${response.status}: ${response.statusText}`;
+      if (errorData.detail) {
+        if (Array.isArray(errorData.detail)) {
+          message = errorData.detail.map(e => e.msg).join('; ');
+        } else if (typeof errorData.detail === 'string') {
+          message = errorData.detail;
+        } else {
+          message = JSON.stringify(errorData.detail);
+        }
+      }
       throw new Error(message);
     }
     return data;
   } catch (error) {
     console.error('Erro em apiRequest:', error);
     throw error;
-  }
-
-
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers
-    });
-
-    // Se a resposta for 204 No Content, retorna null
-    if (response.status === 204) {
-      return null;
-    }
-
-    // Tenta parsear o JSON, se falhar, assume objeto vazio
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      // Log detalhado do erro
-      console.error('❌ Erro na requisição:', {
-        status: response.status,
-        statusText: response.statusText,
-        url: `${API_BASE_URL}${endpoint}`,
-        data: data
-      });
-
-      // Monta mensagem de erro legível
-      let message = `Erro ${response.status}: ${response.statusText}`;
-      if (data.detail) {
-        if (Array.isArray(data.detail)) {
-          message = data.detail.map(e => e.msg).join('; ');
-        } else if (typeof data.detail === 'string') {
-          message = data.detail;
-        } else {
-          message = JSON.stringify(data.detail);
-        }
-      }
-      throw new Error(message);
-    }
-
-    return data;
-  } catch (error) {
-    // Se já for um erro tratado (com message), apenas repassa
-    if (error.message) throw error;
-    // Caso contrário, envolve em um erro genérico
-    throw new Error('Erro de rede ou servidor indisponível');
   }
 }
 
@@ -247,6 +212,20 @@ export async function createBoletim(contratoId, boletimData) {
   return apiRequest(`/contratos/${contratoId}/boletins`, {
     method: 'POST',
     body: JSON.stringify(boletimData)
+  });
+}
+
+export async function updateBoletim(boletimId, boletimData) {
+  return apiRequest(`/boletins/${boletimId}`, {
+    method: 'PUT',
+    body: JSON.stringify(boletimData)
+  });
+}
+
+// Se quiser deletar
+export async function deleteBoletim(boletimId) {
+  return apiRequest(`/boletins/${boletimId}`, {
+    method: 'DELETE'
   });
 }
 

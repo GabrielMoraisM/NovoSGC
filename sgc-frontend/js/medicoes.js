@@ -1,177 +1,23 @@
-// ===== MEDIÇÕES =====
+// js/medicoes.js
+import { getBoletins, createBoletim, updateBoletim, getContratos } from './api.js';
 
-// Dados mockados de medições
-const medicoesMock = [
-  {
-    id: 1,
-    numeroSequencial: 1,
-    contratoNumero: "CT-2024-001",
-    contratoNome: "Plataforma P-80",
-    periodoInicio: "2024-01-01",
-    periodoFim: "2024-01-31",
-    valorMedido: 1500000.00,
-    glosa: 0,
-    valorAprovado: 1500000.00,
-    status: "FATURADO",
-    observacoes: "Primeira medição do contrato"
-  },
-  {
-    id: 2,
-    numeroSequencial: 2,
-    contratoNumero: "CT-2024-001",
-    contratoNome: "Plataforma P-80",
-    periodoInicio: "2024-02-01",
-    periodoFim: "2024-02-28",
-    valorMedido: 1250000.00,
-    glosa: 0,
-    valorAprovado: 1250000.00,
-    status: "FATURADO",
-    observacoes: ""
-  },
-  {
-    id: 3,
-    numeroSequencial: 3,
-    contratoNumero: "CT-2024-001",
-    contratoNome: "Plataforma P-80",
-    periodoInicio: "2024-03-01",
-    periodoFim: "2024-03-31",
-    valorMedido: 1875000.00,
-    glosa: 0,
-    valorAprovado: 1875000.00,
-    status: "FATURADO",
-    observacoes: ""
-  },
-  {
-    id: 4,
-    numeroSequencial: 4,
-    contratoNumero: "CT-2024-001",
-    contratoNome: "Plataforma P-80",
-    periodoInicio: "2024-04-01",
-    periodoFim: "2024-04-30",
-    valorMedido: 2250000.00,
-    glosa: 0,
-    valorAprovado: 2250000.00,
-    status: "FATURADO",
-    observacoes: ""
-  },
-  {
-    id: 5,
-    numeroSequencial: 5,
-    contratoNumero: "CT-2024-001",
-    contratoNome: "Plataforma P-80",
-    periodoInicio: "2024-05-01",
-    periodoFim: "2024-05-31",
-    valorMedido: 1500000.00,
-    glosa: 0,
-    valorAprovado: 1500000.00,
-    status: "APROVADO",
-    observacoes: "Aguardando emissão de nota fiscal"
-  },
-  {
-    id: 6,
-    numeroSequencial: 6,
-    contratoNumero: "CT-2024-001",
-    contratoNome: "Plataforma P-80",
-    periodoInicio: "2024-06-01",
-    periodoFim: "2024-06-15",
-    valorMedido: 625000.00,
-    glosa: 25000.00,
-    valorAprovado: 600000.00,
-    status: "RASCUNHO",
-    observacoes: "Glosa por serviços não conformes"
-  },
-  {
-    id: 7,
-    numeroSequencial: 1,
-    contratoNumero: "CT-2024-002",
-    contratoNome: "Terminal Portuário",
-    periodoInicio: "2024-03-01",
-    periodoFim: "2024-03-31",
-    valorMedido: 2100000.00,
-    glosa: 0,
-    valorAprovado: 2100000.00,
-    status: "FATURADO",
-    observacoes: ""
-  },
-  {
-    id: 8,
-    numeroSequencial: 2,
-    contratoNumero: "CT-2024-002",
-    contratoNome: "Terminal Portuário",
-    periodoInicio: "2024-04-01",
-    periodoFim: "2024-04-30",
-    valorMedido: 3200000.00,
-    glosa: 0,
-    valorAprovado: 3200000.00,
-    status: "FATURADO",
-    observacoes: ""
-  },
-  {
-    id: 9,
-    numeroSequencial: 3,
-    contratoNumero: "CT-2024-002",
-    contratoNome: "Terminal Portuário",
-    periodoInicio: "2024-05-01",
-    periodoFim: "2024-05-31",
-    valorMedido: 2000000.00,
-    glosa: 0,
-    valorAprovado: 2000000.00,
-    status: "APROVADO",
-    observacoes: ""
-  },
-  {
-    id: 10,
-    numeroSequencial: 1,
-    contratoNumero: "CT-2024-003",
-    contratoNome: "Subestação 230kV",
-    periodoInicio: "2024-03-01",
-    periodoFim: "2024-03-31",
-    valorMedido: 1500000.00,
-    glosa: 0,
-    valorAprovado: 1500000.00,
-    status: "APROVADO",
-    observacoes: ""
-  },
-  {
-    id: 11,
-    numeroSequencial: 2,
-    contratoNumero: "CT-2024-003",
-    contratoNome: "Subestação 230kV",
-    periodoInicio: "2024-04-01",
-    periodoFim: "2024-04-30",
-    valorMedido: 3800000.00,
-    glosa: 0,
-    valorAprovado: 3800000.00,
-    status: "APROVADO",
-    observacoes: ""
-  },
-  {
-    id: 12,
-    numeroSequencial: 3,
-    contratoNumero: "CT-2024-003",
-    contratoNome: "Subestação 230kV",
-    periodoInicio: "2024-05-01",
-    periodoFim: "2024-05-31",
-    valorMedido: 2100000.00,
-    glosa: 0,
-    valorAprovado: 2100000.00,
-    status: "RASCUNHO",
-    observacoes: ""
-  }
-];
+// ===== Variáveis globais =====
+let contratos = [];
+let boletins = [];
+let currentBoletimId = null;
 
-// Função para formatar valor em reais
+// ===== Funções auxiliares =====
 function formatarMoeda(valor) {
+  if (valor == null || isNaN(valor)) return 'R$ 0,00';
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Função para formatar data
 function formatarData(dataStr) {
+  if (!dataStr) return '—';
   const data = new Date(dataStr + 'T12:00:00');
   return data.toLocaleDateString('pt-BR');
 }
 
-// Obter badge de status
 function getStatusBadge(status) {
   const classes = {
     'RASCUNHO': 'badge-warning',
@@ -180,7 +26,7 @@ function getStatusBadge(status) {
     'CANCELADO': 'badge-danger'
   };
   const labels = {
-    'RASCUNHO': 'Rascunho',
+    'RASCUNHO': 'Aguardando aprovação',
     'APROVADO': 'Aprovado',
     'FATURADO': 'Faturado',
     'CANCELADO': 'Cancelado'
@@ -188,25 +34,82 @@ function getStatusBadge(status) {
   return `<span class="badge ${classes[status] || 'badge-secondary'}">${labels[status] || status}</span>`;
 }
 
-// Carregar medições no grid
-function carregarMedicoes() {
-  const grid = document.getElementById('measurements-grid');
-  if (!grid) {
-    console.error('Grid de medições não encontrado!');
-    return;
+// ===== Carregar contratos para o select de filtro e de criação =====
+// ===== Carregar contratos para o select de criação e para o filtro =====
+async function carregarContratosSelect() {
+  try {
+    contratos = await getContratos();
+    // Select do formulário de criação (name="contrato_id")
+    const selectCriar = document.querySelector('select[name="contrato_id"]');
+    if (selectCriar) {
+      selectCriar.innerHTML = '<option value="">Selecione um contrato</option>';
+      contratos.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.textContent = `${c.numero_contrato} - ${c.nome_projeto || 'Sem nome'}`;
+        selectCriar.appendChild(option);
+      });
+    }
+
+    // Select do filtro (id="filter-contract")
+    const selectFiltro = document.getElementById('filter-contract');
+    if (selectFiltro) {
+      selectFiltro.innerHTML = '<option value="">Todos os contratos</option>';
+      contratos.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.textContent = `${c.numero_contrato} - ${c.nome_projeto || 'Sem nome'}`;
+        selectFiltro.appendChild(option);
+      });
+    }
+  } catch (error) {
+    console.error('Erro ao carregar contratos:', error);
   }
+}
+
+// ===== Carregar todos os boletins (percorrendo contratos) =====
+async function carregarBoletins() {
+  boletins = [];
+  try {
+    // Se houver um endpoint global de boletins, use-o. Caso contrário, itera sobre contratos.
+    if (typeof getBoletins === 'function' && getBoletins.length === 0) {
+      // getBoletins sem parâmetros (endpoint global)
+      boletins = await getBoletins();
+    } else {
+      // Fallback: busca boletins de cada contrato
+      const contratos = await getContratos();
+      for (const c of contratos) {
+        try {
+          const bmList = await getBoletins(c.id); // função que espera contrato_id
+          boletins.push(...bmList);
+        } catch (e) {
+          console.warn(`Erro ao buscar boletins do contrato ${c.id}:`, e);
+        }
+      }
+    }
+    renderizarBoletins(boletins);
+  } catch (error) {
+    console.error('Erro ao carregar boletins:', error);
+    alert('Não foi possível carregar as medições.');
+  }
+}
+
+// ===== Renderizar cards de boletins =====
+function renderizarBoletins(boletinsParaMostrar) {
+  const grid = document.getElementById('measurements-grid');
+  if (!grid) return;
 
   grid.innerHTML = '';
-  medicoesMock.forEach(med => {
+  boletinsParaMostrar.forEach(bm => {
     const card = document.createElement('div');
-    card.className = `measurement-card ${med.status === 'FATURADO' ? 'locked' : ''}`;
-    card.setAttribute('data-id', med.id);
-    card.setAttribute('data-contrato', med.contratoNumero);
-    card.setAttribute('data-status', med.status);
+    card.className = `measurement-card ${bm.status === 'FATURADO' ? 'locked' : ''}`;
+    card.setAttribute('data-id', bm.id);
+    card.setAttribute('data-contrato', bm.contrato_id);
+    card.setAttribute('data-status', bm.status);
 
     // Definir etapas do status
     const etapas = ['RASCUNHO', 'APROVADO', 'FATURADO'];
-    const statusIndex = etapas.indexOf(med.status);
+    const statusIndex = etapas.indexOf(bm.status);
     const statusSteps = etapas.map((etapa, index) => {
       let stepClass = '';
       if (index < statusIndex) stepClass = 'completed';
@@ -214,18 +117,22 @@ function carregarMedicoes() {
       return `<div class="status-step ${stepClass}" data-label="${etapa.substring(0,3)}"></div>`;
     }).join('');
 
+    // Buscar número do contrato (opcional)
+    const contrato = contratos.find(c => c.id === bm.contrato_id);
+    const contratoNumero = contrato ? contrato.numero_contrato : bm.contrato_id;
+
     card.innerHTML = `
       <div class="flex items-center justify-between">
-        <div class="measurement-number">BM-${med.numeroSequencial.toString().padStart(3, '0')}</div>
-        ${med.status === 'FATURADO' ? `
+        <div class="measurement-number">BM-${bm.numero_sequencial.toString().padStart(3, '0')}</div>
+        ${bm.status === 'FATURADO' ? `
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="color: var(--text-muted);">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
         ` : ''}
       </div>
-      <div class="text-xs text-muted mt-1">${med.contratoNumero} - ${med.contratoNome}</div>
-      <div class="text-xs text-muted">${formatarData(med.periodoInicio)} a ${formatarData(med.periodoFim)}</div>
+      <div class="text-xs text-muted mt-1">Contrato: ${contratoNumero}</div>
+      <div class="text-xs text-muted">${formatarData(bm.periodo_inicio)} a ${formatarData(bm.periodo_fim)}</div>
       
       <div class="measurement-status">
         ${statusSteps}
@@ -234,17 +141,17 @@ function carregarMedicoes() {
       <div class="measurement-values">
         <div class="measurement-value">
           <span>Medido</span>
-          <strong>${formatarMoeda(med.valorMedido)}</strong>
+          <strong>${formatarMoeda(bm.valor_total_medido ?? 0)}</strong>
         </div>
         <div class="measurement-value">
           <span>Aprovado</span>
-          <strong>${formatarMoeda(med.valorAprovado)}</strong>
+          <strong>${formatarMoeda(bm.valor_aprovado ?? 0)}</strong>
         </div>
       </div>
       
       <div style="margin-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
-        <div>${getStatusBadge(med.status)}</div>
-        <button class="btn-view-more" onclick="abrirDetalhesMedicao(${med.id})">
+        <div>${getStatusBadge(bm.status)}</div>
+        <button class="btn-view-more" onclick="abrirDetalhesBoletim(${bm.id})">
           <span>Detalhes</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
             <polyline points="9 18 15 12 9 6"></polyline>
@@ -255,18 +162,17 @@ function carregarMedicoes() {
     grid.appendChild(card);
   });
 
-  // Atualizar resumo
-  atualizarResumo();
+  atualizarResumo(boletinsParaMostrar);
 }
 
-// Atualizar resumo acumulado
-function atualizarResumo() {
-  const total = medicoesMock.length;
-  const valorTotalMedido = medicoesMock.reduce((acc, m) => acc + m.valorMedido, 0);
-  const valorTotalAprovado = medicoesMock.reduce((acc, m) => acc + m.valorAprovado, 0);
-  const valorTotalFaturado = medicoesMock
-    .filter(m => m.status === 'FATURADO')
-    .reduce((acc, m) => acc + m.valorAprovado, 0);
+// ===== Atualizar resumo acumulado =====
+function atualizarResumo(boletinsFiltrados) {
+  const total = boletinsFiltrados.length;
+  const valorTotalMedido = boletinsFiltrados.reduce((acc, b) => acc + (b.valor_total_medido || 0), 0);
+  const valorTotalAprovado = boletinsFiltrados.reduce((acc, b) => acc + (b.valor_aprovado || 0), 0);
+  const valorTotalFaturado = boletinsFiltrados
+    .filter(b => b.status === 'FATURADO')
+    .reduce((acc, b) => acc + (b.valor_aprovado || 0), 0);
 
   document.getElementById('total-medicoes').textContent = total;
   document.getElementById('valor-total-medido').textContent = formatarMoeda(valorTotalMedido);
@@ -274,151 +180,171 @@ function atualizarResumo() {
   document.getElementById('valor-total-faturado').textContent = formatarMoeda(valorTotalFaturado);
 }
 
-// Filtrar medições
-function filtrarMedicoes() {
+// ===== Filtros =====
+function filtrarBoletins() {
   const contratoFiltro = document.getElementById('filter-contract').value;
   const statusFiltro = document.getElementById('filter-status').value;
   const termo = document.getElementById('search-measurements').value.toLowerCase();
 
-  const cards = document.querySelectorAll('.measurement-card');
-  cards.forEach(card => {
-    const contrato = card.getAttribute('data-contrato') || '';
-    const status = card.getAttribute('data-status') || '';
-    const textoCard = card.innerText.toLowerCase();
-
-    let show = true;
-    if (contratoFiltro && contrato !== contratoFiltro) show = false;
-    if (statusFiltro && status !== statusFiltro) show = false;
-    if (termo && !textoCard.includes(termo)) show = false;
-
-    card.style.display = show ? '' : 'none';
+  const filtrados = boletins.filter(bm => {
+    const contratoMatch = !contratoFiltro || bm.contrato_id == contratoFiltro; // comparação com ID numérico
+    const statusMatch = !statusFiltro || bm.status === statusFiltro;
+    // textoMatch pode permanecer baseado no número sequencial e, se quiser, no nome do contrato
+    const contrato = contratos.find(c => c.id === bm.contrato_id);
+    const textoContrato = contrato ? contrato.numero_contrato.toLowerCase() : '';
+    const textoMatch = termo === '' || 
+      bm.numero_sequencial.toString().includes(termo) ||
+      textoContrato.includes(termo);
+    return contratoMatch && statusMatch && textoMatch;
   });
 
-  // Atualizar contagem visível (opcional)
-  const visiveis = document.querySelectorAll('.measurement-card:not([style*="display: none"])').length;
-  console.log(`${visiveis} medições visíveis`);
+  renderizarBoletins(filtrados);
 }
 
-// Abrir modal de detalhes da medição
-function abrirDetalhesMedicao(id) {
-  const med = medicoesMock.find(m => m.id === id);
-  if (!med) return;
+// ===== Abrir detalhes do boletim =====
+window.abrirDetalhesBoletim = function(boletimId) {
+  const bm = boletins.find(b => b.id === boletimId);
+  if (!bm) return;
 
-  document.getElementById('detail-measurement-title').textContent = `BM-${med.numeroSequencial.toString().padStart(3, '0')}`;
-  document.getElementById('detail-measurement-subtitle').textContent = `${med.contratoNumero} - ${med.contratoNome}`;
-  document.getElementById('detail-valor-medido').textContent = formatarMoeda(med.valorMedido);
-  document.getElementById('detail-glosa').textContent = formatarMoeda(med.glosa);
-  document.getElementById('detail-valor-aprovado').textContent = formatarMoeda(med.valorAprovado);
-  document.getElementById('detail-contrato').textContent = `${med.contratoNumero} - ${med.contratoNome}`;
-  document.getElementById('detail-periodo').textContent = `${formatarData(med.periodoInicio)} a ${formatarData(med.periodoFim)}`;
-  document.getElementById('detail-status').innerHTML = getStatusBadge(med.status);
-  document.getElementById('detail-observacoes').textContent = med.observacoes || '—';
+  currentBoletimId = boletimId;
 
-  // Botões de ação conforme status
+  document.getElementById('detail-measurement-title').textContent = `BM-${bm.numero_sequencial.toString().padStart(3, '0')}`;
+  document.getElementById('detail-measurement-subtitle').textContent = `Contrato: ${bm.contrato_id}`;
+  document.getElementById('detail-valor-medido').textContent = formatarMoeda(bm.valor_total_medido ?? 0);
+  document.getElementById('detail-glosa').textContent = formatarMoeda(bm.valor_glosa ?? 0);
+  document.getElementById('detail-valor-aprovado').textContent = formatarMoeda(bm.valor_aprovado ?? 0);
+  document.getElementById('detail-contrato').textContent = bm.contrato_id;
+  document.getElementById('detail-periodo').textContent = `${formatarData(bm.periodo_inicio)} a ${formatarData(bm.periodo_fim)}`;
+  document.getElementById('detail-status').innerHTML = getStatusBadge(bm.status);
+  document.getElementById('detail-observacoes').textContent = bm.observacoes || '—';
+
   const actionsDiv = document.getElementById('detail-actions');
   actionsDiv.innerHTML = '';
 
-  if (med.status === 'RASCUNHO') {
+  if (bm.status === 'RASCUNHO') {
     actionsDiv.innerHTML = `
-      <button class="btn btn-primary" onclick="alterarStatusMedicao(${med.id}, 'APROVAR')">Aprovar</button>
-      <button class="btn btn-secondary" onclick="editarMedicao(${med.id})">Editar</button>
-      <button class="btn btn-danger" onclick="alterarStatusMedicao(${med.id}, 'CANCELAR')">Cancelar</button>
+      <button class="btn btn-primary" onclick="alterarStatusBoletim(${bm.id}, 'APROVADO')">Aprovar</button>
+      <button class="btn btn-secondary" onclick="editarBoletim(${bm.id})">Editar</button>
+      <button class="btn btn-danger" onclick="alterarStatusBoletim(${bm.id}, 'CANCELADO')">Cancelar</button>
     `;
-  } else if (med.status === 'APROVADO') {
+  } else if (bm.status === 'APROVADO') {
     actionsDiv.innerHTML = `
-      <button class="btn btn-success" onclick="alterarStatusMedicao(${med.id}, 'FATURAR')">Faturar</button>
-      <button class="btn btn-secondary" onclick="editarMedicao(${med.id})">Editar</button>
-      <button class="btn btn-danger" onclick="alterarStatusMedicao(${med.id}, 'CANCELAR')">Cancelar</button>
+      <button class="btn btn-success" onclick="alterarStatusBoletim(${bm.id}, 'FATURADO')">Faturar</button>
+      <button class="btn btn-secondary" onclick="editarBoletim(${bm.id})">Editar</button>
+      <button class="btn btn-danger" onclick="alterarStatusBoletim(${bm.id}, 'CANCELADO')">Cancelar</button>
     `;
-  } else if (med.status === 'FATURADO') {
-    actionsDiv.innerHTML = `
-      <span class="text-sm text-muted">Medição já faturada – não pode ser alterada.</span>
-    `;
-  } else if (med.status === 'CANCELADO') {
-    actionsDiv.innerHTML = `
-      <span class="text-sm text-muted">Medição cancelada.</span>
-    `;
+  } else if (bm.status === 'FATURADO') {
+    actionsDiv.innerHTML = `<span class="text-sm text-muted">Medição já faturada – não pode ser alterada.</span>`;
+  } else if (bm.status === 'CANCELADO') {
+    actionsDiv.innerHTML = `<span class="text-sm text-muted">Medição cancelada.</span>`;
   }
 
   document.getElementById('measurement-details-modal').classList.add('active');
-}
+};
 
-// Funções de ação (mock)
-function alterarStatusMedicao(id, acao) {
-  const med = medicoesMock.find(m => m.id === id);
-  if (!med) return;
+// ===== Alterar status do boletim (aprovar/cancelar/faturar) =====
+window.alterarStatusBoletim = async function(id, novoStatus) {
+  try {
+    let motivo = null;
+    if (novoStatus === 'CANCELADO') {
+      motivo = prompt('Motivo do cancelamento:');
+      if (motivo === null) return; // cancelou
+    }
+    const dados = { status: novoStatus };
+    if (motivo) dados.cancelado_motivo = motivo;
 
-  let novaStatus = '';
-  if (acao === 'APROVAR') novaStatus = 'APROVADO';
-  else if (acao === 'FATURAR') novaStatus = 'FATURADO';
-  else if (acao === 'CANCELAR') novaStatus = 'CANCELADO';
-
-  if (novaStatus) {
-    med.status = novaStatus;
-    alert(`Status da medição alterado para ${novaStatus} (simulação)`);
-    carregarMedicoes();
-    document.getElementById('measurement-details-modal').classList.remove('active');
+    await updateBoletim(id, dados);
+    alert(`Boletim ${novoStatus.toLowerCase()} com sucesso!`);
+    await carregarBoletins(); // recarrega a lista
+    if (document.getElementById('measurement-details-modal').classList.contains('active')) {
+      abrirDetalhesBoletim(id);
+    }
+  } catch (error) {
+    alert('Erro ao alterar status: ' + error.message);
   }
-}
+};
 
-function editarMedicao(id) {
-  alert(`Editar medição ${id} – funcionalidade em desenvolvimento`);
-  document.getElementById('measurement-details-modal').classList.remove('active');
-  // Aqui você poderia abrir um modal de edição com os dados preenchidos
-}
+// ===== Editar boletim (placeholder) =====
+window.editarBoletim = function(id) {
+  alert('Edição não implementada ainda.');
+};
 
-// Salvar nova medição (mock)
-function salvarNovaMedicao(event) {
+// ===== Salvar novo boletim =====
+async function salvarNovoBoletim(event) {
   event.preventDefault();
   const form = event.target;
   const formData = new FormData(form);
 
-  // Gerar novo ID
-  const novoId = medicoesMock.length + 1;
-  const contrato = formData.get('contrato');
-  const [contratoNumero, contratoNome] = contrato.split(' - ');
+  const contrato_id = parseInt(formData.get('contrato_id'));
+  if (!contrato_id) {
+    alert('Selecione um contrato.');
+    return;
+  }
 
-  // Encontrar próximo número sequencial para o contrato
-  const medicoesContrato = medicoesMock.filter(m => m.contratoNumero === contratoNumero);
-  const maxSequencial = Math.max(...medicoesContrato.map(m => m.numeroSequencial), 0);
+  const periodo_inicio = formData.get('periodo_inicio');
+  const periodo_fim = formData.get('periodo_fim');
+  const valor_total_medido = parseFloat(formData.get('valor_total_medido'));
+  const valor_glosa = parseFloat(formData.get('valor_glosa')) || 0;
+  const observacoes = formData.get('observacoes') || '';
 
-  const valorMedido = parseFloat(formData.get('valorMedido')) || 0;
-  const glosa = parseFloat(formData.get('glosa')) || 0;
+  // Validações básicas
+  if (!periodo_inicio || !periodo_fim) {
+    alert('Preencha as datas do período.');
+    return;
+  }
+  if (isNaN(valor_total_medido) || valor_total_medido <= 0) {
+    alert('Valor medido deve ser um número positivo.');
+    return;
+  }
+  if (isNaN(valor_glosa) || valor_glosa < 0) {
+    alert('Valor de glosa deve ser um número não negativo.');
+    return;
+  }
 
-  const novaMedicao = {
-    id: novoId,
-    numeroSequencial: maxSequencial + 1,
-    contratoNumero: contratoNumero,
-    contratoNome: contratoNome,
-    periodoInicio: formData.get('periodoInicio'),
-    periodoFim: formData.get('periodoFim'),
-    valorMedido: valorMedido,
-    glosa: glosa,
-    valorAprovado: valorMedido - glosa,
-    status: 'RASCUNHO',
-    observacoes: formData.get('observacoes') || ''
+  // Verifica se período fim é posterior ao início
+  const inicio = new Date(periodo_inicio + 'T12:00:00');
+  const fim = new Date(periodo_fim + 'T12:00:00');
+  if (fim < inicio) {
+    alert('A data de fim não pode ser anterior à data de início.');
+    return;
+  }
+
+  const boletimData = {
+    contrato_id: contrato_id,  // <-- adicione esta linha
+    periodo_inicio,
+    periodo_fim,
+    valor_total_medido,
+    valor_glosa,
+    observacoes
   };
 
-  medicoesMock.push(novaMedicao);
-  alert('Medição criada com sucesso (simulação)!');
-  document.getElementById('new-measurement-modal').classList.remove('active');
-  form.reset();
-  carregarMedicoes();
+  console.log('📤 Enviando boletim para o contrato', contrato_id, ':', JSON.stringify(boletimData, null, 2));
+
+  try {
+    await createBoletim(contrato_id, boletimData);
+    alert('Boletim criado com sucesso!');
+    document.getElementById('new-measurement-modal').classList.remove('active');
+    form.reset();
+    await carregarBoletins();
+  } catch (error) {
+    console.error('❌ Erro detalhado:', error);
+    alert('Erro ao criar boletim: ' + error.message);
+  }
 }
 
-// Inicializar
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM carregado, iniciando medicoes.js');
-  carregarMedicoes();
+// ===== Inicialização =====
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
 
-  // Event listeners
-  const filterContract = document.getElementById('filter-contract');
-  const filterStatus = document.getElementById('filter-status');
-  const searchMeasurements = document.getElementById('search-measurements');
-  const newMeasurementForm = document.getElementById('new-measurement-form');
+  await carregarContratosSelect();
+  await carregarBoletins();
 
-  if (filterContract) filterContract.addEventListener('change', filtrarMedicoes);
-  if (filterStatus) filterStatus.addEventListener('change', filtrarMedicoes);
-  if (searchMeasurements) searchMeasurements.addEventListener('input', filtrarMedicoes);
-  if (newMeasurementForm) newMeasurementForm.addEventListener('submit', salvarNovaMedicao);
+  document.getElementById('filter-contract')?.addEventListener('change', filtrarBoletins);
+  document.getElementById('filter-status')?.addEventListener('change', filtrarBoletins);
+  document.getElementById('search-measurements')?.addEventListener('input', filtrarBoletins);
+  document.getElementById('new-measurement-form')?.addEventListener('submit', salvarNovoBoletim);
 });
