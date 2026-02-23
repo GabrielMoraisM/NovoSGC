@@ -2,12 +2,27 @@ const API_BASE_URL = 'http://localhost:8000';
 
 // Função genérica para requisições autenticadas
 async function apiRequest(endpoint, options = {}) {
-  const token = localStorage.getItem('token'); // ou sessionStorage
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` }),
-    ...options.headers
-  };
+  console.log('apiRequest:', endpoint, options);
+  try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...options.headers
+    };
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+    if (response.status === 204) return null;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const message = data.detail || `Erro ${response.status}`;
+      throw new Error(message);
+    }
+    return data;
+  } catch (error) {
+    console.error('Erro em apiRequest:', error);
+    throw error;
+  }
+
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -259,3 +274,4 @@ export async function createPagamento(pagamentoData) {
     body: JSON.stringify(pagamentoData)
   });
 }
+

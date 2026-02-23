@@ -444,71 +444,10 @@ async function carregarEmpresasGlobais() {
   }
 }
 
-// ===== SEGURADORAS =====
-function carregarSeguradoras() {
-  console.log('carregarSeguradoras executada');
-  const select = document.getElementById('seguro-seguradora');
-  if (!select) {
-    console.error('Select não encontrado');
-    return;
-  }
-  // Filtra empresas com tipo 'SEGURADORA' (case-insensitive)
-  const seguradoras = empresas.filter(e => e.tipo && e.tipo.toUpperCase() === 'SEGURADORA');
-  console.log('Seguradoras encontradas:', seguradoras);
-  
-  select.innerHTML = '<option value="">Selecione...</option>';
-  seguradoras.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s.id;
-    opt.textContent = s.razao_social;
-    select.appendChild(opt);
-  });
-}
 
-// ===== CLIENTES (para o campo "Cliente (segurado)") =====
-function carregarClientesSelect() {
-  const select = document.getElementById('seguro-cliente');
-  if (!select) return;
-  const clientes = empresas.filter(e => e.tipo === 'CLIENTE');
-  select.innerHTML = '<option value="">Selecione...</option>';
-  clientes.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = c.razao_social;
-    select.appendChild(opt);
-  });
-}
 
 // ===== TOMADORES (geralmente a Heca) =====
-function carregarTomadores() {
-  const select = document.getElementById('seguro-tomador');
-  if (!select) return;
-  // Pode ser todas as MATRIZ ou um filtro específico
-  const tomadores = empresas.filter(e => e.tipo === 'MATRIZ' || e.tipo === 'FILIAL');
-  select.innerHTML = '<option value="">Selecione...</option>';
-  tomadores.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t.id;
-    opt.textContent = t.razao_social;
-    select.appendChild(opt);
-  });
-}
 
-// ===== ABRIR MODAL DE SEGUROS =====
-async function abrirModalSeguros() {
-  if (!currentContratoId) {
-    alert('Nenhum contrato selecionado.');
-    return;
-  }
-  if (empresas.length === 0) {
-    await carregarEmpresasGlobais();
-  }
-  carregarSeguradoras();
-  carregarClientesSelect();
-  carregarTomadores();
-  await carregarSeguros(currentContratoId);
-  document.getElementById('seguros-modal').classList.add('active');
-}
 
 // ===== Filtros =====
 function filtrarContratos() {
@@ -871,22 +810,7 @@ async function carregarDetalhesContrato(contratoId) {
   }
 }
 // ===== Modais de ARTs, Seguros e Participantes =====
-async function abrirModalSeguros() {
-  if (!currentContratoId) {
-    alert('Nenhum contrato selecionado.');
-    return;
-  }
-  // Se empresas não estiverem carregadas, carrega agora
-  if (empresas.length === 0) {
-    console.log('Empresas não carregadas. Carregando...');
-    await carregarEmpresasGlobais();
-  }
-  carregarSeguradoras();
-  carregarClientesSelect();
-  carregarTomadores();
-  await carregarSeguros(currentContratoId);
-  document.getElementById('seguros-modal').classList.add('active');
-}
+
 
 function fecharModalSeguros() {
   document.getElementById('seguros-modal').classList.remove('active');
@@ -1007,6 +931,175 @@ async function salvarGestor(nome) {
   }
 }
 
+// ===== SEGUROS =====
+// Função para carregar a lista de seguros do contrato
+async function carregarSeguros(contratoId) {
+  const tbody = document.getElementById('seguros-list');
+  if (!tbody) return;
+
+  try {
+    const seguros = await getSeguros(contratoId);
+    tbody.innerHTML = '';
+    if (seguros.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum seguro cadastrado</td></tr>';
+      return;
+    }
+
+    seguros.forEach(seg => {
+      const seguradora = empresas.find(e => e.id === seg.seguradora_id);
+      const cliente = empresas.find(e => e.id === seg.cliente_id);
+      const tomador = empresas.find(e => e.id === seg.tomador_id);
+
+      const tipoLabel = {
+        'GARANTIA_CONTRATUAL': 'Garantia Contratual',
+        'RISCO_ENGENHARIA': 'Risco de Engenharia',
+        'RC': 'Responsabilidade Civil',
+        'LICITACAO': 'Licitação',
+        'CONTRATO': 'Contrato',
+        'RESPONSABILIDADE_CIVIL': 'Responsabilidade Civil',
+        'RISCO_PROFISSIONAL': 'Risco Profissional',
+        'GARANTIA_CONTRATUAL_RETOMADA': 'Garantia Contratual com Cláusula de Retomada'
+      }[seg.tipo] || seg.tipo;
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${seg.numero_apolice}</td>
+        <td>${seguradora?.razao_social || '-'}</td>
+        <td>${tipoLabel}</td>
+        <td>${new Date(seg.data_vencimento).toLocaleDateString('pt-BR')}</td>
+        <td>R$ ${seg.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+        <td>${cliente?.razao_social || '-'}</td>
+        <td>${tomador?.razao_social || '-'}</td>
+        <td style="text-align: right;">
+          <button class="btn-view-more" onclick="excluirSeguro(${seg.id})">Excluir</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Erro ao carregar seguros:', error);
+    tbody.innerHTML = '<tr><td colspan="8" class="text-danger">Erro ao carregar seguros</td></tr>';
+  }
+}
+
+
+
+// Função para carregar seguradoras no select
+function carregarSeguradoras() {
+  const select = document.getElementById('seguro-seguradora');
+  if (!select) return;
+  const seguradoras = empresas.filter(e => e.tipo === 'SEGURADORA');
+  select.innerHTML = '<option value="">Selecione...</option>';
+  seguradoras.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.razao_social;
+    select.appendChild(opt);
+  });
+}
+
+// Função para carregar clientes no select
+function carregarClientesSelect() {
+  const select = document.getElementById('seguro-cliente');
+  if (!select) return;
+  const clientes = empresas.filter(e => e.tipo === 'CLIENTE');
+  select.innerHTML = '<option value="">Selecione...</option>';
+  clientes.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.razao_social;
+    select.appendChild(opt);
+  });
+}
+
+// Função para carregar tomadores no select
+function carregarTomadores() {
+  const select = document.getElementById('seguro-tomador');
+  if (!select) return;
+  const tomadores = empresas.filter(e => e.tipo === 'MATRIZ' || e.tipo === 'FILIAL');
+  select.innerHTML = '<option value="">Selecione...</option>';
+  tomadores.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.razao_social;
+    select.appendChild(opt);
+  });
+}
+
+// Função para abrir o modal de seguros
+async function abrirModalSeguros() {
+  if (!currentContratoId) {
+    alert('Nenhum contrato selecionado.');
+    return;
+  }
+  // Garantir que as empresas estejam carregadas
+  if (empresas.length === 0) {
+    await carregarEmpresasGlobais();
+  }
+  carregarSeguradoras();
+  carregarClientesSelect();
+  carregarTomadores();
+  await carregarSeguros(currentContratoId);
+  document.getElementById('seguros-modal').classList.add('active');
+}
+
+// Função para adicionar um novo seguro
+async function adicionarSeguro(event) {
+  event.preventDefault();
+  const seguradora_id = parseInt(document.getElementById('seguro-seguradora').value);
+  const numero_apolice = document.getElementById('seguro-apolice').value;
+  const tipo = document.getElementById('seguro-tipo').value;
+  const valor = parseFloat(document.getElementById('seguro-valor').value);
+  const data_vencimento = document.getElementById('seguro-vencimento').value;
+  const cliente_id = parseInt(document.getElementById('seguro-cliente').value);
+  const tomador_id = parseInt(document.getElementById('seguro-tomador').value);
+  const objeto_segurado = document.getElementById('seguro-objeto').value;
+  const possui_clausula_retomada = document.getElementById('seguro-clausula-retomada').checked;
+  const observacoes = document.getElementById('seguro-observacoes').value;
+
+  if (!seguradora_id || !numero_apolice || !tipo || isNaN(valor) || !data_vencimento || !cliente_id || !tomador_id || !objeto_segurado) {
+    alert('Preencha todos os campos obrigatórios.');
+    return;
+  }
+
+  const seguroData = {
+    seguradora_id,
+    numero_apolice,
+    tipo,
+    valor,
+    data_vencimento,
+    cliente_id,
+    tomador_id,
+    objeto_segurado,
+    possui_clausula_retomada,
+    observacoes
+  };
+
+  try {
+    await createSeguro(currentContratoId, seguroData);
+    alert('Seguro adicionado com sucesso!');
+    await carregarSeguros(currentContratoId);
+    document.getElementById('add-seguro-form').reset();
+  } catch (error) {
+    alert('Erro ao adicionar seguro: ' + error.message);
+  }
+}
+
+// Função para excluir um seguro
+window.excluirSeguro = async function(seguroId) {
+  if (confirm('Deseja realmente excluir este seguro?')) {
+    try {
+      await deleteSeguro(seguroId);
+      await carregarSeguros(currentContratoId);
+    } catch (error) {
+      alert('Erro ao excluir seguro: ' + error.message);
+    }
+  }
+};
+
+
+// Se já existir window.fecharModalSeguros, mantenha
+
 // Modifique a função abrirDetalhes para incluir a OS e corrigir o cliente
 async function abrirDetalhes(contratoId) {
   try {
@@ -1071,3 +1164,4 @@ window.abrirModalSeguros = abrirModalSeguros;
 window.fecharModalSeguros = fecharModalSeguros;
 window.abrirModalParticipantes = abrirModalParticipantes;
 window.salvarAditivo = salvarAditivo;
+window.adicionarSeguro = adicionarSeguro;
