@@ -21,12 +21,13 @@ def create_pagamento(
 def list_pagamentos(
     db: Session = Depends(deps.get_db),
     faturamento_id: Optional[int] = Query(None),
+    contrato_id: Optional[int] = Query(None, description="Filtrar por contrato (via faturamentos e boletins)"),
     skip: int = 0,
     limit: int = 100,
     current_user: Usuario = Depends(deps.get_current_active_user)
 ):
     service = PagamentoService(db)
-    return service.list_pagamentos(faturamento_id=faturamento_id, skip=skip, limit=limit)
+    return service.list_pagamentos(faturamento_id=faturamento_id, contrato_id=contrato_id, skip=skip, limit=limit)
 
 @router.get("/{pagamento_id}", response_model=PagamentoInDB)
 def get_pagamento(

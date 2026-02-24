@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="SGC - Sistema de Gestão de Contratos e Medições para Heca Engenharia">
@@ -10,8 +11,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Estilos adicionais para abas e componentes do dashboard */
+    /* Estilos adicionais para componentes do dashboard */
     .tabs {
       display: flex;
       gap: 0.5rem;
@@ -41,18 +44,284 @@
     .tab-pane.active {
       display: block;
     }
-    .badge-success { background: var(--success-light); color: var(--success); }
-    .badge-primary { background: var(--primary-light); color: var(--primary); }
-    .badge-warning { background: var(--warning-light); color: var(--warning); }
-    .badge-danger { background: var(--danger-light); color: var(--danger); }
-    .badge-secondary { background: var(--secondary-light); color: var(--text-secondary); }
+    
+    /* Badges */
+    .badge-success { background: #d4edda; color: #155724; }
+    .badge-primary { background: #cce5ff; color: #004085; }
+    .badge-warning { background: #fff3cd; color: #856404; }
+    .badge-danger { background: #f8d7da; color: #721c24; }
+    .badge-info { background: #d1ecf1; color: #0c5460; }
+    .badge-secondary { background: #e2e3e5; color: #383d41; }
+    
     .project-selector-wrapper {
       margin-left: 1rem;
     }
     #contrato-selector {
       min-width: 250px;
-      border-radius: var(--radius);
+      border-radius: 4px;
     }
+    
+    /* Grid de KPIs */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .kpi-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.25rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0.5rem 0 0.25rem;
+      color: #333;
+    }
+    
+    .kpi-label {
+      color: #666;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .kpi-icon.primary { background: #e3f2fd; color: #1976d2; }
+    .kpi-icon.success { background: #e8f5e9; color: #388e3c; }
+    .kpi-icon.warning { background: #fff3e0; color: #f57c00; }
+    .kpi-icon.danger { background: #ffebee; color: #d32f2f; }
+    
+    /* Painel de Ritmo */
+    .ritmo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding: 1rem;
+    }
+    
+    .ritmo-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .ritmo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .ritmo-item.highlight {
+      background-color: #e3f2fd;
+      border-radius: 4px;
+      font-weight: bold;
+      padding: 0.75rem;
+    }
+    
+    .ritmo-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .ritmo-value {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #333;
+    }
+    
+    .ritmo-divider {
+      height: 2px;
+      background: #ddd;
+      margin: 0.5rem 0;
+    }
+    
+    #status-ritmo {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.75rem;
+    }
+    
+    /* Notificações */
+    .notification-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .notification-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .notification-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .notification-icon.danger { background: #ffebee; color: #d32f2f; }
+    .notification-icon.warning { background: #fff3e0; color: #f57c00; }
+    .notification-icon.success { background: #e8f5e9; color: #388e3c; }
+    .notification-icon.info { background: #e3f2fd; color: #1976d2; }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .notification-text {
+      font-size: 0.875rem;
+      color: #666;
+    }
+    
+    .notification-time {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    /* Tabelas */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .table th {
+      text-align: left;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+    
+    .table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    /* Botões */
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+    }
+    
+    .btn-ghost {
+      background: none;
+      color: #1976d2;
+    }
+    
+    .btn-ghost:hover {
+      background: #f0f0f0;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+    
+    /* Utilitários */
+    .flex {
+      display: flex;
+    }
+    
+    .items-center {
+      align-items: center;
+    }
+    
+    .gap-2 {
+      gap: 0.5rem;
+    }
+    
+    .progress {
+      background: #f0f0f0;
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      transition: width 0.3s;
+    }
+    
+    .progress-bar.success { background: #388e3c; }
+    .progress-bar.primary { background: #1976d2; }
+    .progress-bar.warning { background: #f57c00; }
+    .progress-bar.danger { background: #d32f2f; }
+    
+    .text-xs { font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -60,7 +329,7 @@
     <!-- Mobile Overlay -->
     <div id="mobile-overlay" class="mobile-overlay"></div>
     
-    <!-- Sidebar -->
+    <!-- Sidebar (mantida igual) -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">HC</div>
@@ -246,12 +515,12 @@
           <p>Visão geral do portfólio de contratos ou detalhamento por obra</p>
         </div>
         
-        <!-- KPI Cards Dinâmicos -->
+        <!-- LINHA 1: KPI Cards Principais (6 cards) -->
         <div class="kpi-grid">
           <div class="kpi-card" id="kpi-valor-total">
             <div class="kpi-header">
               <div class="kpi-icon primary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                   <line x1="12" y1="1" x2="12" y2="23"></line>
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
@@ -264,7 +533,7 @@
           <div class="kpi-card" id="kpi-executado">
             <div class="kpi-header">
               <div class="kpi-icon success">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </div>
@@ -276,7 +545,7 @@
           <div class="kpi-card" id="kpi-faturado">
             <div class="kpi-header">
               <div class="kpi-icon warning">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
@@ -289,7 +558,7 @@
           <div class="kpi-card" id="kpi-recebido">
             <div class="kpi-header">
               <div class="kpi-icon danger">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -304,7 +573,7 @@
           <div class="kpi-card" id="kpi-perc-fisico">
             <div class="kpi-header">
               <div class="kpi-icon primary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                   <path d="M22 12h-4l-3 9-4-18-3 9H2"></path>
                 </svg>
               </div>
@@ -316,7 +585,7 @@
           <div class="kpi-card" id="kpi-perc-financeiro">
             <div class="kpi-header">
               <div class="kpi-icon success">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
               </div>
@@ -326,30 +595,108 @@
           </div>
         </div>
         
-        <!-- Gráfico de Progresso (placeholder) -->
-        <div class="card" style="margin-bottom: 1.5rem;">
+        <!-- LINHA 2: KPIs Secundários (percentual tempo e risco) -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="kpi-card" id="kpi-perc-tempo">
+            <div class="kpi-value">0%</div>
+            <div class="kpi-label">⏱️ Tempo Decorrido</div>
+          </div>
+          <div class="kpi-card" id="kpi-risco">
+            <div class="kpi-value">-</div>
+            <div class="kpi-label">⚠️ Nível de Risco</div>
+          </div>
+          <div class="kpi-card" id="kpi-status">
+            <div class="kpi-value">-</div>
+            <div class="kpi-label">📊 Status do Contrato</div>
+          </div>
+        </div>
+        
+        <!-- LINHA 3: Gráfico de Evolução -->
+        <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Progresso Físico x Financeiro</h3>
-            <select class="form-input form-select" style="width: auto;">
-              <option>Últimos 6 meses</option>
-              <option>Último ano</option>
-              <option>Todo período</option>
+            <h3 class="card-title">📈 Evolução Físico x Financeiro x Tempo</h3>
+            <select id="periodo-grafico" class="form-input form-select" style="width: auto;">
+              <option value="6">Últimos 6 meses</option>
+              <option value="12" selected>Últimos 12 meses</option>
+              <option value="24">Últimos 24 meses</option>
             </select>
           </div>
           <div class="card-body">
-            <div id="progress-chart" style="height: 250px; background: var(--bg-secondary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
-              [Gráfico de evolução]
+            <canvas id="grafico-evolucao" style="width:100%; height:300px;"></canvas>
+          </div>
+        </div>
+        
+        <!-- LINHA 4: Painel de Ritmo e Projeção (inicialmente oculto) -->
+        <div class="card" id="card-ritmo" style="display: none;">
+          <div class="card-header">
+            <h3 class="card-title">⏱️ Análise de Ritmo e Projeção</h3>
+            <span class="badge" id="status-ritmo"></span>
+          </div>
+          <div class="card-body">
+            <div class="ritmo-grid">
+              <div class="ritmo-col">
+                <div class="ritmo-item">
+                  <span class="ritmo-label">✅ EXECUTADOS</span>
+                  <span class="ritmo-value" id="perc-executado">0%</span>
+                </div>
+                <div class="ritmo-item">
+                  <span class="ritmo-label">⏳ EXECUTAR</span>
+                  <span class="ritmo-value" id="perc-executar">0%</span>
+                </div>
+                <div class="ritmo-divider"></div>
+                <div class="ritmo-item">
+                  <span class="ritmo-label">📊 Executado/dia</span>
+                  <span class="ritmo-value" id="ritmo-real">0%</span>
+                </div>
+                <div class="ritmo-item">
+                  <span class="ritmo-label">⚡ Necessário/dia</span>
+                  <span class="ritmo-value" id="ritmo-necessario">0%</span>
+                </div>
+              </div>
+              <div class="ritmo-col">
+                <div class="ritmo-item">
+                  <span class="ritmo-label">📅 Transcorridos</span>
+                  <span class="ritmo-value" id="dias-transcorridos">0 dias</span>
+                </div>
+                <div class="ritmo-item">
+                  <span class="ritmo-label">🔮 Restam</span>
+                  <span class="ritmo-value" id="dias-restantes">0 dias</span>
+                </div>
+                <div class="ritmo-divider"></div>
+                <div class="ritmo-item">
+                  <span class="ritmo-label">⚠️ Necessários (ritmo atual)</span>
+                  <span class="ritmo-value" id="dias-necessarios">0 dias</span>
+                </div>
+                <div class="ritmo-item highlight">
+                  <span class="ritmo-label">🎯 Término Previsto</span>
+                  <span class="ritmo-value" id="data-termino">-</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         
-        <!-- Detalhamento do Contrato (aparece quando um contrato é selecionado) -->
+        <!-- LINHA 5: Alertas em Destaque -->
+        <div class="card" id="alertas-destaque">
+          <div class="card-header">
+            <h3 class="card-title">🔔 Alertas e Notificações</h3>
+            <a href="alertas.html" class="btn btn-ghost btn-sm">Ver todos</a>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="notification-list" id="lista-alertas-destaque">
+              <div class="notification-item">Carregando alertas...</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- LINHA 6: Abas de Detalhamento do Contrato (aparece quando um contrato é selecionado) -->
         <div class="card" id="contrato-detalhes" style="display: none;">
           <div class="card-header">
             <div class="tabs">
-              <button class="tab-btn active" data-tab="medicoes">Boletins de Medição</button>
-              <button class="tab-btn" data-tab="financeiro">Financeiro</button>
-              <button class="tab-btn" data-tab="alertas">Alertas</button>
+              <button class="tab-btn active" data-tab="medicoes">📄 Boletins de Medição</button>
+              <button class="tab-btn" data-tab="financeiro">💰 Financeiro</button>
+              <button class="tab-btn" data-tab="alertas">⚠️ Alertas</button>
+              <button class="tab-btn" data-tab="aditivos">📑 Aditivos</button>
             </div>
           </div>
           <div class="card-body">
@@ -360,21 +707,21 @@
                   <thead>
                     <tr>
                       <th>Nº BM</th>
-                      <th>Data</th>
+                      <th>Período</th>
                       <th>Valor Medido</th>
                       <th>Valor Aprovado</th>
                       <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td colspan="5" class="text-center">Carregando...</td></tr>
+                    <tr><td colspan="5" class="text-center">Carregando...</td></tr>   
                   </tbody>
                 </table>
               </div>
             </div>
             <!-- Aba Financeiro -->
             <div class="tab-pane" id="tab-financeiro">
-              <h4>Notas Fiscais</h4>
+              <h4 style="margin-bottom: 1rem;">Notas Fiscais</h4>
               <div class="table-container">
                 <table class="table" id="tabela-nfs">
                   <thead>
@@ -391,7 +738,7 @@
                   </tbody>
                 </table>
               </div>
-              <h4 style="margin-top: 1.5rem;">Pagamentos</h4>
+              <h4 style="margin: 1.5rem 0 1rem;">Pagamentos</h4>
               <div class="table-container">
                 <table class="table" id="tabela-pagamentos">
                   <thead>
@@ -414,17 +761,36 @@
                 <div class="notification-item">Carregando alertas...</div>
               </div>
             </div>
+            <!-- Aba Aditivos -->
+            <div class="tab-pane" id="tab-aditivos">
+              <div class="table-container">
+                <table class="table" id="tabela-aditivos">
+                  <thead>
+                    <tr>
+                      <th>Nº</th>
+                      <th>Data</th>
+                      <th>Tipo</th>
+                      <th>Valor</th>
+                      <th>Dias</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="5" class="text-center">Carregando...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
         
         <!-- Contratos Recentes (visível apenas quando "Todos" está selecionado) -->
         <div class="card" id="recentes-container">
           <div class="card-header">
-            <h3 class="card-title">Contratos Recentes</h3>
+            <h3 class="card-title">📋 Contratos Recentes</h3>
             <a href="contratos.html" class="btn btn-ghost btn-sm">Ver todos</a>
           </div>
           <div class="card-body" style="padding: 0;">
-            <div class="table-container" style="border: none; border-radius: 0;">
+            <div class="table-container">
               <table class="table">
                 <thead>
                   <tr>
@@ -441,24 +807,11 @@
             </div>
           </div>
         </div>
-        
-        <!-- Alertas Recentes (visível apenas quando "Todos" está selecionado) -->
-        <div class="card" id="alertas-recentes-container">
-          <div class="card-header">
-            <h3 class="card-title">Alertas Recentes</h3>
-            <a href="alertas.html" class="btn btn-ghost btn-sm">Ver todos</a>
-          </div>
-          <div class="card-body" style="padding: 0;">
-            <div class="notification-list" id="lista-alertas-recentes">
-              <div class="notification-item">Carregando...</div>
-            </div>
-          </div>
-        </div>
       </div>
     </main>
   </div>
   
-  <!-- Profile Modal -->
+  <!-- Profile Modal (mantido igual) -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
@@ -517,7 +870,6 @@
   </div>
   
   <script>
-    // Função de logout simples (pode ser movida para main.js)
     function fazerLogout(event) {
       event.preventDefault();
       sessionStorage.clear();
@@ -525,7 +877,6 @@
       window.location.replace("index.html");
     }
   </script>
-  <script src="/sgc-frontend/js/main.js"></script>
   <script src="/sgc-frontend/js/api.js" type="module"></script>
   <script src="/sgc-frontend/js/dashboard.js" type="module"></script>
 </body>

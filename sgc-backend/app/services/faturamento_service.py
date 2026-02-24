@@ -7,6 +7,7 @@ from app.repositories.boletim_medicao_repo import BoletimMedicaoRepository
 from app.repositories.empresa_repo import EmpresaRepository
 from app.schemas.faturamento import FaturamentoCreate, FaturamentoUpdate
 from app.models.faturamento import Faturamento
+from app.models.boletim_medicao import BoletimMedicao
 
 class FaturamentoService:
     def __init__(self, db: Session):
@@ -93,17 +94,13 @@ class FaturamentoService:
     # ------------------------------------------------------------------
     # LISTAR FATURAMENTOS (COM FILTROS OPCIONAIS)
     # ------------------------------------------------------------------
-    def list_faturamentos(
-        self,
-        bm_id: Optional[int] = None,
-        skip: int = 0,
-        limit: int = 100
-    ) -> list[Faturamento]:
+    def list_faturamentos(self, bm_id=None, contrato_id=None, skip=0, limit=100):
         query = self.db.query(Faturamento)
         if bm_id:
             query = query.filter(Faturamento.bm_id == bm_id)
+        if contrato_id:
+            query = query.join(BoletimMedicao).filter(BoletimMedicao.contrato_id == contrato_id)
         return query.offset(skip).limit(limit).all()
-
     # ------------------------------------------------------------------
     # ATUALIZAR FATURAMENTO
     # ------------------------------------------------------------------

@@ -22,12 +22,13 @@ def create_faturamento(
 def list_faturamentos(
     db: Session = Depends(deps.get_db),
     bm_id: Optional[int] = Query(None),
+    contrato_id: Optional[int] = Query(None, description="Filtrar por contrato (via boletins)"),
     skip: int = 0,
     limit: int = 100,
     current_user: Usuario = Depends(deps.get_current_active_user)
 ):
     service = FaturamentoService(db)
-    return service.list_faturamentos(bm_id=bm_id, skip=skip, limit=limit)
+    return service.list_faturamentos(bm_id=bm_id, contrato_id=contrato_id, skip=skip, limit=limit)
 
 @router.get("/{faturamento_id}", response_model=FaturamentoInDB)
 def get_faturamento(

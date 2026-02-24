@@ -7,6 +7,8 @@ from app.repositories.pagamento_repo import PagamentoRepository
 from app.repositories.faturamento_repo import FaturamentoRepository
 from app.schemas.pagamento import PagamentoCreate, PagamentoUpdate
 from app.models.pagamento import Pagamento
+from app.models.faturamento import Faturamento
+from app.models.boletim_medicao import BoletimMedicao
 
 class PagamentoService:
     def __init__(self, db: Session):
@@ -68,15 +70,12 @@ class PagamentoService:
     # ------------------------------------------------------------------
     # LISTAR PAGAMENTOS (COM FILTRO OPCIONAL POR FATURAMENTO)
     # ------------------------------------------------------------------
-    def list_pagamentos(
-        self,
-        faturamento_id: Optional[int] = None,
-        skip: int = 0,
-        limit: int = 100
-    ) -> list[Pagamento]:
+    def list_pagamentos(self, faturamento_id=None, contrato_id=None, skip=0, limit=100):
         query = self.db.query(Pagamento)
         if faturamento_id:
             query = query.filter(Pagamento.faturamento_id == faturamento_id)
+        if contrato_id:
+            query = query.join(Faturamento).join(BoletimMedicao).filter(BoletimMedicao.contrato_id == contrato_id)
         return query.offset(skip).limit(limit).all()
 
     # ------------------------------------------------------------------

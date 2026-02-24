@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="SGC - Gestão Financeira">
@@ -27,6 +28,41 @@
       border-radius: var(--radius);
       padding: 1.25rem;
     }
+    .project-selector-wrapper {
+      margin-left: 1rem;
+    }
+    #contrato-selector {
+      min-width: 250px;
+      border-radius: var(--radius);
+    }
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+    .search-input svg {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+    }
+    .search-input input {
+      padding-left: 2.5rem;
+      width: 100%;
+    }
+    .tax-detail-table {
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
@@ -34,7 +70,7 @@
     <!-- Mobile Overlay -->
     <div id="mobile-overlay" class="mobile-overlay"></div>
     
-    <!-- Sidebar -->
+    <!-- Sidebar (idêntica à do dashboard) -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">HC</div>
@@ -102,8 +138,7 @@
         
         <div class="nav-section">
           <div class="nav-section-title">Sistema</div>
-        <a href="configuracoes.html" class="nav-item">
-
+          <a href="configuracoes.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -143,6 +178,13 @@
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
             <span>Financeiro</span>
+          </div>
+          
+          <!-- Seletor de Contrato (igual ao dashboard) -->
+          <div class="project-selector-wrapper">
+            <select id="contrato-selector" class="form-input form-select">
+              <option value="">Todos os Contratos</option>
+            </select>
           </div>
         </div>
         
@@ -294,9 +336,13 @@
               <option value="PAGO">Pago</option>
               <option value="PENDENTE">Pendente</option>
               <option value="VENCIDO">Vencido</option>
+              <option value="CANCELADO">Cancelado</option>
             </select>
             
-            <button class="btn btn-secondary">
+            <input type="date" class="form-input" style="width: auto;" id="filter-invoice-date-start" placeholder="Data início">
+            <input type="date" class="form-input" style="width: auto;" id="filter-invoice-date-end" placeholder="Data fim">
+            
+            <button class="btn btn-secondary" id="export-invoices">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -318,20 +364,22 @@
                     <th>Vencimento</th>
                     <th>Valor Bruto</th>
                     <th>Valor Líquido</th>
+                    <th>Valor a Receber</th>
                     <th>Status</th>
                     <th style="text-align: right;">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- preenchido via JavaScript -->
+                  <tr><td colspan="10" class="text-center">Carregando notas fiscais...</td></tr>
                 </tbody>
               </table>
             </div>
             <div class="card-footer flex items-center justify-between">
               <span class="text-sm text-muted" id="invoices-count">Mostrando 0 de 0 notas</span>
               <div class="flex gap-2">
-                <button class="btn btn-secondary btn-sm" disabled>Anterior</button>
-                <button class="btn btn-secondary btn-sm">Próximo</button>
+                <button class="btn btn-secondary btn-sm" id="prev-invoices-page" disabled>Anterior</button>
+                <span id="invoices-page-info">1</span>
+                <button class="btn btn-secondary btn-sm" id="next-invoices-page">Próximo</button>
               </div>
             </div>
           </div>
@@ -339,16 +387,26 @@
         
         <!-- Panel: Pagamentos -->
         <div id="payments-panel" class="tab-content">
+          <div class="filter-bar">
+            <div class="search-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="search-payments" class="form-input" placeholder="Buscar pagamentos...">
+            </div>
+            <button class="btn btn-primary btn-sm" data-modal-open="new-payment-modal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Novo Pagamento
+            </button>
+          </div>
+          
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">Histórico de Pagamentos</h3>
-              <button class="btn btn-primary btn-sm" data-modal-open="new-payment-modal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Novo Pagamento
-              </button>
             </div>
             <div class="card-body">
               <div class="table-container">
@@ -360,14 +418,22 @@
                       <th>Contrato</th>
                       <th>Cliente</th>
                       <th>Valor Pago</th>
-                      <th>Forma</th>
                       <th>Observação</th>
+                      <th style="text-align: right;">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- preenchido via JavaScript -->
+                    <tr><td colspan="7" class="text-center">Carregando pagamentos...</td></tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+            <div class="card-footer flex items-center justify-between">
+              <span class="text-sm text-muted" id="payments-count">Mostrando 0 de 0 pagamentos</span>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary btn-sm" id="prev-payments-page" disabled>Anterior</button>
+                <span id="payments-page-info">1</span>
+                <button class="btn btn-secondary btn-sm" id="next-payments-page">Próximo</button>
               </div>
             </div>
           </div>
@@ -375,6 +441,16 @@
         
         <!-- Panel: Impostos -->
         <div id="taxes-panel" class="tab-content">
+          <div class="filter-bar">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">Período:</span>
+              <input type="date" class="form-input" id="filter-tax-date-start">
+              <span>até</span>
+              <input type="date" class="form-input" id="filter-tax-date-end">
+              <button class="btn btn-secondary btn-sm" id="apply-tax-filter">Aplicar</button>
+            </div>
+          </div>
+          
           <div class="grid grid-cols-2" style="gap: 1.5rem;">
             <div class="tax-summary-card">
               <h4 class="text-sm font-semibold mb-3">Impostos Federais</h4>
@@ -415,6 +491,47 @@
                   <span class="font-bold text-lg" id="tax-total">R$ 0</span>
                 </div>
               </div>
+            </div>
+          </div>
+          
+          <!-- Tabela detalhada de impostos por nota -->
+          <div class="card mt-4 tax-detail-table">
+            <div class="card-header">
+              <h3 class="card-title">Detalhamento de Impostos por Nota Fiscal</h3>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="table" id="taxes-detail-table">
+                  <thead>
+                    <tr>
+                      <th>Nº NF</th>
+                      <th>Emissão</th>
+                      <th>Valor Bruto</th>
+                      <th>Valor Líquido</th>
+                      <th>ISS</th>
+                      <th>INSS</th>
+                      <th>IRRF</th>
+                      <th>CSLL</th>
+                      <th>PIS</th>
+                      <th>COFINS</th>
+                      <th>Total Impostos</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="11" class="text-center">Carregando...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Gráfico de impostos (opcional) -->
+          <div class="card mt-4">
+            <div class="card-header">
+              <h3 class="card-title">Distribuição dos Impostos</h3>
+            </div>
+            <div class="card-body">
+              <canvas id="tax-chart" style="height: 200px; width: 100%;"></canvas>
             </div>
           </div>
         </div>
@@ -549,6 +666,10 @@
             <div class="text-lg font-bold" id="detail-valor-liquido">R$ 0</div>
           </div>
           <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
+            <div class="text-xs text-muted">Valor a receber</div>
+            <div class="text-lg font-bold" id="detail-valor-receber">R$ 0</div>
+          </div>
+          <div style="background: var(--background); padding: 1rem; border-radius: var(--radius);">
             <div class="text-xs text-muted">Status</div>
             <div id="detail-status"></div>
           </div>
@@ -559,23 +680,23 @@
           <table style="width: 100%; font-size: 0.875rem;">
             <tr>
               <td style="padding: 4px 0; color: var(--text-muted);">Contrato / BM:</td>
-              <td class="font-semibold" id="detail-bm">CT-2024-001 / BM-005</td>
+              <td class="font-semibold" id="detail-bm">-</td>
             </tr>
             <tr>
               <td style="padding: 4px 0; color: var(--text-muted);">Cliente:</td>
-              <td id="detail-cliente">Petrobras</td>
+              <td id="detail-cliente">-</td>
             </tr>
             <tr>
               <td style="padding: 4px 0; color: var(--text-muted);">Emissão:</td>
-              <td id="detail-emissao">15/01/2024</td>
+              <td id="detail-emissao">-</td>
             </tr>
             <tr>
               <td style="padding: 4px 0; color: var(--text-muted);">Vencimento:</td>
-              <td id="detail-vencimento">15/02/2024</td>
+              <td id="detail-vencimento">-</td>
             </tr>
             <tr>
               <td style="padding: 4px 0; color: var(--text-muted);">Empresa Emissora:</td>
-              <td id="detail-emissora">Heca Engenharia</td>
+              <td id="detail-emissora">-</td>
             </tr>
           </table>
         </div>
@@ -622,7 +743,7 @@
                 </tr>
               </thead>
               <tbody id="detail-pagamentos">
-                <!-- preenchido via JS -->
+                <tr><td colspan="3">Nenhum pagamento registrado.</td></tr>
               </tbody>
             </table>
           </div>
@@ -690,7 +811,12 @@
     </div>
   </div>
   
-  <script src="/sgc-frontend/js/main.js"></script>
+  <!-- Toast de feedback (opcional) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <div id="toast" class="toast hidden"></div>
+  
+  <script src="/sgc-frontend/js/api.js" type="module"></script>
   <script src="/sgc-frontend/js/financeiro.js" type="module"></script>
 </body>
 </html>
