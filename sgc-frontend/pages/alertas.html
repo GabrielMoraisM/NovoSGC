@@ -10,6 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
+  <!-- Chart.js (opcional) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .alert-card {
       background: var(--surface);
@@ -74,7 +76,29 @@
       flex-shrink: 0;
     }
     .filter-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
       margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+    .search-input svg {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+    }
+    .search-input input {
+      padding-left: 2.5rem;
+      width: 100%;
     }
     .empty-state {
       text-align: center;
@@ -87,6 +111,25 @@
       stroke: var(--border);
       margin-bottom: 1rem;
     }
+    .spinner {
+      border: 4px solid rgba(0,0,0,0.1);
+      border-left-color: var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .project-selector-wrapper {
+      margin-left: 1rem;
+    }
+    #contrato-selector {
+      min-width: 250px;
+      border-radius: var(--radius);
+    }
   </style>
 </head>
 <body>
@@ -94,7 +137,7 @@
     <!-- Mobile Overlay -->
     <div id="mobile-overlay" class="mobile-overlay"></div>
     
-    <!-- Sidebar -->
+    <!-- Sidebar (igual à do dashboard) -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">HC</div>
@@ -162,8 +205,7 @@
         
         <div class="nav-section">
           <div class="nav-section-title">Sistema</div>
-        <a href="configuracoes.html" class="nav-item">
-
+          <a href="configuracoes.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -203,6 +245,13 @@
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
             <span>Alertas</span>
+          </div>
+          
+          <!-- Seletor de Contrato -->
+          <div class="project-selector-wrapper">
+            <select id="contrato-selector" class="form-input form-select">
+              <option value="">Todos os Contratos</option>
+            </select>
           </div>
         </div>
         
@@ -267,12 +316,21 @@
             <h1>Alertas e Notificações</h1>
             <p>Acompanhe os eventos importantes do sistema</p>
           </div>
-          <button class="btn btn-secondary" onclick="marcarTodosLidos()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="1 12 9 20 23 4"></polyline>
-            </svg>
-            Marcar todos como lidos
-          </button>
+          <div class="flex gap-2">
+            <button class="btn btn-secondary" onclick="recarregarAlertas()" title="Atualizar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 4v6h-6"></path>
+                <path d="M1 20v-6h6"></path>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+            </button>
+            <button class="btn btn-secondary" onclick="marcarTodosLidos()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 12 9 20 23 4"></polyline>
+              </svg>
+              Marcar todos como lidos
+            </button>
+          </div>
         </div>
         
         <!-- Filtros -->
@@ -302,7 +360,9 @@
         
         <!-- Lista de Alertas -->
         <div id="alerts-list" class="alerts-container">
-          <!-- Os alertas serão inseridos via JavaScript -->
+          <!-- Spinner de carregamento -->
+          <div id="loading-spinner" class="spinner"></div>
+          <!-- Mensagem de vazio -->
           <div class="empty-state" id="alerts-empty" style="display: none;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <circle cx="12" cy="12" r="10"></circle>
@@ -317,7 +377,7 @@
     </main>
   </div>
   
-  <!-- Modal Perfil (já existente) -->
+  <!-- Modal Perfil -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
@@ -374,8 +434,11 @@
       </div>
     </div>
   </div>
-  
-  <script src="/sgc-frontend/js/alertas.js"></script>
-  <script src="/sgc-frontend/js/main.js"></script>
+    <div id="toast" class="toast hidden"></div>
+    <script src="/sgc-frontend/js/api.js" type="module"></script>
+    <script src="/sgc-frontend/js/alertas.js" type="module"></script>
+    <script src="/sgc-frontend/js/main.js"></script> <!-- se não for módulo -->
+
+
 </body>
 </html>

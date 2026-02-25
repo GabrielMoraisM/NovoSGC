@@ -15,8 +15,7 @@ def calcular_resumo_contrato(db: Session, contrato_id: int) -> Dict[str, Any]:
     if not contrato:
         raise BusinessError("Contrato não encontrado.")
 
-    # Converter Decimal do contrato para float
-    valor_total = float(contrato.valor_total) if contrato.valor_total is not None else 0.0
+    valor_total = float(contrato.valor_total) if contrato.valor_total else 0.0
 
     valor_executado = db.query(func.sum(BoletimMedicao.valor_aprovado)).filter(
         BoletimMedicao.contrato_id == contrato_id,

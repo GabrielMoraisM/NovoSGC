@@ -1,0 +1,8 @@
+from alembic import op
+import sqlalchemy as sa
+
+def upgrade():
+    op.add_column('usuarios', sa.Column('nome', sa.String(100), nullable=False, server_default='Usuário'))
+
+def downgrade():
+    op.drop_column('usuarios', 'nome')

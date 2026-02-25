@@ -42,6 +42,10 @@ class ContratoService:
 
         # 4. Converter para dicionário e criar
         contrato_dict = contrato_data.model_dump()
+        
+        # 👇 LINHA ADICIONADA: define valor_total igual ao valor_original
+        contrato_dict['valor_total'] = contrato_dict['valor_original']
+        
         contrato = self.repo.create(**contrato_dict)
 
         # 5. Commit e refresh
@@ -124,3 +128,17 @@ class ContratoService:
 
         self.repo.delete(contrato.id)
         self.db.commit()
+
+
+    def create_usuario(self, usuario_in: UsuarioCreate) -> Usuario:
+        # Verificar se email já existe
+        existing = self.repo.get_by_email(usuario_in.email)
+        if existing:
+            raise HTTPException(status_code=400, detail="Email já cadastrado")
+        # Criar usuário com senha hash
+        usuario_data = usuario_in.dict()
+        # Aqui você deve usar a função de hash da senha
+        from app.core.security import get_password_hash
+        usuario_data['senha_hash'] = get_password_hash(usuario_data.pop('senha'))
+        usuario = self.repo.create(**usuario_data)
+        return usuario

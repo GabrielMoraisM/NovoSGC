@@ -101,3 +101,7 @@ def get_resumo_financeiro_contrato(
         return {**resumo, **desempenho}
     except BusinessError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        # Log do erro e retorne apenas o resumo (ou um erro amigável)
+        print(f"Erro ao calcular desempenho: {e}")
+        return {**resumo, "status_desempenho": "ERRO"}

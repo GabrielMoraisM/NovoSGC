@@ -294,3 +294,10 @@ export async function createPagamento(pagamentoData) {
     body: JSON.stringify(pagamentoData)
   });
 }
+
+// Em api.js
+export async function getAlertas(contrato_id) {
+  const url = contrato_id ? `/alertas?contrato_id=${contrato_id}` : '/alertas/';
+  return apiRequest(url);
+}
+

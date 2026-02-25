@@ -95,7 +95,7 @@ def get_evolucao_global(
     if not contratos:
         return {"labels": [], "fisico": [], "financeiro": [], "tempo": []}
     
-    valor_total_geral = sum(c.valor_total for c in contratos)
+    valor_total_geral = sum((c.valor_total or 0) for c in contratos)
     
     hoje = date.today()
     labels = []

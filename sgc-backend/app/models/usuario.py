@@ -28,6 +28,8 @@ class Usuario(Base):
     # Soft delete: se False, usuário está desativado, mas registro permanece.
     ativo = Column(Boolean, default=True, nullable=False)
 
+    nome = Column(String(100), nullable=True)  # ou False se obrigatório
+
     # Timestamps de criação e atualização automáticos.
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

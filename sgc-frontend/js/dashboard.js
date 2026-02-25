@@ -743,3 +743,30 @@ function preencherTabelaBoletins(bms) {
         tbody.appendChild(tr);
     });
 }
+
+async function carregarProjecao(contratoId) {
+  try {
+    const url = contratoId ? `/contratos/${contratoId}/projecao-financeira` : '/dashboard/projecao-global';
+    const response = await api.get(url);
+    if (!response.ok) throw new Error('Erro ao carregar projeção');
+    const dados = await response.json();
+    atualizarCardProjecao(dados);
+  } catch (error) {
+    console.error('Erro na projeção:', error);
+  }
+}
+
+function atualizarCardProjecao(dados) {
+  document.getElementById('ritmo-medio').innerText = formatarMoeda(dados.ritmo_medio_mensal);
+  document.getElementById('saldo-executar').innerText = formatarMoeda(dados.saldo_a_executar);
+  document.getElementById('previsao-termino').innerText = dados.previsao_termino || '—';
+
+  // Barras de projeção (valores relativos ao total)
+  const maxValor = Math.max(dados.faturamento_30d, dados.faturamento_60d, dados.faturamento_90d) || 1;
+  document.getElementById('barra-30d').style.width = (dados.faturamento_30d / maxValor * 80) + '%';
+  document.getElementById('barra-30d').innerText = formatarMoeda(dados.faturamento_30d);
+  document.getElementById('barra-60d').style.width = (dados.faturamento_60d / maxValor * 80) + '%';
+  document.getElementById('barra-60d').innerText = formatarMoeda(dados.faturamento_60d);
+  document.getElementById('barra-90d').style.width = (dados.faturamento_90d / maxValor * 80) + '%';
+  document.getElementById('barra-90d').innerText = formatarMoeda(dados.faturamento_90d);
+}

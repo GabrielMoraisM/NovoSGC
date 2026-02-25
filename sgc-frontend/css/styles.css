@@ -884,3 +884,50 @@ body {
 .vencido td:first-child {
   border-left: 3px solid var(--danger);
 }
+
+.projecao-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.projecao-item {
+  text-align: center;
+  padding: 0.5rem;
+  border-right: 1px solid #eee;
+}
+.projecao-item:last-child { border-right: none; }
+.projecao-item.highlight {
+  background: #e3f2fd;
+  border-radius: 4px;
+}
+.projecao-label {
+  font-size: 0.75rem;
+  color: #666;
+  display: block;
+}
+.projecao-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+.barra-container {
+  margin-bottom: 0.75rem;
+}
+.barra-label {
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+.barra {
+  height: 24px;
+  background: #4e73df;
+  color: white;
+  font-size: 0.8rem;
+  line-height: 24px;
+  padding-left: 8px;
+  border-radius: 4px;
+  transition: width 0.3s;
+  min-width: 40px;
+}
+
+.badge-primary { background: #cce5ff; color: #004085; }

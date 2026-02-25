@@ -675,7 +675,44 @@
             </div>
           </div>
         </div>
-        
+        <!-- Card de Projeção Financeira -->
+        <div class="card" id="card-projecao">
+          <div class="card-header">
+            <h3 class="card-title">📊 Projeção de Faturamento</h3>
+            <span class="badge badge-info" id="projecao-status">Baseado em boletins</span>
+          </div>
+          <div class="card-body">
+            <div class="projecao-grid">
+              <div class="projecao-item">
+                <span class="projecao-label">Ritmo Médio Mensal</span>
+                <span class="projecao-value" id="ritmo-medio">R$ 0</span>
+              </div>
+              <div class="projecao-item">
+                <span class="projecao-label">Saldo a Executar</span>
+                <span class="projecao-value" id="saldo-executar">R$ 0</span>
+              </div>
+              <div class="projecao-item highlight">
+                <span class="projecao-label">Previsão de Término</span>
+                <span class="projecao-value" id="previsao-termino">—</span>
+              </div>
+            </div>
+            <div class="projecao-barras">
+              <h4>Previsão de Recebimento</h4>
+              <div class="barra-container">
+                <div class="barra-label">30 dias</div>
+                <div class="barra" style="width: 0%;" id="barra-30d">R$ 0</div>
+              </div>
+              <div class="barra-container">
+                <div class="barra-label">60 dias</div>
+                <div class="barra" style="width: 0%;" id="barra-60d">R$ 0</div>
+              </div>
+              <div class="barra-container">
+                <div class="barra-label">90 dias</div>
+                <div class="barra" style="width: 0%;" id="barra-90d">R$ 0</div>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- LINHA 5: Alertas em Destaque -->
         <div class="card" id="alertas-destaque">
           <div class="card-header">
