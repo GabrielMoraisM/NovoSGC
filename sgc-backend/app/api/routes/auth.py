@@ -1,13 +1,12 @@
-from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from datetime import timedelta
 
 from app.api import deps
-from app.core.config import settings
-from app.core.security import create_access_token, verify_password
+from app.core.security import create_access_token
 from app.services.usuario_service import UsuarioService
-from app.schemas.usuario import LoginResponse
+from app.schemas.usuario import LoginResponse, UsuarioInDB
 
 router = APIRouter()
 
@@ -16,18 +15,22 @@ def login(
     db: Session = Depends(deps.get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
 ):
-    usuario_service = UsuarioService(db)
-    usuario = usuario_service.get_usuario_by_email(form_data.username)
-    
+    service = UsuarioService(db)
+    usuario = service.authenticate(form_data.username, form_data.password)
     if not usuario:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
-    
-    if not verify_password(form_data.password, usuario.senha_hash):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
-    
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email ou senha incorretos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    # Criar token de acesso
+    access_token_expires = timedelta(minutes=30)  # usar settings
     access_token = create_access_token(
         data={"sub": str(usuario.id)}, expires_delta=access_token_expires
     )
-    
-    return LoginResponse(access_token=access_token)
+    # Retornar token e dados do usuário
+    return LoginResponse(
+        access_token=access_token,
+        token_type="bearer",
+        usuario=UsuarioInDB.from_orm(usuario)
+    )

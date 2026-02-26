@@ -1,3 +1,5 @@
+# app/api/deps.py
+
 from typing import Annotated, Generator
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer

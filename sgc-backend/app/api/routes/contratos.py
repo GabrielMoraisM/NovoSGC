@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 
 from app.api import deps
@@ -11,22 +11,12 @@ from app.services import financeiro_service
 from app.api.deps import get_db, get_current_user
 
 
+
 router = APIRouter()
 
 # ----------------------------------------------------------------------
 # POST /contratos/
 # ----------------------------------------------------------------------
-@router.post("/", response_model=ContratoInDB, status_code=status.HTTP_201_CREATED)
-def create_contrato(
-    *,
-    db: Session = Depends(deps.get_db),
-    contrato_in: ContratoCreate,
-    current_user: Usuario = Depends(deps.get_current_active_user)
-):
-    """Criar novo contrato."""
-    service = ContratoService(db)
-    return service.create_contrato(contrato_in)
-
 
 # ----------------------------------------------------------------------
 # GET /contratos/
@@ -60,31 +50,12 @@ def get_contrato(
 # ----------------------------------------------------------------------
 # PUT /contratos/{id}
 # ----------------------------------------------------------------------
-@router.put("/{contrato_id}", response_model=ContratoInDB)
-def update_contrato(
-    contrato_id: int,
-    contrato_in: ContratoUpdate,
-    db: Session = Depends(deps.get_db),
-    current_user: Usuario = Depends(deps.get_current_active_user)
-):
-    """Atualizar dados de um contrato."""
-    service = ContratoService(db)
-    return service.update_contrato(contrato_id, contrato_in)
 
 
 # ----------------------------------------------------------------------
 # DELETE /contratos/{id}
 # ----------------------------------------------------------------------
-@router.delete("/{contrato_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_contrato(
-    contrato_id: int,
-    db: Session = Depends(deps.get_db),
-    current_user: Usuario = Depends(deps.get_current_active_user)
-):
-    """Remover contrato (somente se não houver boletins vinculados)."""
-    service = ContratoService(db)
-    service.delete_contrato(contrato_id)
-    return None
+
 
 @router.get("/{contrato_id}/resumo-financeiro")
 def get_resumo_financeiro_contrato(
@@ -105,3 +76,42 @@ def get_resumo_financeiro_contrato(
         # Log do erro e retorne apenas o resumo (ou um erro amigável)
         print(f"Erro ao calcular desempenho: {e}")
         return {**resumo, "status_desempenho": "ERRO"}
+    
+
+
+@router.post("/", response_model=ContratoInDB, status_code=status.HTTP_201_CREATED)
+def create_contrato(
+    *,
+    request: Request,
+    db: Session = Depends(deps.get_db),
+    contrato_in: ContratoCreate,
+    current_user: Usuario = Depends(deps.get_current_active_user)
+):
+    service = ContratoService(db)
+    return service.create_contrato(contrato_in, current_user=current_user, request=request)
+
+
+
+
+@router.put("/{contrato_id}", response_model=ContratoInDB)
+def update_contrato(
+    contrato_id: int,
+    contrato_in: ContratoUpdate,
+    request: Request,
+    db: Session = Depends(deps.get_db),
+    current_user: Usuario = Depends(deps.get_current_active_user)
+):
+    service = ContratoService(db)
+    return service.update_contrato(contrato_id, contrato_in, current_user=current_user, request=request)
+
+
+@router.delete("/{contrato_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_contrato(
+    contrato_id: int,
+    request: Request,
+    db: Session = Depends(deps.get_db),
+    current_user: Usuario = Depends(deps.get_current_active_user)
+):
+    service = ContratoService(db)
+    service.delete_contrato(contrato_id, current_user=current_user, request=request)
+    return None

@@ -1,25 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="SGC - Configurações do Sistema" />
-  <meta name="theme-color" content="#1e3a5f" />
-  <title>Configurações | SGC - Heca Engenharia</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="../css/styles.css" />
-  <link rel="stylesheet" href="../css/configuracoes.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Logs de Atividades | SGC</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .filters-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+        }
+        .filter-input {
+            min-width: 200px;
+        }
+        .logs-table {
+            font-size: 0.9rem;
+        }
+        .badge-create { background: #d4edda; color: #155724; }
+        .badge-update { background: #fff3cd; color: #856404; }
+        .badge-delete { background: #f8d7da; color: #721c24; }
+        .badge-login { background: #d1ecf1; color: #0c5460; }
+        .badge-logout { background: #e2e3e5; color: #383d41; }
+    </style>
 </head>
-
 <body>
-  <div class="app-container">
-    <div id="mobile-overlay" class="mobile-overlay"></div>
-
-    <aside id="sidebar" class="sidebar">
+    <div class="app-container">
+        <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">HC</div>
         <div class="sidebar-brand">
@@ -28,12 +40,9 @@
         </div>
       </div>
       
-
-
       <nav class="sidebar-nav">
         <div class="nav-section">
           <div class="nav-section-title">Principal</div>
-
           <a href="dashboard.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="7"></rect>
@@ -43,7 +52,6 @@
             </svg>
             <span>Dashboard</span>
           </a>
-
           <a href="empresas.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -51,7 +59,6 @@
             </svg>
             <span>Empresas</span>
           </a>
-
           <a href="contratos.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -61,7 +68,6 @@
             </svg>
             <span>Contratos</span>
           </a>
-
           <a href="medicoes.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="20" x2="12" y2="10"></line>
@@ -71,10 +77,9 @@
             <span>Medições</span>
           </a>
         </div>
-
+        
         <div class="nav-section">
           <div class="nav-section-title">Financeiro</div>
-
           <a href="financeiro.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="1" x2="12" y2="23"></line>
@@ -82,7 +87,6 @@
             </svg>
             <span>Financeiro</span>
           </a>
-
           <a href="alertas.html" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -91,11 +95,11 @@
             <span>Alertas</span>
           </a>
         </div>
-
+        
         <div class="nav-section">
           <div class="nav-section-title">Sistema</div>
+         <a href="configuracoes.html" class="nav-item active" id="menu-configuracoes">
 
-          <a href="configuracoes.html" class="nav-item active">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -104,7 +108,7 @@
           </a>
         </div>
       </nav>
-
+      
       <div class="sidebar-footer">
         <button id="sidebar-toggle" class="sidebar-toggle">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
@@ -116,8 +120,8 @@
       </div>
     </aside>
 
-    <main class="main-content">
-      <header class="topbar">
+        <main class="main-content">
+            <header class="topbar">
         <div class="topbar-left">
           <button id="mobile-menu-btn" class="mobile-menu-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
@@ -126,22 +130,16 @@
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-
           <div class="breadcrumb">
-            <a href="dashboard.html">SGC</a>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <span>Sistema</span>
+            <a href="/sgc-frontend/pages/dashboard.html">SGC</a>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
             <span>Configurações</span>
           </div>
         </div>
-
         <div class="topbar-right">
-          <button id="theme-toggle" class="topbar-btn">
+          <button id="theme-toggle" class="topbar-btn" data-tooltip="Alternar tema">
             <svg id="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
@@ -157,7 +155,13 @@
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
           </button>
-
+          <button class="topbar-btn" data-dropdown="notifications-dropdown">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge"></span>
+          </button>
           <div class="user-menu">
             <div class="user-avatar" data-dropdown="user-dropdown">HC</div>
             <div id="user-dropdown" class="dropdown">
@@ -165,449 +169,105 @@
                 <h4 class="user-display-name">Heca Admin</h4>
                 <p>admin@heca.com.br</p>
               </div>
-              <a href="#" class="dropdown-item">Meu Perfil</a>
-              <a href="#" class="dropdown-item">Sair</a>
+              <a href="#" class="dropdown-item" data-modal-open="profile-modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Meu Perfil
+              </a>
+              <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+              </a>
             </div>
           </div>
         </div>
       </header>
 
-      <div class="page-content">
-        <div class="page-header">
-          <h1>Configurações do Sistema</h1>
-          <p>Gerencie as preferências gerais, usuários e parâmetros da aplicação.</p>
-        </div>
-
-        <!-- ====== CARDS: ÚLTIMAS ALTERAÇÕES ====== -->
-        <div class="kpi-grid" id="last-changes-cards">
-
-  <a class="kpi-card" href="empresas.html">
-    <div class="kpi-header">
-      <div class="kpi-icon primary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-        </svg>
-      </div>
-      <div class="kpi-trend up" id="trend-empresas">↗ +0</div>
-    </div>
-    <div class="kpi-value" id="value-empresas">0</div>
-    <div class="kpi-label">Empresas</div>
-    <div class="kpi-sub" id="last-empresas">Última alteração: —</div>
-
-    <div style="margin-top:.75rem;">
-      <button type="button" class="btn btn-secondary btn-sm"
-        onclick="openChanges(event, 'empresas')">
-        Ver mais
-      </button>
-    </div>
-  </a>
-
-  <a class="kpi-card" href="contratos.html">
-    <div class="kpi-header">
-      <div class="kpi-icon success">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14,2 14,8 20,8"></polyline>
-        </svg>
-      </div>
-      <div class="kpi-trend up" id="trend-contratos">↗ +0</div>
-    </div>
-    <div class="kpi-value" id="value-contratos">0</div>
-    <div class="kpi-label">Contratos</div>
-    <div class="kpi-sub" id="last-contratos">Última alteração: —</div>
-
-    <div style="margin-top:.75rem;">
-      <button type="button" class="btn btn-secondary btn-sm"
-        onclick="openChanges(event, 'contratos')">
-        Ver mais
-      </button>
-    </div>
-  </a>
-
-  <a class="kpi-card" href="medicoes.html">
-    <div class="kpi-header">
-      <div class="kpi-icon warning">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-          <line x1="12" y1="20" x2="12" y2="10"></line>
-          <line x1="18" y1="20" x2="18" y2="4"></line>
-          <line x1="6" y1="20" x2="6" y2="16"></line>
-        </svg>
-      </div>
-      <div class="kpi-trend up" id="trend-medicoes">↗ +0</div>
-    </div>
-    <div class="kpi-value" id="value-medicoes">0</div>
-    <div class="kpi-label">Medições</div>
-    <div class="kpi-sub" id="last-medicoes">Última alteração: —</div>
-
-    <div style="margin-top:.75rem;">
-      <button type="button" class="btn btn-secondary btn-sm"
-        onclick="openChanges(event, 'medicoes')">
-        Ver mais
-      </button>
-    </div>
-  </a>
-
-  <a class="kpi-card" href="financeiro.html">
-    <div class="kpi-header">
-      <div class="kpi-icon primary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-          <line x1="12" y1="1" x2="12" y2="23"></line>
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-        </svg>
-      </div>
-      <div class="kpi-trend down" id="trend-financeiro">↘ -0</div>
-    </div>
-    <div class="kpi-value" id="value-financeiro">0</div>
-    <div class="kpi-label">Financeiro</div>
-    <div class="kpi-sub" id="last-financeiro">Última alteração: —</div>
-
-    <div style="margin-top:.75rem;">
-      <button type="button" class="btn btn-secondary btn-sm"
-        onclick="openChanges(event, 'financeiro')">
-        Ver mais
-      </button>
-    </div>
-  </a>
-
-  <a class="kpi-card" href="alertas.html">
-    <div class="kpi-header">
-      <div class="kpi-icon danger">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-      </div>
-      <div class="kpi-trend down" id="trend-alertas">↘ 0</div>
-    </div>
-    <div class="kpi-value" id="value-alertas">0</div>
-    <div class="kpi-label">Últimos alertas</div>
-    <div class="kpi-sub" id="last-alertas">Último alerta: —</div>
-
-    <div style="margin-top:.75rem;">
-      <button type="button" class="btn btn-secondary btn-sm"
-        onclick="openChanges(event, 'alertas')">
-        Ver mais
-      </button>
-    </div>
-  </a>
-
-</div>
-
-
-         
-        <!-- ====== /CARDS ====== -->
-
-        <div class="settings-layout">
-          <div class="settings-menu">
-            <a href="#" class="settings-menu-item active" onclick="showSection(event, 'sec-geral')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-              Geral
-            </a>
-
-            <a href="#" class="settings-menu-item" onclick="showSection(event, 'sec-usuarios')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              Usuários e Permissões
-            </a>
-
-            <a href="#" class="settings-menu-item" onclick="showSection(event, 'sec-financeiro')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-              Parâmetros Financeiros
-            </a>
-
-            <a href="#" class="settings-menu-item" onclick="showSection(event, 'sec-notificacoes')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
-              Notificações
-            </a>
-
-            <a href="#" class="settings-menu-item" onclick="showSection(event, 'sec-backup')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Backup e Dados
-            </a>
-          </div>
-
-          <div class="settings-content">
-            <div id="sec-geral" class="settings-section active">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Informações da Organização</h3>
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>📋 Log de Atividades</h1>
+                    <p>Visualize todas as ações realizadas no sistema</p>
                 </div>
-                <div class="card-body">
-                  <form>
-                    <div class="grid grid-cols-2" style="gap: 1.5rem;">
-                      <div class="form-group">
-                        <label class="form-label">Nome da Empresa</label>
-                        <input type="text" class="form-input" value="Heca Engenharia e Construções" required />
-                      </div>
-                      <div class="form-group">
-                        <label class="form-label">CNPJ</label>
-                        <input type="text" class="form-input" value="12.345.678/0001-99" required />
-                      </div>
-                    </div>
 
-                    <div class="form-group" style="margin-top: 1rem;">
-                      <label class="form-label">Endereço Principal</label>
-                      <input type="text" class="form-input" value="Av. Paulista, 1000 - São Paulo, SP" />
-                    </div>
-
-                    <div class="form-group" style="margin-top: 1rem;">
-                      <label class="form-label">Fuso Horário do Sistema</label>
-                      <select class="form-input form-select">
-                        <option value="brt" selected>Horário de Brasília (GMT-3)</option>
-                        <option value="am">Manaus (GMT-4)</option>
-                        <option value="fn">Fernando de Noronha (GMT-2)</option>
-                      </select>
-                    </div>
-
-                    <div class="card-footer" style="padding:0; padding-top:1.5rem; margin-top:1.5rem; border-top:1px solid #e2e8f0; text-align:right;">
-                      <button type="button" class="btn btn-primary">Salvar Alterações</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-
-            <div id="sec-usuarios" class="settings-section">
-              <div class="card">
-                <div class="card-header flex justify-between items-center">
-                  <h3 class="card-title">Gerenciar Usuários</h3>
-                  <a class="btn btn-sm btn-primary" href="novousu.html">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-    <line x1="12" y1="5" x2="12" y2="19"></line>
-    <line x1="5" y1="12" x2="19" y2="12"></line>
-  </svg>
-  Novo Usuário
-</a>
-                </div>
-                <div class="card-body">
-                  <div class="user-row">
-                    <div class="flex items-center gap-3">
-                      <div class="user-avatar" style="width: 36px; height: 36px; font-size: 0.8rem;">HC</div>
-                      <div>
-                        <div class="font-semibold text-sm">Heca Admin</div>
-                        <div class="text-xs text-muted">admin@heca.com.br</div>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <span class="badge badge-primary">Administrador</span>
-                      <button class="btn btn-sm btn-secondary" type="button" style="padding: 4px 8px;">Editar</button>
-                    </div>
-                  </div>
-
-                  <div class="user-row">
-                    <div class="flex items-center gap-3">
-                      <div class="user-avatar" style="background: #e2e8f0; color: #64748b; width: 36px; height: 36px; font-size: 0.8rem;">CS</div>
-                      <div>
-                        <div class="font-semibold text-sm">Carlos Silva</div>
-                        <div class="text-xs text-muted">carlos.silva@heca.com.br</div>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <span class="badge badge-secondary">Engenheiro</span>
-                      <button class="btn btn-sm btn-secondary" type="button" style="padding: 4px 8px;">Editar</button>
-                    </div>
-                  </div>
-
-                  <div class="user-row">
-                    <div class="flex items-center gap-3">
-                      <div class="user-avatar" style="background: #e2e8f0; color: #64748b; width: 36px; height: 36px; font-size: 0.8rem;">AM</div>
-                      <div>
-                        <div class="font-semibold text-sm">Ana Maria</div>
-                        <div class="text-xs text-muted">ana.maria@heca.com.br</div>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <span class="badge badge-warning">Financeiro</span>
-                      <button class="btn btn-sm btn-secondary" type="button" style="padding: 4px 8px;">Editar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div id="sec-financeiro" class="settings-section">
-              <div class="card">
-                <div class="card-header">
-                  <div>
-                    <h3 class="card-title">Parâmetros Financeiros Padrão</h3>
-                    <p class="text-sm text-muted">Estes valores serão preenchidos automaticamente em novos contratos.</p>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <div class="grid grid-cols-2" style="gap: 1.5rem;">
-                    <div class="form-group">
-                      <label class="form-label">ISS Padrão (%)</label>
-                      <input type="number" class="form-input" value="5.00" step="0.01" />
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Retenção Técnica Padrão (%)</label>
-                      <input type="number" class="form-input" value="5.00" step="0.01" />
-                    </div>
-                  </div>
-
-                  <div class="form-group" style="margin-top: 1.5rem;">
-                    <label class="form-label">Moeda Padrão</label>
-                    <select class="form-input form-select">
-                      <option value="BRL" selected>Real Brasileiro (BRL)</option>
-                      <option value="USD">Dólar Americano (USD)</option>
-                      <option value="EUR">Euro (EUR)</option>
+                <!-- Filtros -->
+                <div class="filters-bar">
+                    <select id="filter-usuario" class="form-input form-select filter-input">
+                        <option value="">Todos os usuários</option>
                     </select>
-                  </div>
-
-                  <div class="form-group" style="margin-top: 1.5rem;">
-                    <label class="flex items-center gap-2" style="cursor: pointer;">
-                      <input type="checkbox" checked style="accent-color: var(--primary);" />
-                      <span style="font-size: 0.9rem; color: #334155;">Exigir aprovação de diretoria para contratos acima de R$ 1.000.000</span>
-                    </label>
-                  </div>
-
-                  <div class="card-footer" style="padding:0; padding-top:1.5rem; margin-top:1.5rem; border-top:1px solid #e2e8f0; text-align:right;">
-                    <button type="button" class="btn btn-primary">Atualizar Parâmetros</button>
-                  </div>
+                    <select id="filter-modulo" class="form-input form-select filter-input">
+                        <option value="">Todos os módulos</option>
+                        <option value="contratos">Contratos</option>
+                        <option value="empresas">Empresas</option>
+                        <option value="medicoes">Medições</option>
+                        <option value="financeiro">Financeiro</option>
+                        <option value="configuracoes">Configurações</option>
+                    </select>
+                    <input type="text" id="filter-usuario-nome" class="form-input filter-input" placeholder="Nome do usuário...">
+                    <button class="btn btn-primary" id="btn-filtrar">Filtrar</button>
+                    <button class="btn btn-secondary" id="btn-limpar">Limpar</button>
+                    <button class="btn btn-secondary" id="btn-atualizar">↻ Atualizar</button>
                 </div>
-              </div>
+
+                <!-- Tabela de logs -->
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table logs-table" id="logs-table">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Usuário</th>
+                                    <th>Ação</th>
+                                    <th>Módulo</th>
+                                    <th>Descrição</th>
+                                    <th>Detalhes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="6" class="text-center">Carregando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer flex items-center justify-between">
+                        <span id="logs-count">Mostrando 0 registros</span>
+                        <div class="flex gap-2">
+                            <button class="btn btn-secondary btn-sm" id="prev-page" disabled>Anterior</button>
+                            <span id="page-info">1</span>
+                            <button class="btn btn-secondary btn-sm" id="next-page">Próximo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão para criar novo usuário -->
+                <div style="margin-top: 2rem; text-align: right;">
+                    <a href="registro.html" class="btn btn-primary">➕ Criar novo usuário</a>
+                </div>
             </div>
-
-            <div id="sec-notificacoes" class="settings-section">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Preferências de Alerta</h3>
-                </div>
-                <div class="card-body">
-                  <div class="flex items-center justify-between" style="margin-bottom: 1.5rem;">
-                    <div>
-                      <div class="font-medium">Alertas de Vencimento</div>
-                      <div class="text-sm text-muted">Notificar quando um contrato estiver próximo do fim</div>
-                    </div>
-                    <label class="toggle-switch">
-                      <input type="checkbox" checked />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="flex items-center justify-between" style="margin-bottom: 1.5rem;">
-                    <div>
-                      <div class="font-medium">Medições Pendentes</div>
-                      <div class="text-sm text-muted">Avisar gestores sobre medições aguardando aprovação</div>
-                    </div>
-                    <label class="toggle-switch">
-                      <input type="checkbox" checked />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="flex items-center justify-between" style="margin-bottom: 1.5rem;">
-                    <div>
-                      <div class="font-medium">Novos Aditivos</div>
-                      <div class="text-sm text-muted">Notificar diretoria ao criar um novo aditivo</div>
-                    </div>
-                    <label class="toggle-switch">
-                      <input type="checkbox" />
-                      <span class="slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;">
-                    <label class="form-label">E-mails adicionais para cópia (separar por vírgula)</label>
-                    <input type="text" class="form-input" placeholder="ex: financeiro@heca.com.br, diretoria@heca.com.br" />
-                  </div>
-
-                  <div class="card-footer" style="text-align:right; margin-top: 1rem;">
-                    <button type="button" class="btn btn-primary">Salvar Preferências</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div id="sec-backup" class="settings-section">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Manutenção de Dados</h3>
-                </div>
-                <div class="card-body">
-                  <div style="background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
-                    <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">Exportar Dados</h4>
-                    <p class="text-sm text-muted" style="margin-bottom: 1rem;">Faça o download de todos os contratos e medições em formato CSV ou JSON.</p>
-                    <div class="flex gap-2">
-                      <button type="button" class="btn btn-secondary btn-sm">Baixar CSV</button>
-                      <button type="button" class="btn btn-secondary btn-sm">Baixar JSON</button>
-                    </div>
-                  </div>
-
-                  <div style="background: #fff1f2; padding: 1rem; border-radius: 6px; border: 1px solid #fecdd3;">
-                    <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: #9f1239;">Zona de Perigo</h4>
-                    <p class="text-sm" style="margin-bottom: 1rem; color: #881337;">Ações aqui não podem ser desfeitas.</p>
-                    <button type="button" class="btn btn-sm" style="background-color: #e11d48; color: white; border: none;">Limpar Cache do Sistema</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div><!-- /settings-content -->
-        </div><!-- /settings-layout -->
-      </div><!-- /page-content -->
-    </main>
-  </div>
-
- 
-<div id="changes-modal" class="modal-overlay" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="changes-title">
-
-    <div class="modal-header">
-      <h3 class="modal-title" id="changes-title">Detalhes</h3>
-
-      <button class="modal-close" type="button" onclick="closeChanges()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
+        </main>
     </div>
 
-    <div class="modal-body">
-      <div id="changes-subtitle" class="text-sm text-muted" style="margin-bottom:1rem;"></div>
-      <div id="changes-table-slot"></div>
+    <!-- Modal para detalhes (opcional) -->
+    <div id="log-details-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalhes da Ação</h3>
+                <button class="modal-close" data-modal-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre id="log-details-content"></pre>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-modal-close>Fechar</button>
+            </div>
+        </div>
     </div>
 
-  </div>
-</div>
-
-
-    <div class="modal-body">
-      <div id="changes-subtitle" class="text-sm text-muted" style="margin-bottom:1rem;"></div>
-
-      <!-- aqui entra a tabela dinamicamente -->
-      <div id="changes-table-slot"></div>
-    </div>
-
-   
-
- 
-
-
-  <script src="../js/configuracoes.js" defer></script>
-</body>
-
-  
-  
+    <script src="../js/api.js" type="module"></script>
+    <script src="../js/configuracoes.js" type="module"></script>
 </body>
 </html>

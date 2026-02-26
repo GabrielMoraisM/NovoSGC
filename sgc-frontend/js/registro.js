@@ -1,5 +1,6 @@
 import { apiFetch } from './api.js';
 
+
 document.getElementById('register-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -18,7 +19,6 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || 'Erro ao criar usuário');
         alert('Usuário criado com sucesso! Faça login.');
-        window.location.href = '/index.html';
     } catch (error) {
         alert('Erro: ' + error.message);
         console.error(error);

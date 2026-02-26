@@ -1,40 +1,22 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum
-from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship  # <-- ESTA LINHA ESTAVA FALTANDO
+# app/models/usuario.py
 
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.db.base import Base
 
 class Usuario(Base):
-    """
-    Armazena credenciais e perfis de acesso.
-    """
     __tablename__ = "usuarios"
 
-    # Identificador único, auto-incremento (SERIAL no PostgreSQL)
     id = Column(Integer, primary_key=True, index=True)
-
-    # E-mail único, usado para login. Indexado para buscas rápidas.
-    email = Column(String(255), unique=True, nullable=False, index=True)
-
-    # Hash da senha (bcrypt) – nunca armazenamos a senha em texto plano.
-    senha_hash = Column(String(255), nullable=False)
-
-    # Perfil do usuário (controla permissões). ENUM do PostgreSQL.
-    perfil = Column(
-        Enum("ADMIN", "GESTOR", "FINANCEIRO", "AUDITOR", name="perfil"),
-        nullable=False
-    )
-
-    # Soft delete: se False, usuário está desativado, mas registro permanece.
-    ativo = Column(Boolean, default=True, nullable=False)
-
-    nome = Column(String(100), nullable=True)  # ou False se obrigatório
-
-    # Timestamps de criação e atualização automáticos.
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    nome = Column(String(100), nullable=False)          # Nome completo do usuário
+    email = Column(String(100), unique=True, index=True, nullable=False)
+    senha_hash = Column(String(255), nullable=False)    # Hash da senha
+    perfil = Column(String(50), nullable=False)         # ADMIN, GESTOR, FINANCEIRO, AUDITOR, TI
+    ativo = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # Futuramente: relacionamento com UsuarioContrato
-    # contratos = relationship("UsuarioContrato", back_populates="usuario")
-    # Relacionamento com UsuarioContrato (para RLS)
+    def __repr__(self):
+        return f"<Usuario {self.email}>"
     contratos = relationship("UsuarioContrato", back_populates="usuario", cascade="all, delete-orphan")

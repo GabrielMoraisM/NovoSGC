@@ -92,3 +92,69 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     }
   });
 });
+
+async function login(email, password) {
+    const response = await apiFetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ username: email, password })
+    });
+    const data = await response.json();
+    localStorage.setItem('token', data.access_token);
+    
+    // Buscar dados do usuário
+    const userResponse = await apiFetch('/usuarios/me', {
+        headers: { 'Authorization': `Bearer ${data.access_token}` }
+    });
+    const userData = await userResponse.json();
+    localStorage.setItem('user', JSON.stringify(userData));
+    
+    return userData;
+}
+
+// frontend/js/main.js
+
+// main.js
+
+// main.js
+
+// main.js
+
+document.addEventListener('DOMContentLoaded', function() {
+  const token = localStorage.getItem('token');
+  const perfil = localStorage.getItem('perfil');
+
+  // Redirecionar para login se não estiver autenticado (exceto na página de login)
+  const isLoginPage = window.location.pathname.includes('index.html') || window.location.pathname === '/';
+  if (!token && !isLoginPage) {
+    window.location.href = '/index.html';
+    return;
+  }
+
+  // Controle do menu Configurações (visível apenas para TI)
+  const menuConfig = document.getElementById('menu-configuracoes');
+  if (menuConfig) {
+    if (perfil === 'TI') {
+      menuConfig.style.display = 'flex'; // ou o display original do menu
+    } else {
+      menuConfig.style.display = 'none';
+    }
+  } else {
+    console.warn('Elemento #menu-configuracoes não encontrado');
+  }
+
+  // Exibir nome do usuário no header (se houver)
+  const userData = JSON.parse(localStorage.getItem('user') || '{}');
+  const userDisplay = document.querySelector('.user-display-name');
+  if (userDisplay && userData.nome) {
+    userDisplay.textContent = userData.nome;
+  }
+});
+
+// Função de logout global
+window.fazerLogout = function(event) {
+  event.preventDefault();
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = 'index.html';
+};

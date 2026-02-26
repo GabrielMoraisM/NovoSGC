@@ -1,3 +1,4 @@
+export { apiFetch };
 // api.js
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -92,6 +93,18 @@ export async function login(email, password) {
   }
 
   localStorage.setItem('token', data.access_token);
+
+  // Buscar dados do usuário e salvar perfil
+  try {
+    const user = await getCurrentUser();
+    console.log('Dados do usuário recebidos:', user);
+    localStorage.setItem('perfil', user.perfil);
+    localStorage.setItem('userNome', user.nome);
+  } catch (e) {
+    console.error('Erro ao obter dados do usuário:', e);
+    // Se falhar, não impede o login, mas o perfil não estará disponível
+  }
+
   return data;
 }
 
@@ -301,3 +314,7 @@ export async function getAlertas(contrato_id) {
   return apiRequest(url);
 }
 
+// ==================== USUÁRIO ATUAL ====================
+export async function getCurrentUser() {
+  return apiRequest('/usuarios/me');
+}
