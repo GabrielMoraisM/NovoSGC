@@ -9,6 +9,10 @@ from app.models.usuario import Usuario
 from app.core.exceptions import BusinessError
 from app.services import financeiro_service
 from app.api.deps import get_db, get_current_user
+from app.schemas.projecao import ProjecaoFinanceiraResponse
+from app.services import projecao_service
+from app.schemas.analise_ritmo import AnaliseRitmoResponse
+from app.services import analise_ritmo_service
 
 
 
@@ -115,3 +119,38 @@ def delete_contrato(
     service = ContratoService(db)
     service.delete_contrato(contrato_id, current_user=current_user, request=request)
     return None
+
+@router.get("/{contrato_id}/projecao-financeira", response_model=ProjecaoFinanceiraResponse)
+def get_projecao_financeira_contrato(
+    contrato_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: Usuario = Depends(deps.get_current_active_user)
+):
+    """
+    Retorna projeção financeira para um contrato específico.
+    - **ritmo_medio_mensal**: valor médio executado por mês (R$)
+    - **saldo_a_executar**: valor restante a executar (R$)
+    - **previsao_termino**: data estimada de término (dd/mm/aaaa)
+    - **faturamento_30d/60d/90d**: projeção de faturamento para os próximos meses
+    """
+    try:
+        projecao = projecao_service.calcular_projecao_contrato(db, contrato_id)
+        return projecao
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Erro interno ao calcular projeção")
+    
+
+@router.get("/{contrato_id}/analise-ritmo", response_model=AnaliseRitmoResponse)
+def get_analise_ritmo(
+    contrato_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: Usuario = Depends(deps.get_current_active_user)
+):
+    try:
+        return analise_ritmo_service.calcular_analise_ritmo(db, contrato_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Erro ao calcular análise de ritmo")

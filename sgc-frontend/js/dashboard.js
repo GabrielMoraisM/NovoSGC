@@ -178,43 +178,76 @@ function renderizarGrafico(dados) {
 
 // ===== Painel de Ritmo e Projeção =====
 function atualizarPainelRitmo(resumo, desempenho) {
-    if (!resumo || !desempenho) return;
-    const percExecutado = resumo.percentual_fisico || 0;
-    const percExecutar = 100 - percExecutado;
-    const diasTranscorridos = desempenho.dias_decorridos || 0;
-    const diasRestantes = desempenho.dias_totais - diasTranscorridos;
+  if (!resumo || !desempenho) return;
+  
+  const percExecutado = resumo.percentual_fisico || 0;
+  const percExecutar = 100 - percExecutado;
+  const diasTranscorridos = desempenho.dias_decorridos || 0;
+  const diasRestantes = desempenho.dias_totais - diasTranscorridos;
 
-    const ritmoReal = diasTranscorridos > 0 ? (percExecutado / diasTranscorridos) : 0;
-    const ritmoNecessario = diasRestantes > 0 ? (percExecutar / diasRestantes) : 0;
+  const ritmoReal = diasTranscorridos > 0 ? (percExecutado / diasTranscorridos) : 0;
+  const ritmoNecessario = diasRestantes > 0 ? (percExecutar / diasRestantes) : 0;
 
-    let diasNecessarios = 0;
-    let dataTermino = '-';
-    let statusRitmo = '';
+  // Valor executado por dia em reais
+  const valorExecutado = resumo.valor_executado || 0;
+  const ritmoRealValor = diasTranscorridos > 0 ? valorExecutado / diasTranscorridos : 0;
 
-    if (ritmoReal > 0) {
-        diasNecessarios = Math.ceil(percExecutar / ritmoReal);
-        const novaData = new Date();
-        novaData.setDate(novaData.getDate() + diasNecessarios);
-        dataTermino = novaData.toLocaleDateString('pt-BR');
+  let diasNecessarios = 0;
+  let dataTermino = '-';
+  let statusRitmo = '';
 
-        if (ritmoNecessario > ritmoReal * 1.2) {
-            statusRitmo = '🔴 Ritmo insuficiente';
-        } else if (ritmoNecessario > ritmoReal) {
-            statusRitmo = '🟡 Ritmo abaixo do necessário';
-        } else {
-            statusRitmo = '🟢 Ritmo adequado';
-        }
+  const elPercExec = document.getElementById('perc-executado');
+  if (elPercExec) elPercExec.innerText = percExecutado.toFixed(2) + '%';
+  
+  const elPercExecutar = document.getElementById('perc-executar');
+  if (elPercExecutar) elPercExecutar.innerText = percExecutar.toFixed(2) + '%';
+  
+  const elRitmoReal = document.getElementById('ritmo-real');
+  if (elRitmoReal) elRitmoReal.innerText = ritmoReal.toFixed(4) + '%';
+  
+  const elRitmoNecessario = document.getElementById('ritmo-necessario');
+  if (elRitmoNecessario) elRitmoNecessario.innerText = ritmoNecessario.toFixed(4) + '%';
+  
+  const elRitmoRealValor = document.getElementById('ritmo-real-valor');
+  if (elRitmoRealValor) elRitmoRealValor.innerText = formatarMoeda(ritmoRealValor);
+
+  if (ritmoReal > 0) {
+    diasNecessarios = Math.ceil(percExecutar / ritmoReal);
+    const novaData = new Date();
+    novaData.setDate(novaData.getDate() + diasNecessarios);
+    dataTermino = novaData.toLocaleDateString('pt-BR');
+
+    if (ritmoNecessario > ritmoReal * 1.2) {
+      statusRitmo = '🔴 Ritmo insuficiente';
+    } else if (ritmoNecessario > ritmoReal) {
+      statusRitmo = '🟡 Ritmo abaixo do necessário';
+    } else {
+      statusRitmo = '🟢 Ritmo adequado';
     }
+  }
 
-    document.getElementById('perc-executado').innerText = percExecutado.toFixed(2) + '%';
-    document.getElementById('perc-executar').innerText = percExecutar.toFixed(2) + '%';
-    document.getElementById('ritmo-real').innerText = ritmoReal.toFixed(4) + '%';
-    document.getElementById('ritmo-necessario').innerText = ritmoNecessario.toFixed(4) + '%';
-    document.getElementById('dias-transcorridos').innerText = diasTranscorridos + ' dias';
-    document.getElementById('dias-restantes').innerText = diasRestantes + ' dias';
-    document.getElementById('dias-necessarios').innerText = diasNecessarios + ' dias';
-    document.getElementById('data-termino').innerText = dataTermino;
-    document.getElementById('status-ritmo').innerText = statusRitmo;
+  // Atualizar elementos com verificação de existência
+  const elementos = {
+    'perc-executado': percExecutado.toFixed(2) + '%',
+    'perc-executar': percExecutar.toFixed(2) + '%',
+    'ritmo-real': ritmoReal.toFixed(4) + '%',
+    'ritmo-necessario': ritmoNecessario.toFixed(4) + '%',
+    'dias-transcorridos': diasTranscorridos + ' dias',
+    'dias-restantes': diasRestantes + ' dias',
+    'dias-necessarios': diasNecessarios + ' dias',
+    'data-termino': dataTermino,
+    'status-ritmo': statusRitmo,
+    'ritmo-real-valor': formatarMoeda(ritmoRealValor)  // NOVO
+  };
+
+  for (const [id, valor] of Object.entries(elementos)) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.innerText = valor;
+    } else {
+      console.warn(`Elemento com id "${id}" não encontrado`);
+    }
+  }
 }
 
 // ---------- Carregar Lista de Contratos para o Seletor ----------
@@ -300,6 +333,7 @@ async function carregarResumoGlobal() {
         console.error('Erro ao carregar resumo global:', error);
         mostrarErro('Falha ao carregar dados do dashboard.');
     }
+    await carregarProjecao(null); // null = projeção global
 }
 
 function atualizarKPIsGlobais(data) {
@@ -406,6 +440,7 @@ async function carregarDadosContrato(contratoId) {
         const resumoResp = await api.get(`/contratos/${contratoId}/resumo-financeiro`);
         if (!resumoResp.ok) throw new Error('Erro ao carregar resumo');
         const resumo = await resumoResp.json();
+        console.log('Resumo do contrato:', resumo);
         atualizarKPIsContrato(resumo);
 
         // Chama o painel de ritmo
@@ -477,6 +512,7 @@ async function carregarDadosContrato(contratoId) {
         console.error('Erro crítico ao carregar dados do contrato:', error);
         mostrarErro('Falha ao carregar detalhes do contrato.');
     }
+    await carregarProjecao(contratoId);
 }
 
 function atualizarKPIsContrato(resumo) {
@@ -500,18 +536,31 @@ function atualizarKPIsContrato(resumo) {
     }
 
     // KPIs secundários
+    console.log('Atualizando KPIs do contrato:', resumo);
+    console.log('Elemento risco:', document.querySelector('#kpi-risco .kpi-value'));
     const percTempoEl = document.querySelector('#kpi-perc-tempo .kpi-value');
-    if (percTempoEl) percTempoEl.innerText = formatarPercentual(resumo.percentual_tempo);
+    if (percTempoEl) {
+        if (resumo.percentual_tempo !== null && resumo.percentual_tempo !== undefined) {
+            percTempoEl.innerText = formatarPercentual(resumo.percentual_tempo);
+        } else {
+            percTempoEl.innerText = '—'; // ou 'Sem prazo'
+        }
+    }
     const riscoEl = document.querySelector('#kpi-risco .kpi-value');
     if (riscoEl) {
         const status = resumo.status_desempenho;
         if (status === 'ATRASADO') riscoEl.innerText = '🔴 Alto';
         else if (status === 'EM_DIA') riscoEl.innerText = '🟢 Baixo';
         else if (status === 'ADIANTADO') riscoEl.innerText = '🟡 Moderado';
+        else if (status === 'SEM_PRAZO') riscoEl.innerText = '⚪ Sem prazo'; // adicionar essa linha
         else riscoEl.innerText = '⚪ Desconhecido';
     }
     const statusEl = document.querySelector('#kpi-status .kpi-value');
     if (statusEl) statusEl.innerText = getTextoStatus(resumo.status_desempenho);
+    
+    console.log('Atualizando KPIs do contrato:', resumo);
+    console.log('Elemento risco:', document.querySelector('#kpi-risco .kpi-value'));
+    console.log('Elemento status:', document.querySelector('#kpi-status .kpi-value'));
 }
 
 // Função auxiliar para formatar o período
@@ -601,7 +650,12 @@ function formatarMoeda(valor) {
 
 function formatarPercentual(valor) {
     if (valor === null || valor === undefined) return '0%';
-    return parseFloat(valor).toLocaleString('pt-BR', {
+    let num = parseFloat(valor);
+    // Se for maior que 1, assume que veio como percentual (ex: 60) e converte para decimal
+    if (num > 1) {
+        num = num / 100;
+    }
+    return num.toLocaleString('pt-BR', {
         style: 'percent',
         minimumFractionDigits: 1,
         maximumFractionDigits: 1
@@ -750,6 +804,7 @@ async function carregarProjecao(contratoId) {
     const response = await api.get(url);
     if (!response.ok) throw new Error('Erro ao carregar projeção');
     const dados = await response.json();
+    console.log('Dados da projeção:', dados);
     atualizarCardProjecao(dados);
   } catch (error) {
     console.error('Erro na projeção:', error);
@@ -757,11 +812,22 @@ async function carregarProjecao(contratoId) {
 }
 
 function atualizarCardProjecao(dados) {
+  // Se dados não existir ou estiver vazio, define valores padrão
+  if (!dados) {
+    dados = {
+      ritmo_medio_mensal: 0,
+      saldo_a_executar: 0,
+      previsao_termino: '—',
+      faturamento_30d: 0,
+      faturamento_60d: 0,
+      faturamento_90d: 0
+    };
+  }
+
   document.getElementById('ritmo-medio').innerText = formatarMoeda(dados.ritmo_medio_mensal);
   document.getElementById('saldo-executar').innerText = formatarMoeda(dados.saldo_a_executar);
   document.getElementById('previsao-termino').innerText = dados.previsao_termino || '—';
 
-  // Barras de projeção (valores relativos ao total)
   const maxValor = Math.max(dados.faturamento_30d, dados.faturamento_60d, dados.faturamento_90d) || 1;
   document.getElementById('barra-30d').style.width = (dados.faturamento_30d / maxValor * 80) + '%';
   document.getElementById('barra-30d').innerText = formatarMoeda(dados.faturamento_30d);

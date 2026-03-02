@@ -1,6 +1,6 @@
 export { apiFetch };
 // api.js
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:8000';
 
 // ---------- Função interna para fetch com autenticação ----------
 async function apiFetch(endpoint, options = {}) {
@@ -318,3 +318,4 @@ export async function getAlertas(contrato_id) {
 export async function getCurrentUser() {
   return apiRequest('/usuarios/me');
 }
+

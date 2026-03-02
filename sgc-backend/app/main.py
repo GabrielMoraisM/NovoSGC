@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from app.core.config import settings
+from app.api.routes import dashboard
 
 app = FastAPI(
     title="SGC - Sistema de Gestão de Contratos",
@@ -35,3 +36,5 @@ app.include_router(api_router)
 @app.get("/")
 def root():
     return {"message": "Bem-vindo ao SGC API"}
+
+app.include_router(dashboard.router)

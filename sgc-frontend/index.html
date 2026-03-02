@@ -31,7 +31,6 @@
 
         <button type="submit" class="login-btn">Entrar no Sistema</button>
 
-        <a href="redefinir.html" class="forgot-password">Esqueci minha senha</a>
       </form>
 
       <div class="construction-indicator">
@@ -54,7 +53,7 @@
 
       try {
         await login(email, password);
-        window.location.href = 'dashboard.html';
+        window.location.href = '/sgc-frontend/pages/dashboard.html';
       } catch (error) {
         alert('Erro no login: ' + error.message);
       }
