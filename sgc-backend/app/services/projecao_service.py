@@ -60,11 +60,17 @@ def calcular_projecao_contrato(db: Session, contrato_id: int) -> dict:
             ritmo_medio_mensal = 0.0
 
     # Previsão de término
+        # Previsão de término
     previsao_termino: Optional[str] = None
     if ritmo_medio_mensal > 0 and saldo_a_executar > 0:
         meses_restantes = saldo_a_executar / ritmo_medio_mensal
-        data_prevista = date.today() + timedelta(days=meses_restantes * 30)
-        previsao_termino = data_prevista.strftime("%d/%m/%Y")
+        # Limita a 1200 meses (100 anos) para evitar datas fora do intervalo
+        MAX_MESES = 1200
+        if meses_restantes > MAX_MESES:
+            previsao_termino = None
+        else:
+            data_prevista = date.today() + timedelta(days=meses_restantes * 30)
+            previsao_termino = data_prevista.strftime("%d/%m/%Y")
 
     # Projeções de faturamento (mantendo o mesmo ritmo)
     fat_30d = ritmo_medio_mensal * 1

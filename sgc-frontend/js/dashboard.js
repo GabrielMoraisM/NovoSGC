@@ -176,70 +176,105 @@ function renderizarGrafico(dados) {
     });
 }
 
-// ===== Painel de Ritmo e Projeção =====
-function atualizarPainelRitmo(resumo, desempenho) {
+// ===== Painel de Ritmo e Projeção (COM PRAZO ORIGINAL) =====
+function atualizarPainelRitmo(resumo, desempenho, diasMedidos) {
   if (!resumo || !desempenho) return;
-  
+
+  console.log('atualizarPainelRitmo chamada', resumo, desempenho, diasMedidos);
+
+  // Dados básicos
   const percExecutado = resumo.percentual_fisico || 0;
   const percExecutar = 100 - percExecutado;
-  const diasTranscorridos = desempenho.dias_decorridos || 0;
-  const diasRestantes = desempenho.dias_totais - diasTranscorridos;
-
-  const ritmoReal = diasTranscorridos > 0 ? (percExecutado / diasTranscorridos) : 0;
-  const ritmoNecessario = diasRestantes > 0 ? (percExecutar / diasRestantes) : 0;
-
-  // Valor executado por dia em reais
+  
+  // Valores financeiros
+  const valorTotal = resumo.valor_total_contrato || 0;
   const valorExecutado = resumo.valor_executado || 0;
-  const ritmoRealValor = diasTranscorridos > 0 ? valorExecutado / diasTranscorridos : 0;
+  const valorRestante = valorTotal - valorExecutado;
 
+  // Dias transcorridos (prioridade para diasMedidos)
+  const diasTranscorridos = (diasMedidos !== undefined && diasMedidos !== null) ? diasMedidos : desempenho.dias_decorridos || 0;
+
+  // Dias totais: primeiro tenta do backend, depois usa prazo_original_dias
+  let diasTotais = desempenho.dias_totais;
+  if (!diasTotais && desempenho.prazo_original_dias) {
+    diasTotais = desempenho.prazo_original_dias;
+    // TODO: somar aditivos de prazo se houver
+  }
+
+  const temPrazo = diasTotais !== null && diasTotais !== undefined && diasTotais > 0;
+  const temDiasTranscorridos = diasTranscorridos > 0;
+
+  let diasRestantes = 0;
+  let ritmoPlanejado = 0;
+  let ritmoRealValor = 0;
+  let ritmoNecessarioValor = 0;
+  let percRitmoRealVsPlanejado = 0;
   let diasNecessarios = 0;
   let dataTermino = '-';
   let statusRitmo = '';
 
-  const elPercExec = document.getElementById('perc-executado');
-  if (elPercExec) elPercExec.innerText = percExecutado.toFixed(2) + '%';
-  
-  const elPercExecutar = document.getElementById('perc-executar');
-  if (elPercExecutar) elPercExecutar.innerText = percExecutar.toFixed(2) + '%';
-  
-  const elRitmoReal = document.getElementById('ritmo-real');
-  if (elRitmoReal) elRitmoReal.innerText = ritmoReal.toFixed(4) + '%';
-  
-  const elRitmoNecessario = document.getElementById('ritmo-necessario');
-  if (elRitmoNecessario) elRitmoNecessario.innerText = ritmoNecessario.toFixed(4) + '%';
-  
-  const elRitmoRealValor = document.getElementById('ritmo-real-valor');
-  if (elRitmoRealValor) elRitmoRealValor.innerText = formatarMoeda(ritmoRealValor);
+  if (temPrazo && temDiasTranscorridos) {
+    diasRestantes = diasTotais - diasTranscorridos;
+    
+    // Ritmo planejado (escopo) = valor total / prazo total (R$/dia)
+    ritmoPlanejado = valorTotal / diasTotais;
 
-  if (ritmoReal > 0) {
-    diasNecessarios = Math.ceil(percExecutar / ritmoReal);
-    const novaData = new Date();
-    novaData.setDate(novaData.getDate() + diasNecessarios);
-    dataTermino = novaData.toLocaleDateString('pt-BR');
+    // Ritmo real (executado/dia) baseado nos dias transcorridos
+    ritmoRealValor = valorExecutado / diasTranscorridos;
 
-    if (ritmoNecessario > ritmoReal * 1.2) {
-      statusRitmo = '🔴 Ritmo insuficiente';
-    } else if (ritmoNecessario > ritmoReal) {
-      statusRitmo = '🟡 Ritmo abaixo do necessário';
+    // Ritmo necessário para cumprir o prazo restante
+    ritmoNecessarioValor = diasRestantes > 0 ? valorRestante / diasRestantes : 0;
+
+    // Comparação percentual do ritmo real em relação ao planejado
+    percRitmoRealVsPlanejado = ritmoPlanejado > 0 ? (ritmoRealValor / ritmoPlanejado) * 100 : 0;
+
+    // Cálculo de dias necessários para terminar no ritmo atual
+    if (ritmoRealValor > 0) {
+      diasNecessarios = Math.ceil(valorRestante / ritmoRealValor);
+      const novaData = new Date();
+      novaData.setDate(novaData.getDate() + diasNecessarios);
+      dataTermino = novaData.toLocaleDateString('pt-BR');
+
+      // Classificação do ritmo
+      if (ritmoNecessarioValor > ritmoRealValor * 1.2) {
+        statusRitmo = '🔴 Ritmo insuficiente (atraso)';
+      } else if (ritmoNecessarioValor > ritmoRealValor) {
+        statusRitmo = '🟡 Ritmo abaixo do necessário (atenção)';
+      } else if (ritmoRealValor >= ritmoNecessarioValor) {
+        statusRitmo = '🟢 Ritmo adequado (no prazo)';
+      }
     } else {
-      statusRitmo = '🟢 Ritmo adequado';
+      if (diasTranscorridos > 0 && valorExecutado === 0) {
+        statusRitmo = '🔴 Nenhuma execução (atrasado)';
+      }
     }
+  } else {
+    // Sem prazo ou sem dias transcorridos
+    diasRestantes = 0;
+    ritmoPlanejado = 0;
+    ritmoRealValor = 0;
+    ritmoNecessarioValor = 0;
+    percRitmoRealVsPlanejado = 0;
+    diasNecessarios = 0;
+    dataTermino = '—';
+    statusRitmo = temPrazo ? (temDiasTranscorridos ? '⚪ Aguardando dados' : '⚪ Sem medições') : '⚪ Sem prazo definido';
   }
 
-  // Atualizar elementos com verificação de existência
+  // Prepara os valores para exibição
   const elementos = {
-    'perc-executado': percExecutado.toFixed(2) + '%',
-    'perc-executar': percExecutar.toFixed(2) + '%',
-    'ritmo-real': ritmoReal.toFixed(4) + '%',
-    'ritmo-necessario': ritmoNecessario.toFixed(4) + '%',
-    'dias-transcorridos': diasTranscorridos + ' dias',
-    'dias-restantes': diasRestantes + ' dias',
-    'dias-necessarios': diasNecessarios + ' dias',
+    'perc-executado': `${percExecutado.toFixed(2)}%`,
+    'perc-executar': `${percExecutar.toFixed(2)}%`,
+    'ritmo-real': temPrazo && temDiasTranscorridos ? `${percRitmoRealVsPlanejado.toFixed(2)}%` : '—',
+    'ritmo-necessario': temPrazo && temDiasTranscorridos ? (ritmoNecessarioValor > 0 ? `${ritmoNecessarioValor.toFixed(2)} R$/dia` : '0 R$/dia') : '—',
+    'dias-transcorridos': temDiasTranscorridos ? `${diasTranscorridos} dias` : '0 dias',
+    'dias-restantes': temPrazo ? `${diasRestantes} dias` : '—',
+    'dias-necessarios': temPrazo && temDiasTranscorridos ? `${diasNecessarios} dias` : '—',
     'data-termino': dataTermino,
     'status-ritmo': statusRitmo,
-    'ritmo-real-valor': formatarMoeda(ritmoRealValor)  // NOVO
+    'ritmo-real-valor': temPrazo && temDiasTranscorridos ? formatarMoeda(ritmoRealValor) + '/dia' : '—'
   };
 
+  // Atualiza os elementos
   for (const [id, valor] of Object.entries(elementos)) {
     const el = document.getElementById(id);
     if (el) {
@@ -443,26 +478,47 @@ async function carregarDadosContrato(contratoId) {
         console.log('Resumo do contrato:', resumo);
         atualizarKPIsContrato(resumo);
 
-        // Chama o painel de ritmo
+        // Desempenho básico (pode ser complementado pelos boletins)
         const desempenho = {
             dias_decorridos: resumo.dias_decorridos,
             dias_totais: resumo.dias_totais,
             percentual_tempo: resumo.percentual_tempo,
-            status_desempenho: resumo.status_desempenho
+            status_desempenho: resumo.status_desempenho,
+            prazo_original_dias: contratoSelecionado?.prazo_original_dias || null
         };
-        atualizarPainelRitmo(resumo, desempenho);
 
-        // Boletins
+        // Carrega os boletins para calcular dias efetivamente medidos
+        let diasMedidos = 0;
         try {
             const bmsResp = await api.get(`/contratos/${contratoId}/boletins`);
             const bms = bmsResp.ok ? await bmsResp.json() : [];
+            console.log('Boletins carregados:', bms);
             preencherTabelaBoletins(bms);
+
+            // Calcula a soma dos períodos (dias) de boletins aprovados/faturados
+            diasMedidos = bms
+                .filter(bm => ['APROVADO', 'FATURADO'].includes(bm.status))
+                .reduce((total, bm) => {
+                    if (bm.periodo_inicio && bm.periodo_fim) {
+                        const inicio = new Date(bm.periodo_inicio);
+                        const fim = new Date(bm.periodo_fim);
+                        // Adiciona 1 para incluir o dia final
+                        const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24)) + 1;
+                        console.log(`BM período ${bm.periodo_inicio} a ${bm.periodo_fim} => ${diff} dias`);
+                        return total + diff;
+                    }
+                    return total;
+                }, 0);
+            console.log('Total de dias medidos (soma dos períodos):', diasMedidos);
         } catch (e) {
             console.warn('Erro ao carregar boletins', e);
             preencherTabelaBoletins([]);
         }
 
-        // Notas fiscais (declaramos nfs fora para usar nos pagamentos)
+        // Atualiza o painel de ritmo com os dias calculados a partir dos boletins
+        atualizarPainelRitmo(resumo, desempenho, diasMedidos);
+
+        // Notas fiscais
         let nfs = [];
         try {
             const nfsResp = await api.get(`/faturamentos?contrato_id=${contratoId}`);
@@ -508,11 +564,13 @@ async function carregarDadosContrato(contratoId) {
         const dadosGrafico = await carregarDadosGrafico(contratoId, meses);
         renderizarGrafico(dadosGrafico);
 
+        // Carrega a projeção financeira
+        await carregarProjecao(contratoId);
+
     } catch (error) {
         console.error('Erro crítico ao carregar dados do contrato:', error);
         mostrarErro('Falha ao carregar detalhes do contrato.');
     }
-    await carregarProjecao(contratoId);
 }
 
 function atualizarKPIsContrato(resumo) {
