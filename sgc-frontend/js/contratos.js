@@ -850,6 +850,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('new-contract-form')?.addEventListener('submit', salvarNovoContrato);
 
+  document.querySelectorAll('.money-mask').forEach(campo => {
+  campo.addEventListener('input', aplicarMascaraMoeda);
+  campo.addEventListener('keydown', function(e) {
+    // Permite apenas teclas numéricas e de controle
+    const teclasPermitidas = [
+      'Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'
+    ];
+    if (teclasPermitidas.includes(e.key)) return;
+    if (e.key === ' ' || isNaN(Number(e.key))) {
+      e.preventDefault();
+    }
+  });
+});
+
   document.querySelectorAll('[data-modal-close]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const modal = btn.closest('.modal-overlay');
@@ -1144,6 +1158,47 @@ async function abrirDetalhes(contratoId) {
     console.error('Erro ao abrir detalhes do contrato:', error);
     alert('Não foi possível carregar os detalhes do contrato.');
   }
+}
+
+// ===== FUNÇÕES DE MÁSCARA =====
+function mascaraMoeda(valor) {
+  // Remove tudo que não for dígito
+  let v = valor.replace(/\D/g, '');
+  
+  // Converte para número e divide por 100 para ter os centavos
+  v = (parseInt(v) / 100).toFixed(2) + '';
+  
+  // Separa os centavos
+  let partes = v.split('.');
+  let inteiro = partes[0];
+  let decimal = partes[1];
+  
+  // Adiciona separadores de milhar
+  inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  
+  return inteiro + ',' + decimal;
+}
+
+function aplicarMascaraMoeda(event) {
+  let input = event.target;
+  let cursorPos = input.selectionStart;
+  let valorOriginal = input.value.replace(/\D/g, '');
+  let valorAnterior = input.dataset.valorAnterior || '';
+  
+  input.value = mascaraMoeda(input.value);
+  
+  // Mantém a posição do cursor
+  if (valorOriginal !== valorAnterior) {
+    input.dataset.valorAnterior = valorOriginal;
+    let novaPosicao = cursorPos + (input.value.length - valorOriginal.length);
+    input.setSelectionRange(novaPosicao, novaPosicao);
+  }
+}
+
+function limparMascaraMoeda(valorFormatado) {
+  // Remove pontos (separadores de milhar) e troca vírgula por ponto
+  let numero = valorFormatado.replace(/\./g, '').replace(',', '.');
+  return parseFloat(numero) || 0;
 }
 
 // Expor a função globalmente

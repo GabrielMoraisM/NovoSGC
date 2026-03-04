@@ -76,9 +76,8 @@ function calcularSaldoDevedor(fatura) {
     // Se a nota estiver cancelada, saldo é zero
     if (fatura.status === 'CANCELADA' || fatura.status === 'CANCELADO') return 0;
     const totalPago = calcularTotalPago(fatura.id);
-    return (Number(fatura.valor_liquido_nf) || 0) - totalPago;
+    return (Number(fatura.valor_bruto_nf) || 0) - totalPago;
 }
-
 
 function isVencida(dataVencimento) {
   if (!dataVencimento) return false;
@@ -801,6 +800,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('new-invoice-form')?.addEventListener('submit', salvarNovaNF);
   document.getElementById('new-payment-form')?.addEventListener('submit', salvarNovoPagamento);
+  document.querySelectorAll('.money-mask').forEach(campo => {
+  campo.addEventListener('input', aplicarMascaraMoeda);
+  // Opcional: bloquear teclas não numéricas
+  campo.addEventListener('keydown', function(e) {
+    const teclasPermitidas = [
+      'Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'
+    ];
+    if (teclasPermitidas.includes(e.key)) return;
+    if (e.key === ' ' || isNaN(Number(e.key))) {
+      e.preventDefault();
+    }
+  });
+});
 });
 
 // ===== Gerenciamento de Modais =====
@@ -941,4 +953,25 @@ function tentarRenderizar() {
         atualizarKPIs();
         atualizarImpostos();
     }
+}
+
+// ===== FUNÇÕES DE MÁSCARA =====
+function mascaraMoeda(valor) {
+  let v = valor.replace(/\D/g, '');
+  v = (parseInt(v) / 100).toFixed(2) + '';
+  let partes = v.split('.');
+  let inteiro = partes[0];
+  let decimal = partes[1];
+  inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return inteiro + ',' + decimal;
+}
+
+function aplicarMascaraMoeda(event) {
+  let input = event.target;
+  input.value = mascaraMoeda(input.value);
+}
+
+function limparMascaraMoeda(valorFormatado) {
+  let numero = valorFormatado.replace(/\./g, '').replace(',', '.');
+  return parseFloat(numero) || 0;
 }

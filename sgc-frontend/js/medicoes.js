@@ -201,6 +201,27 @@ function filtrarBoletins() {
   renderizarBoletins(filtrados);
 }
 
+// ===== FUNÇÕES DE MÁSCARA (copiadas de contratos.js) =====
+function mascaraMoeda(valor) {
+  let v = valor.replace(/\D/g, '');
+  v = (parseInt(v) / 100).toFixed(2) + '';
+  let partes = v.split('.');
+  let inteiro = partes[0];
+  let decimal = partes[1];
+  inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return inteiro + ',' + decimal;
+}
+
+function aplicarMascaraMoeda(event) {
+  let input = event.target;
+  input.value = mascaraMoeda(input.value);
+}
+
+function limparMascaraMoeda(valorFormatado) {
+  let numero = valorFormatado.replace(/\./g, '').replace(',', '.');
+  return parseFloat(numero) || 0;
+}
+
 // ===== Abrir detalhes do boletim =====
 window.abrirDetalhesBoletim = function(boletimId) {
   const bm = boletins.find(b => b.id === boletimId);
@@ -270,65 +291,32 @@ window.editarBoletim = function(id) {
 };
 
 // ===== Salvar novo boletim =====
-async function salvarNovoBoletim(event) {
+async function salvarNovaMedicao(event) {
   event.preventDefault();
-  const form = event.target;
-  const formData = new FormData(form);
-
-  const contrato_id = parseInt(formData.get('contrato_id'));
-  if (!contrato_id) {
-    alert('Selecione um contrato.');
-    return;
-  }
-
-  const periodo_inicio = formData.get('periodo_inicio');
-  const periodo_fim = formData.get('periodo_fim');
-  const valor_total_medido = parseFloat(formData.get('valor_total_medido'));
-  const valor_glosa = parseFloat(formData.get('valor_glosa')) || 0;
-  const observacoes = formData.get('observacoes') || '';
-
-  // Validações básicas
-  if (!periodo_inicio || !periodo_fim) {
-    alert('Preencha as datas do período.');
-    return;
-  }
-  if (isNaN(valor_total_medido) || valor_total_medido <= 0) {
-    alert('Valor medido deve ser um número positivo.');
-    return;
-  }
-  if (isNaN(valor_glosa) || valor_glosa < 0) {
-    alert('Valor de glosa deve ser um número não negativo.');
-    return;
-  }
-
-  // Verifica se período fim é posterior ao início
-  const inicio = new Date(periodo_inicio + 'T12:00:00');
-  const fim = new Date(periodo_fim + 'T12:00:00');
-  if (fim < inicio) {
-    alert('A data de fim não pode ser anterior à data de início.');
-    return;
-  }
-
-  const boletimData = {
-    contrato_id: contrato_id,  // <-- adicione esta linha
-    periodo_inicio,
-    periodo_fim,
-    valor_total_medido,
-    valor_glosa,
-    observacoes
+  
+  const valorMedidoInput = document.querySelector('[name="valor_total_medido"]');
+  const valorGlosaInput = document.querySelector('[name="valor_glosa"]');
+  
+  const valorMedido = limparMascaraMoeda(valorMedidoInput.value);
+  const valorGlosa = limparMascaraMoeda(valorGlosaInput.value || '0');
+  
+  const dados = {
+    contrato_id: document.querySelector('[name="contrato_id"]').value,
+    periodo_inicio: document.querySelector('[name="periodo_inicio"]').value,
+    periodo_fim: document.querySelector('[name="periodo_fim"]').value,
+    valor_total_medido: valorMedido,
+    valor_glosa: valorGlosa,
+    observacoes: document.querySelector('[name="observacoes"]').value
   };
-
-  console.log('📤 Enviando boletim para o contrato', contrato_id, ':', JSON.stringify(boletimData, null, 2));
-
+  
   try {
-    await createBoletim(contrato_id, boletimData);
-    alert('Boletim criado com sucesso!');
+    // Chamada à API
+    await criarMedicao(dados);
+    alert('Medição criada com sucesso!');
     document.getElementById('new-measurement-modal').classList.remove('active');
-    form.reset();
-    await carregarBoletins();
+    // recarregar lista de medições
   } catch (error) {
-    console.error('❌ Erro detalhado:', error);
-    alert('Erro ao criar boletim: ' + error.message);
+    alert('Erro: ' + error.message);
   }
 }
 
@@ -340,6 +328,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+    document.querySelectorAll('.money-mask').forEach(campo => {
+    campo.addEventListener('input', aplicarMascaraMoeda);
+    // Bloqueia teclas não numéricas (opcional)
+    campo.addEventListener('keydown', function(e) {
+      const teclasPermitidas = [
+        'Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'
+      ];
+      if (teclasPermitidas.includes(e.key)) return;
+      if (e.key === ' ' || isNaN(Number(e.key))) {
+        e.preventDefault();
+      }
+    });
+  });
   await carregarContratosSelect();
   await carregarBoletins();
 
