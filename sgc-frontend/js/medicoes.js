@@ -204,11 +204,16 @@ function filtrarBoletins() {
 // ===== FUNÇÕES DE MÁSCARA (copiadas de contratos.js) =====
 function mascaraMoeda(valor) {
   let v = valor.replace(/\D/g, '');
-  v = (parseInt(v) / 100).toFixed(2) + '';
+
+  if (!v) return '0,00';
+
+  v = (parseInt(v) / 100).toFixed(2);
   let partes = v.split('.');
   let inteiro = partes[0];
   let decimal = partes[1];
+
   inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
   return inteiro + ',' + decimal;
 }
 
@@ -294,14 +299,17 @@ window.editarBoletim = function(id) {
 async function salvarNovaMedicao(event) {
   event.preventDefault();
   
-  const valorMedidoInput = document.querySelector('[name="valor_total_medido"]');
-  const valorGlosaInput = document.querySelector('[name="valor_glosa"]');
-  
-  const valorMedido = limparMascaraMoeda(valorMedidoInput.value);
-  const valorGlosa = limparMascaraMoeda(valorGlosaInput.value || '0');
-  
+  const valorMedido = limparMascaraMoeda(
+    document.querySelector('[name="valor_total_medido"]').value
+  );
+
+  const valorGlosa = limparMascaraMoeda(
+    document.querySelector('[name="valor_glosa"]').value || '0'
+  );
+
+  const contratoId = document.querySelector('[name="contrato_id"]').value;
+
   const dados = {
-    contrato_id: document.querySelector('[name="contrato_id"]').value,
     periodo_inicio: document.querySelector('[name="periodo_inicio"]').value,
     periodo_fim: document.querySelector('[name="periodo_fim"]').value,
     valor_total_medido: valorMedido,
@@ -310,11 +318,10 @@ async function salvarNovaMedicao(event) {
   };
   
   try {
-    // Chamada à API
-    await criarMedicao(dados);
+    await createBoletim(contratoId, dados);
     alert('Medição criada com sucesso!');
     document.getElementById('new-measurement-modal').classList.remove('active');
-    // recarregar lista de medições
+    await carregarBoletins();
   } catch (error) {
     alert('Erro: ' + error.message);
   }
@@ -347,5 +354,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filter-contract')?.addEventListener('change', filtrarBoletins);
   document.getElementById('filter-status')?.addEventListener('change', filtrarBoletins);
   document.getElementById('search-measurements')?.addEventListener('input', filtrarBoletins);
-  document.getElementById('new-measurement-form')?.addEventListener('submit', salvarNovoBoletim);
+  document.getElementById('new-measurement-form')?.addEventListener('submit', salvarNovaMedicao);
 });

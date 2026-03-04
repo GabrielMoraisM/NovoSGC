@@ -623,6 +623,8 @@ async function salvarNovoContrato(event) {
   event.preventDefault();
   const form = event.target;
   const formData = new FormData(form);
+  const valorOriginalInput = document.querySelector('[name="valor_original"]');
+  const valorOriginal = limparMascaraMoeda(valorOriginalInput.value);
 
   const tipoObra = formData.get('tipo_obra');
   if (!tipoObra) {
@@ -647,7 +649,7 @@ async function salvarNovoContrato(event) {
   const contratoData = {
     numero_contrato: formData.get('numero_contrato'),
     tipo_obra: tipoObra,
-    valor_original: parseFloat(formData.get('valor_original')),
+    valor_original: valorOriginal,
     prazo_original_dias: diasDuracao,  // agora usamos o campo diretamente
     data_inicio: dataInicio,
     cliente_id: clienteId,
@@ -1199,6 +1201,17 @@ function limparMascaraMoeda(valorFormatado) {
   // Remove pontos (separadores de milhar) e troca vírgula por ponto
   let numero = valorFormatado.replace(/\./g, '').replace(',', '.');
   return parseFloat(numero) || 0;
+}
+
+function mascaraPercentual(valor) {
+  let v = valor.replace(/\D/g, '');
+  v = (parseInt(v) / 100).toFixed(2) + '';
+  return v.replace('.', ',') + '%';
+}
+
+function aplicarMascaraPercentual(event) {
+  let input = event.target;
+  input.value = mascaraPercentual(input.value);
 }
 
 // Expor a função globalmente
