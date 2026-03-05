@@ -500,7 +500,19 @@ async function salvarNovaNF(event) {
     return;
   }
 
-  const valorBruto = parseFloat(formData.get('valorBruto'));
+  // Obter valor bruto e tratar vazio
+  const valorBrutoStr = formData.get('valorBruto');
+  if (!valorBrutoStr || valorBrutoStr.trim() === '') {
+    mostrarToast('Informe o valor bruto da NF.', 'error');
+    return;
+  }
+  const valorBruto = limparMascaraMoeda(valorBrutoStr);
+
+  if (valorBruto <= 0) {
+    mostrarToast('Valor bruto deve ser maior que zero.', 'error');
+    return;
+  }
+
   if (valorBruto > boletim.valor_aprovado) {
     mostrarToast('Valor da NF não pode ser maior que o valor aprovado do boletim.', 'error');
     return;
@@ -972,6 +984,7 @@ function aplicarMascaraMoeda(event) {
 }
 
 function limparMascaraMoeda(valorFormatado) {
+  if (!valorFormatado) return 0;
   let numero = valorFormatado.replace(/\./g, '').replace(',', '.');
   return parseFloat(numero) || 0;
 }

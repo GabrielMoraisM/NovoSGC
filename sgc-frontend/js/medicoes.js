@@ -314,7 +314,8 @@ async function salvarNovaMedicao(event) {
     periodo_fim: document.querySelector('[name="periodo_fim"]').value,
     valor_total_medido: valorMedido,
     valor_glosa: valorGlosa,
-    observacoes: document.querySelector('[name="observacoes"]').value
+    contrato_id: contratoId
+    // observacoes removido por enquanto
   };
   
   try {
