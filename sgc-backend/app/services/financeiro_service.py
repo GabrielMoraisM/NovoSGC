@@ -17,10 +17,10 @@ def calcular_resumo_contrato(db: Session, contrato_id: int) -> Dict[str, Any]:
 
     valor_total = float(contrato.valor_total) if contrato.valor_total else 0.0
 
-    # Valor executado (boletins aprovados/faturados)
+    # Valor executado (apenas boletins APROVADOS) - ALTERADO AQUI
     valor_executado = db.query(func.sum(BoletimMedicao.valor_aprovado)).filter(
         BoletimMedicao.contrato_id == contrato_id,
-        BoletimMedicao.status.in_(["APROVADO", "FATURADO"])
+        BoletimMedicao.status == "APROVADO"  # Antes: in_(["APROVADO", "FATURADO"])
     ).scalar() or 0.0
     valor_executado = float(valor_executado)
 
@@ -64,10 +64,9 @@ def calcular_resumo_contrato(db: Session, contrato_id: int) -> Dict[str, Any]:
         "saldo_a_faturar": round(saldo_a_faturar, 2),
         "saldo_a_receber": round(saldo_a_receber, 2),
         "percentual_fisico": round(perc_fisico, 2),
-        "percentual_financeiro_faturado": round(perc_financeiro_faturado, 2),  # novo
-        "percentual_financeiro_recebido": round(perc_financeiro_recebido, 2),  # opcional
-        # mantendo compatibilidade com front-end atual que espera "percentual_financeiro"
-        "percentual_financeiro": round(perc_financeiro_faturado, 2),  # se quiser substituir o antigo
+        "percentual_financeiro_faturado": round(perc_financeiro_faturado, 2),
+        "percentual_financeiro_recebido": round(perc_financeiro_recebido, 2),
+        "percentual_financeiro": round(perc_financeiro_faturado, 2),  # compatibilidade com frontend
     }
 
 def calcular_status_desempenho(db: Session, contrato_id: int) -> Dict[str, Any]:
