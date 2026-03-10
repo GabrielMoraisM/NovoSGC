@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import ENUM as PG_ENUM
 
 
 # revision identifiers, used by Alembic.
@@ -45,7 +46,7 @@ def upgrade() -> None:
         sa.Column('valor_medido_acumulado', sa.DECIMAL(precision=15, scale=2), nullable=False, server_default='0'),
         sa.Column(
             'status',
-            sa.Enum(
+            PG_ENUM(
                 'PENDENTE', 'AGUARDANDO_MEDICAO', 'INCLUIDO_EM_MEDICAO', 'CANCELADO',
                 name='status_prateleira',
                 create_type=False
