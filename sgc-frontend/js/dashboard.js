@@ -180,8 +180,6 @@ function renderizarGrafico(dados) {
 function atualizarPainelRitmo(resumo, desempenho, diasMedidos) {
   if (!resumo || !desempenho) return;
 
-  console.log('atualizarPainelRitmo chamada', resumo, desempenho, diasMedidos);
-
   // Dados básicos
   const percExecutado = resumo.percentual_fisico || 0;
   const percExecutar = 100 - percExecutado;
@@ -315,49 +313,12 @@ function preencherSeletor(contratos) {
 // ---------- Resumo Global (Todos os Projetos) ----------
 async function carregarResumoGlobal() {
     try {
-        const totalContratos = contratos.length;
-        const valorTotalContratado = contratos.reduce((acc, c) => acc + (parseFloat(c.valor_total) || 0), 0);
-        const valorExecutadoTotal = contratos.reduce((acc, c) => acc + (parseFloat(c.valor_executado) || 0), 0);
-        const valorFaturadoTotal = contratos.reduce((acc, c) => acc + (parseFloat(c.valor_faturado) || 0), 0);
-        const valorRecebidoTotal = contratos.reduce((acc, c) => acc + (parseFloat(c.valor_recebido) || 0), 0);
-        const percFisico = valorTotalContratado ? (valorExecutadoTotal / valorTotalContratado * 100) : 0;
-        const percFinanceiro = valorTotalContratado ? (valorRecebidoTotal / valorTotalContratado * 100) : 0;
+        // Usa o endpoint consolidado do backend — inclui métricas da prateleira e alertas reais
+        const response = await api.get('/dashboard/resumo');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
 
-        const contratosRecentes = [...contratos]
-            .sort((a, b) => b.id - a.id)
-            .slice(0, 5)
-            .map(c => ({
-                numero_contrato: c.numero_contrato,
-                cliente_nome: c.cliente_nome,
-                percentual_fisico: parseFloat(c.percentual_fisico) || 0,
-                status_desempenho: c.status_desempenho || 'SEM_PRAZO'
-            }));
-
-        const alertasRecentes = [
-            {
-                tipo: 'warning',
-                titulo: 'Desequilíbrio Financeiro',
-                mensagem: 'CT-2024-003 com variação de 8.5%',
-                data: 'Há 2 horas'
-            },
-            {
-                tipo: 'danger',
-                titulo: 'Prazo Crítico',
-                mensagem: 'CT-2024-004 com atraso de 15 dias',
-                data: 'Há 30 minutos'
-            }
-        ];
-
-        atualizarKPIsGlobais({
-            valor_total_contratado: valorTotalContratado,
-            valor_executado_total: valorExecutadoTotal,
-            valor_faturado_total: valorFaturadoTotal,
-            valor_recebido_total: valorRecebidoTotal,
-            percentual_global_fisico: percFisico,
-            percentual_global_recebido: percFinanceiro,
-            contratos_recentes: contratosRecentes,
-            alertas_recentes: alertasRecentes
-        });
+        atualizarKPIsGlobais(data);
 
         // Carrega o gráfico global
         const meses = document.getElementById('periodo-grafico')?.value || 12;
@@ -378,7 +339,7 @@ function atualizarKPIsGlobais(data) {
         '#kpi-faturado .kpi-value': data.valor_faturado_total,
         '#kpi-recebido .kpi-value': data.valor_recebido_total,
         '#kpi-perc-fisico .kpi-value': data.percentual_global_fisico,
-        '#kpi-perc-financeiro .kpi-value': data.percentual_global_recebido
+        '#kpi-perc-financeiro .kpi-value': data.percentual_global_faturado
     };
     for (const [selector, valor] of Object.entries(kpis)) {
         const el = document.querySelector(selector);
@@ -488,8 +449,7 @@ async function carregarDadosContrato(contratoId) {
         const resumoResp = await api.get(`/contratos/${contratoId}/resumo-financeiro`);
         if (!resumoResp.ok) throw new Error('Erro ao carregar resumo');
         const resumo = await resumoResp.json();
-        console.log('Resumo do contrato:', resumo);
-        atualizarKPIsContrato(resumo);
+            atualizarKPIsContrato(resumo);
 
         // Desempenho básico (pode ser complementado pelos boletins)
         const desempenho = {
@@ -505,8 +465,7 @@ async function carregarDadosContrato(contratoId) {
         try {
             const bmsResp = await api.get(`/contratos/${contratoId}/boletins`);
             const bms = bmsResp.ok ? await bmsResp.json() : [];
-            console.log('Boletins carregados:', bms);
-            preencherTabelaBoletins(bms);
+                preencherTabelaBoletins(bms);
 
             // Calcula a soma dos períodos (dias) de boletins aprovados/faturados
             diasMedidos = bms
@@ -517,13 +476,11 @@ async function carregarDadosContrato(contratoId) {
                         const fim = new Date(bm.periodo_fim);
                         // Adiciona 1 para incluir o dia final
                         const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24)) + 1;
-                        console.log(`BM período ${bm.periodo_inicio} a ${bm.periodo_fim} => ${diff} dias`);
-                        return total + diff;
+                                    return total + diff;
                     }
                     return total;
                 }, 0);
-            console.log('Total de dias medidos (soma dos períodos):', diasMedidos);
-        } catch (e) {
+            } catch (e) {
             console.warn('Erro ao carregar boletins', e);
             preencherTabelaBoletins([]);
         }
@@ -607,8 +564,6 @@ function atualizarKPIsContrato(resumo) {
     }
 
     // KPIs secundários
-    console.log('Atualizando KPIs do contrato:', resumo);
-    console.log('Elemento risco:', document.querySelector('#kpi-risco .kpi-value'));
     const percTempoEl = document.querySelector('#kpi-perc-tempo .kpi-value');
     if (percTempoEl) {
         if (resumo.percentual_tempo !== null && resumo.percentual_tempo !== undefined) {
@@ -628,10 +583,6 @@ function atualizarKPIsContrato(resumo) {
     }
     const statusEl = document.querySelector('#kpi-status .kpi-value');
     if (statusEl) statusEl.innerText = getTextoStatus(resumo.status_desempenho);
-    
-    console.log('Atualizando KPIs do contrato:', resumo);
-    console.log('Elemento risco:', document.querySelector('#kpi-risco .kpi-value'));
-    console.log('Elemento status:', document.querySelector('#kpi-status .kpi-value'));
 }
 
 // Função auxiliar para formatar o período
@@ -641,7 +592,6 @@ function formatarPeriodo(inicio, fim) {
 }
 
 function preencherTabelaNFs(nfs) {
-    console.log('Preenchendo tabela de NFs:', nfs);
     const tbody = document.querySelector('#tabela-nfs tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -663,7 +613,6 @@ function preencherTabelaNFs(nfs) {
 }
 
 function preencherTabelaPagamentos(pagamentos, nfs) {
-    console.log('Preenchendo tabela de pagamentos:', pagamentos);
     const tbody = document.querySelector('#tabela-pagamentos tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -720,12 +669,10 @@ function formatarMoeda(valor) {
 }
 
 function formatarPercentual(valor) {
-    if (valor === null || valor === undefined) return '0%';
-    let num = parseFloat(valor);
-    // Se for maior que 1, assume que veio como percentual (ex: 60) e converte para decimal
-    if (num > 1) {
-        num = num / 100;
-    }
+    if (valor === null || valor === undefined) return '—';
+    // Backend sempre envia percentuais como 0-100 (ex: 60.5 = 60,5%)
+    // toLocaleString com style:'percent' espera fração (0.605), então divide por 100
+    const num = parseFloat(valor) / 100;
     return num.toLocaleString('pt-BR', {
         style: 'percent',
         minimumFractionDigits: 1,
@@ -803,25 +750,6 @@ function mostrarErro(mensagem) {
     alert(mensagem);
 }
 
-// Aditivos
-async function carregarAditivos(contratoId) {
-    console.log('Carregando aditivos para contrato:', contratoId);
-    try {
-        const response = await api.get(`/contratos/${contratoId}/aditivos`);
-        console.log('Resposta de aditivos:', response);
-        if (response.ok) {
-            const aditivos = await response.json();
-            console.log('Dados de aditivos recebidos:', aditivos);
-            preencherTabelaAditivos(aditivos);
-        } else {
-            console.warn('Erro ao carregar aditivos. Status:', response.status);
-            preencherTabelaAditivos([]);
-        }
-    } catch (error) {
-        console.error('Erro ao carregar aditivos:', error);
-        preencherTabelaAditivos([]);
-    }
-}
 
 function preencherTabelaAditivos(aditivos) {
     const tbody = document.querySelector('#tabela-aditivos tbody');
@@ -831,8 +759,6 @@ function preencherTabelaAditivos(aditivos) {
         tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum aditivo encontrado.</td></tr>';
         return;
     }
-    
-    console.log('Aditivos recebidos:', aditivos);
     
     aditivos.forEach(ad => {
         const tr = document.createElement('tr');
@@ -848,7 +774,6 @@ function preencherTabelaAditivos(aditivos) {
 }
 
 function preencherTabelaBoletins(bms) {
-    console.log('Preenchendo boletins:', bms);
     const tbody = document.querySelector('#tabela-boletins tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -875,7 +800,6 @@ async function carregarProjecao(contratoId) {
     const response = await api.get(url);
     if (!response.ok) throw new Error('Erro ao carregar projeção');
     const dados = await response.json();
-    console.log('Dados da projeção:', dados);
     atualizarCardProjecao(dados);
   } catch (error) {
     console.error('Erro na projeção:', error);

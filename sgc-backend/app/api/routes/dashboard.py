@@ -5,9 +5,17 @@ from app.api import deps
 from app.models.contrato import Contrato
 from app.services import financeiro_service
 from app.services import projecao_service
+from app.services.alerta_service import AlertaService
 from app.schemas.projecao import ProjecaoFinanceiraResponse
 from app.models.usuario import Usuario
 from app.repositories.prateleira_repository import PrateleiraRepository
+
+_SEVERIDADE_TO_TIPO = {
+    "critica": "danger",
+    "alta":    "danger",
+    "media":   "warning",
+    "baixa":   "info",
+}
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -56,28 +64,33 @@ def get_dashboard_resumo(
     contratos_recentes.sort(key=lambda x: x["id"], reverse=True)
     contratos_recentes = contratos_recentes[:5]
 
-    # Alertas fixos (pode substituir por consulta real futuramente)
-    alertas_recentes = [
-        {
-            "tipo": "warning",
-            "titulo": "Desequilíbrio Financeiro",
-            "mensagem": "CT-2024-003 com variação de 8.5%",
-            "data": "Há 2 horas"
-        },
-        {
-            "tipo": "danger",
-            "titulo": "Prazo Crítico",
-            "mensagem": "CT-2024-004 com atraso de 15 dias",
-            "data": "Há 30 minutos"
-        }
-    ]
+    # Alertas reais gerados pelo AlertaService (todos os contratos, top 5 por severidade)
+    try:
+        alerta_svc = AlertaService(db)
+        todos_alertas = alerta_svc.gerar_alertas()
+        _ordem = {"critica": 0, "alta": 1, "media": 2, "baixa": 3}
+        todos_alertas.sort(key=lambda a: _ordem.get(a.get("severidade", "baixa"), 4))
+        alertas_recentes = [
+            {
+                "tipo":     _SEVERIDADE_TO_TIPO.get(a.get("severidade", "media"), "warning"),
+                "titulo":   a["titulo"],
+                "mensagem": a["mensagem"],
+                "data":     "Agora",
+            }
+            for a in todos_alertas[:5]
+        ]
+    except Exception as e:
+        print(f"Erro ao gerar alertas para dashboard: {e}")
+        alertas_recentes = []
 
     # Cálculo dos percentuais globais
     percentual_fisico = 0.0
+    percentual_faturado = 0.0
     percentual_recebido = 0.0
     if valor_total_contratado > 0:
-        percentual_fisico = (valor_executado_total / valor_total_contratado) * 100
-        percentual_recebido = (valor_recebido_total / valor_total_contratado) * 100
+        percentual_fisico   = (valor_executado_total / valor_total_contratado) * 100
+        percentual_faturado = (valor_faturado_total  / valor_total_contratado) * 100
+        percentual_recebido = (valor_recebido_total  / valor_total_contratado) * 100
 
     # ── Métricas da Prateleira ───────────────────────────────────
     try:
@@ -99,6 +112,7 @@ def get_dashboard_resumo(
         "valor_faturado_total": round(valor_faturado_total, 2),
         "valor_recebido_total": round(valor_recebido_total, 2),
         "percentual_global_fisico": round(percentual_fisico, 2),
+        "percentual_global_faturado": round(percentual_faturado, 2),
         "percentual_global_recebido": round(percentual_recebido, 2),
         "contratos_recentes": contratos_recentes,
         "alertas_recentes": alertas_recentes,

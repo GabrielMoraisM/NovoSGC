@@ -8,6 +8,7 @@ from app.models.boletim_medicao import BoletimMedicao
 from app.models.faturamento import Faturamento
 from app.models.pagamento import Pagamento
 from app.models.contrato import Contrato
+from app.models.aditivo import Aditivo
 from app.core.exceptions import BusinessError
 
 def calcular_resumo_contrato(db: Session, contrato_id: int) -> Dict[str, Any]:
@@ -17,10 +18,10 @@ def calcular_resumo_contrato(db: Session, contrato_id: int) -> Dict[str, Any]:
 
     valor_total = float(contrato.valor_total) if contrato.valor_total else 0.0
 
-    # Valor executado (apenas boletins APROVADOS) - ALTERADO AQUI
+    # Valor executado (boletins APROVADOS e FATURADOS — ambos representam execução confirmada)
     valor_executado = db.query(func.sum(BoletimMedicao.valor_aprovado)).filter(
         BoletimMedicao.contrato_id == contrato_id,
-        BoletimMedicao.status == "APROVADO"  # Antes: in_(["APROVADO", "FATURADO"])
+        BoletimMedicao.status.in_(["APROVADO", "FATURADO"])
     ).scalar() or 0.0
     valor_executado = float(valor_executado)
 
@@ -86,7 +87,13 @@ def calcular_status_desempenho(db: Session, contrato_id: int) -> Dict[str, Any]:
             "dias_totais": None,
         }
 
-    dias_totais = (data_fim - data_inicio).days
+    # Soma os dias de aditivos de prazo (tipo PRAZO ou AMBOS)
+    dias_aditivos = db.query(func.sum(Aditivo.dias_acrescimo)).filter(
+        Aditivo.contrato_id == contrato_id,
+        Aditivo.tipo.in_(["PRAZO", "AMBOS"])
+    ).scalar() or 0
+
+    dias_totais = (data_fim - data_inicio).days + dias_aditivos
     dias_decorridos = (hoje - data_inicio).days
 
     if dias_totais <= 0:
