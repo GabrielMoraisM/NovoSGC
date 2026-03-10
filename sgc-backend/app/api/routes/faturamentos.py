@@ -1,10 +1,12 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.api import deps
 from app.schemas.faturamento import FaturamentoCreate, FaturamentoInDB, FaturamentoUpdate
 from app.services.faturamento_service import FaturamentoService
 from app.models.usuario import Usuario
+from app.models.boletim_medicao import BoletimMedicao
+from app.models.contrato_imposto import ContratoImposto
 
 router = APIRouter()
 
@@ -14,7 +16,26 @@ def create_faturamento(
     db: Session = Depends(deps.get_db),
     current_user: Usuario = Depends(deps.get_current_active_user)
 ):
-    print("🔵 faturamento_in recebido:", faturamento_in)
+    # ── Pre-check: impostos do contrato devem estar configurados ──────────
+    bm = db.get(BoletimMedicao, faturamento_in.bm_id)
+    if not bm:
+        raise HTTPException(status_code=404, detail="Boletim de medição não encontrado.")
+
+    qtd_impostos = db.query(ContratoImposto).filter(
+        ContratoImposto.contrato_id == bm.contrato_id
+    ).count()
+
+    if qtd_impostos == 0:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": "IMPOSTOS_NAO_CONFIGURADOS",
+                "contrato_id": bm.contrato_id,
+                "message": "Configure os impostos do contrato antes de emitir a primeira NF.",
+            },
+        )
+    # ─────────────────────────────────────────────────────────────────────
+
     service = FaturamentoService(db)
     return service.create_faturamento(faturamento_in)
 

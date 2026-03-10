@@ -6,7 +6,9 @@ import {
   getFaturamentos,
   getPagamentos,
   createFaturamento,
-  createPagamento
+  createPagamento,
+  getImpostosContrato,
+  setImpostosContrato
 } from './api.js';
 
 // ===== Estado global =====
@@ -17,6 +19,10 @@ let faturas = [];
 let pagamentos = [];
 
 let contratoSelecionado = null; // ID do contrato selecionado (null = todos)
+
+// ── Estado da criação de NF ──────────────────────────────────────────
+let impostosContratoAtual = []; // impostos do contrato da NF em edição
+let contratoIdNFAtual = null;   // contrato_id da NF em edição
 
 // Paginação
 let invoicesPage = 1;
@@ -441,14 +447,17 @@ function initTabs() {
 
 // ===== Modais =====
 async function abrirModalNovaNF() {
+  // Resetar estado de impostos
+  impostosContratoAtual = [];
+  contratoIdNFAtual = null;
+  const taxPreview = document.getElementById('invoice-tax-preview');
+  if (taxPreview) taxPreview.style.display = 'none';
+
   const selectBM = document.getElementById('invoice-bm');
   selectBM.innerHTML = '<option value="">Selecione...</option>';
 
   const boletinsFiltrados = contratoSelecionado
-    ? boletinsAprovados.filter(b => {
-        const contrato = contratos.find(c => c.id === b.contrato_id);
-        return contrato && contrato.id === contratoSelecionado;
-      })
+    ? boletinsAprovados.filter(b => b.contrato_id === contratoSelecionado)
     : boletinsAprovados;
 
   if (boletinsFiltrados.length === 0) {
@@ -460,7 +469,7 @@ async function abrirModalNovaNF() {
     const opt = document.createElement('option');
     opt.value = b.id;
     const contrato = contratos.find(c => c.id === b.contrato_id);
-    opt.textContent = `BM-${b.numero_sequencial} - ${contrato?.numero_contrato || 'Contrato'} - R$ ${b.valor_aprovado}`;
+    opt.textContent = `BM-${b.numero_sequencial} - ${contrato?.numero_contrato || 'Contrato'} - ${formatarMoeda(b.valor_aprovado)}`;
     selectBM.appendChild(opt);
   });
 
@@ -474,7 +483,216 @@ async function abrirModalNovaNF() {
     selectEmissora.appendChild(opt);
   });
 
+  // Listener: ao selecionar BM → carrega impostos e mostra preview
+  selectBM.onchange = async function () {
+    const bmId = parseInt(this.value);
+    if (!bmId) {
+      impostosContratoAtual = [];
+      contratoIdNFAtual = null;
+      if (taxPreview) taxPreview.style.display = 'none';
+      return;
+    }
+    await onBmSelecionado(bmId);
+  };
+
+  // Listener: ao digitar valor bruto → atualiza preview de impostos
+  const inputValorBruto = document.getElementById('invoice-valor-bruto');
+  if (inputValorBruto) {
+    inputValorBruto.oninput = function () {
+      const valor = limparMascaraMoeda(this.value);
+      renderizarPreviewImpostos(valor);
+    };
+  }
+
   document.getElementById('new-invoice-modal').classList.add('active');
+}
+
+// ── Carrega impostos quando o BM é selecionado ───────────────────────
+async function onBmSelecionado(bmId) {
+  const bm = boletinsAprovados.find(b => b.id === bmId);
+  if (!bm) return;
+
+  contratoIdNFAtual = bm.contrato_id;
+  const contrato = contratos.find(c => c.id === bm.contrato_id);
+
+  try {
+    impostosContratoAtual = await getImpostosContrato(bm.contrato_id);
+  } catch (e) {
+    impostosContratoAtual = [];
+  }
+
+  const valorAtual = limparMascaraMoeda(
+    document.getElementById('invoice-valor-bruto')?.value || '0'
+  );
+  renderizarPreviewImpostos(valorAtual, contrato);
+}
+
+// ── Renderiza seção de impostos no modal de NF ───────────────────────
+function renderizarPreviewImpostos(valorBruto = 0, contrato = null) {
+  const taxPreview = document.getElementById('invoice-tax-preview');
+  if (!taxPreview) return;
+
+  if (!contratoIdNFAtual) {
+    taxPreview.style.display = 'none';
+    return;
+  }
+
+  taxPreview.style.display = 'block';
+
+  if (impostosContratoAtual.length === 0) {
+    // Impostos não configurados → aviso com botão
+    taxPreview.innerHTML = `
+      <div style="padding:0.75rem 1rem; background:rgba(239,68,68,0.08); border-left:3px solid var(--danger);
+                  border-radius:var(--radius); display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+        <span style="font-size:0.85rem;">
+          ⚠ <strong>Impostos não configurados</strong> para este contrato.
+          Configure antes de emitir a NF.
+        </span>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-abrir-impostos" style="white-space:nowrap;">
+          Configurar Impostos
+        </button>
+      </div>`;
+
+    document.getElementById('btn-abrir-impostos')?.addEventListener('click', () => {
+      abrirModalImpostos(contratoIdNFAtual, contrato);
+    });
+    return;
+  }
+
+  // Impostos configurados → preview calculado
+  const linhas = impostosContratoAtual.map(imp => {
+    const valor = valorBruto * (parseFloat(imp.aliquota) / 100);
+    return `
+      <tr>
+        <td>${imp.tipo_imposto}</td>
+        <td>${parseFloat(imp.aliquota).toFixed(2)}%</td>
+        <td>${formatarMoeda(valor)}</td>
+      </tr>`;
+  }).join('');
+
+  const totalRetido = impostosContratoAtual.reduce((acc, imp) => {
+    return acc + valorBruto * (parseFloat(imp.aliquota) / 100);
+  }, 0);
+  const valorLiquido = valorBruto - totalRetido;
+
+  taxPreview.innerHTML = `
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:0.875rem; font-size:0.85rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span class="font-semibold" style="font-size:0.8rem; text-transform:uppercase; color:var(--text-muted);">
+          Preview de Impostos
+        </span>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-editar-impostos" style="padding:2px 8px; font-size:0.75rem;">
+          Editar
+        </button>
+      </div>
+      <table style="width:100%;">
+        <thead>
+          <tr style="color:var(--text-muted); font-size:0.78rem;">
+            <th style="text-align:left; padding-bottom:4px;">Imposto</th>
+            <th style="text-align:center; padding-bottom:4px;">Alíquota</th>
+            <th style="text-align:right; padding-bottom:4px;">Retido</th>
+          </tr>
+        </thead>
+        <tbody>${linhas}</tbody>
+        <tfoot>
+          <tr style="border-top:1px solid var(--border); font-size:0.85rem;">
+            <td colspan="2" style="padding-top:6px;"><strong>Total Retido</strong></td>
+            <td style="text-align:right; padding-top:6px;"><strong>${formatarMoeda(totalRetido)}</strong></td>
+          </tr>
+          <tr>
+            <td colspan="2"><strong>Valor Líquido</strong></td>
+            <td style="text-align:right;"><strong style="color:var(--success);">${formatarMoeda(valorLiquido)}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+
+  document.getElementById('btn-editar-impostos')?.addEventListener('click', () => {
+    const contrato = contratos.find(c => c.id === contratoIdNFAtual);
+    abrirModalImpostos(contratoIdNFAtual, contrato);
+  });
+}
+
+// ── Modal A: configurar impostos do contrato ─────────────────────────
+function abrirModalImpostos(contratoId, contrato) {
+  const modal = document.getElementById('configure-taxes-modal');
+  if (!modal) return;
+
+  // Definir subtitle
+  const subtitle = document.getElementById('configure-taxes-subtitle');
+  if (subtitle && contrato) {
+    subtitle.textContent = `Contrato: ${contrato.numero_contrato} — ${contrato.nome || ''}`;
+  }
+
+  // Guardar o contrato_id no campo hidden
+  document.getElementById('configure-taxes-contrato-id').value = contratoId;
+
+  // Pré-preencher com os valores existentes (se já configurado)
+  const tipos = ['iss', 'inss', 'irrf', 'csll', 'pis', 'cofins'];
+  tipos.forEach(tipo => {
+    const existente = impostosContratoAtual.find(
+      i => i.tipo_imposto.toLowerCase() === tipo
+    );
+    const inputAliq = modal.querySelector(`[name="${tipo}_aliquota"]`);
+    const selectBase = modal.querySelector(`[name="${tipo}_base"]`);
+    if (inputAliq) inputAliq.value = existente ? parseFloat(existente.aliquota).toFixed(2) : '0';
+    if (selectBase) selectBase.value = existente ? existente.base_calculo : 'BRUTO';
+  });
+
+  modal.classList.add('active');
+}
+
+async function salvarImpostos(event) {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+
+  const contratoId = parseInt(formData.get('contrato_id'));
+  if (!contratoId) {
+    mostrarToast('Erro interno: contrato não identificado.', 'error');
+    return;
+  }
+
+  const tipos = [
+    { key: 'iss',    nome: 'ISS' },
+    { key: 'inss',   nome: 'INSS' },
+    { key: 'irrf',   nome: 'IRRF' },
+    { key: 'csll',   nome: 'CSLL' },
+    { key: 'pis',    nome: 'PIS' },
+    { key: 'cofins', nome: 'COFINS' },
+  ];
+
+  // Monta lista (inclui apenas os que têm alíquota > 0, ou todos — decisão de incluir zeros também)
+  const impostos = tipos.map(t => ({
+    tipo_imposto: t.nome,
+    aliquota: parseFloat(formData.get(`${t.key}_aliquota`)) || 0,
+    base_calculo: formData.get(`${t.key}_base`) || 'BRUTO',
+  }));
+
+  // Filtra impostos com alíquota > 0 (impostos que não se aplicam ficam fora)
+  const impostosAtivos = impostos.filter(i => i.aliquota > 0);
+
+  if (impostosAtivos.length === 0) {
+    mostrarToast('Informe pelo menos um imposto com alíquota maior que 0.', 'error');
+    return;
+  }
+
+  try {
+    impostosContratoAtual = await setImpostosContrato(contratoId, impostosAtivos);
+    mostrarToast('Impostos configurados com sucesso!');
+
+    // Fechar Modal A
+    document.getElementById('configure-taxes-modal').classList.remove('active');
+
+    // Atualizar preview no modal de NF
+    const valorAtual = limparMascaraMoeda(
+      document.getElementById('invoice-valor-bruto')?.value || '0'
+    );
+    const contrato = contratos.find(c => c.id === contratoId);
+    renderizarPreviewImpostos(valorAtual, contrato);
+  } catch (error) {
+    mostrarToast('Erro ao salvar impostos: ' + error.message, 'error');
+  }
 }
 
 async function salvarNovaNF(event) {
@@ -500,8 +718,15 @@ async function salvarNovaNF(event) {
     return;
   }
 
-  // Obter valor bruto e tratar vazio
-  const valorBrutoStr = formData.get('valorBruto');
+  // ── Verificar se impostos estão configurados ─────────────────────
+  if (impostosContratoAtual.length === 0) {
+    mostrarToast('Configure os impostos do contrato antes de emitir a NF.', 'error');
+    abrirModalImpostos(boletim.contrato_id, contrato);
+    return;
+  }
+
+  // Obter valor bruto — campo tem name="valor_bruto"
+  const valorBrutoStr = formData.get('valor_bruto');
   if (!valorBrutoStr || valorBrutoStr.trim() === '') {
     mostrarToast('Informe o valor bruto da NF.', 'error');
     return;
@@ -533,6 +758,9 @@ async function salvarNovaNF(event) {
     mostrarToast('NF criada com sucesso!');
     document.getElementById('new-invoice-modal').classList.remove('active');
     form.reset();
+    // Resetar estado de impostos
+    impostosContratoAtual = [];
+    contratoIdNFAtual = null;
     await carregarFaturamentos();
     await carregarPagamentos();
   } catch (error) {
@@ -812,6 +1040,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('new-invoice-form')?.addEventListener('submit', salvarNovaNF);
   document.getElementById('new-payment-form')?.addEventListener('submit', salvarNovoPagamento);
+
+  // Modal A: configurar impostos
+  document.getElementById('configure-taxes-form')?.addEventListener('submit', salvarImpostos);
+  // Botões de cancelar do Modal A
+  const fecharModalA = () => {
+    document.getElementById('configure-taxes-modal')?.classList.remove('active');
+  };
+  document.getElementById('configure-taxes-cancel-btn')?.addEventListener('click', fecharModalA);
+  document.getElementById('configure-taxes-cancel-btn2')?.addEventListener('click', fecharModalA);
   document.querySelectorAll('.money-mask').forEach(campo => {
   campo.addEventListener('input', aplicarMascaraMoeda);
   // Opcional: bloquear teclas não numéricas

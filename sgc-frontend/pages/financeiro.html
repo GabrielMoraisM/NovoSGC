@@ -587,9 +587,12 @@
           
           <div class="form-group">
             <label class="form-label">Valor Bruto (R$)</label>
-            <input type="text" class="form-input money-mask" name="valor_bruto" placeholder="0,00" required>
+            <input type="text" class="form-input money-mask" id="invoice-valor-bruto" name="valor_bruto" placeholder="0,00" required>
           </div>
-          
+
+          <!-- Seção de impostos: aparece após selecionar o BM -->
+          <div id="invoice-tax-preview" style="display:none; margin-top:0.25rem; margin-bottom:0.25rem;"></div>
+
           <div class="form-group">
             <label class="form-label">Empresa Emissora</label>
             <select class="form-input form-select" name="empresaEmissoraId" id="invoice-emissora" required>
@@ -820,11 +823,101 @@
     </div>
   </div>
   
+  <!-- ================================================================
+       Modal A — Configurar Impostos do Contrato (1ª NF)
+       z-index maior para ficar sobre o modal de NF
+  ================================================================ -->
+  <div id="configure-taxes-modal" class="modal-overlay" style="z-index: 1100;">
+    <div class="modal" style="max-width: 580px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Configurar Impostos do Contrato</h3>
+          <p class="text-sm text-muted" id="configure-taxes-subtitle">
+            Preencha as alíquotas para cada imposto que incide sobre as NFs deste contrato.
+          </p>
+        </div>
+        <button class="modal-close" id="configure-taxes-cancel-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Aviso -->
+        <div style="padding:0.75rem 1rem; background:rgba(245,158,11,0.1); border-left:3px solid var(--warning);
+                    border-radius:var(--radius); margin-bottom:1.25rem; font-size:0.875rem;">
+          <strong>⚠ Atenção:</strong> Estes impostos são <strong>fixos para todo o contrato</strong>
+          e serão aplicados automaticamente em todas as notas fiscais futuras.
+          Deixe o valor em <strong>0</strong> para impostos que não se aplicam.
+        </div>
+
+        <form id="configure-taxes-form">
+          <!-- Campo hidden para guardar o contrato_id -->
+          <input type="hidden" id="configure-taxes-contrato-id" name="contrato_id">
+
+          <div class="table-container" style="border:none; padding:0;">
+            <table class="table" style="font-size:0.875rem;">
+              <thead>
+                <tr>
+                  <th style="width:40%">Imposto</th>
+                  <th style="width:30%">Alíquota (%)</th>
+                  <th style="width:30%">Base de Cálculo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>ISS</strong><br><span class="text-xs text-muted">Imposto Sobre Serviços</span></td>
+                  <td><input type="number" class="form-input" name="iss_aliquota" step="0.01" min="0" max="100" placeholder="0.00" value="0"></td>
+                  <td><select class="form-input form-select" name="iss_base"><option value="BRUTO">Bruto</option><option value="LIQUIDO">Líquido</option></select></td>
+                </tr>
+                <tr>
+                  <td><strong>INSS</strong><br><span class="text-xs text-muted">Previdência Social</span></td>
+                  <td><input type="number" class="form-input" name="inss_aliquota" step="0.01" min="0" max="100" placeholder="0.00" value="0"></td>
+                  <td><select class="form-input form-select" name="inss_base"><option value="BRUTO">Bruto</option><option value="LIQUIDO">Líquido</option></select></td>
+                </tr>
+                <tr>
+                  <td><strong>IRRF</strong><br><span class="text-xs text-muted">Imposto de Renda Retido</span></td>
+                  <td><input type="number" class="form-input" name="irrf_aliquota" step="0.01" min="0" max="100" placeholder="0.00" value="0"></td>
+                  <td><select class="form-input form-select" name="irrf_base"><option value="BRUTO">Bruto</option><option value="LIQUIDO">Líquido</option></select></td>
+                </tr>
+                <tr>
+                  <td><strong>CSLL</strong><br><span class="text-xs text-muted">Contribuição Social s/ Lucro</span></td>
+                  <td><input type="number" class="form-input" name="csll_aliquota" step="0.01" min="0" max="100" placeholder="0.00" value="0"></td>
+                  <td><select class="form-input form-select" name="csll_base"><option value="BRUTO">Bruto</option><option value="LIQUIDO">Líquido</option></select></td>
+                </tr>
+                <tr>
+                  <td><strong>PIS</strong><br><span class="text-xs text-muted">Prog. Integração Social</span></td>
+                  <td><input type="number" class="form-input" name="pis_aliquota" step="0.01" min="0" max="100" placeholder="0.00" value="0"></td>
+                  <td><select class="form-input form-select" name="pis_base"><option value="BRUTO">Bruto</option><option value="LIQUIDO">Líquido</option></select></td>
+                </tr>
+                <tr>
+                  <td><strong>COFINS</strong><br><span class="text-xs text-muted">Financiamento da Seguridade</span></td>
+                  <td><input type="number" class="form-input" name="cofins_aliquota" step="0.01" min="0" max="100" placeholder="0.00" value="0"></td>
+                  <td><select class="form-input form-select" name="cofins_base"><option value="BRUTO">Bruto</option><option value="LIQUIDO">Líquido</option></select></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="configure-taxes-cancel-btn2">Cancelar</button>
+        <button type="submit" form="configure-taxes-form" class="btn btn-primary">
+          Salvar e Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast de feedback (opcional) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <div id="toast" class="toast hidden"></div>
-  
+
   <script src="/sgc-frontend/js/api.js" type="module"></script>
   <script src="/sgc-frontend/js/financeiro.js" type="module"></script>
 </body>

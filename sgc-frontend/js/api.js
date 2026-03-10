@@ -70,7 +70,12 @@ window.api = {
     method: 'PUT',
     body: JSON.stringify(data)
   }),
-  delete: (endpoint) => apiFetch(endpoint, { method: 'DELETE' })
+  delete: (endpoint) => apiFetch(endpoint, { method: 'DELETE' }),
+  getImpostosContrato: (contratoId) => apiFetch(`/contratos/${contratoId}/impostos`, { method: 'GET' }),
+  setImpostosContrato: (contratoId, impostos) => apiFetch(`/contratos/${contratoId}/impostos`, {
+    method: 'PUT',
+    body: JSON.stringify({ impostos })
+  })
 };
 
 // ==================== AUTENTICAÇÃO ====================
@@ -374,6 +379,19 @@ export async function getVinculosPrateleira(boletimId) {
 
 export async function getResumoPrateleira() {
   return apiRequest('/prateleira/resumo');
+}
+
+// ==================== IMPOSTOS DO CONTRATO ====================
+
+export async function getImpostosContrato(contratoId) {
+  return apiRequest(`/contratos/${contratoId}/impostos`);
+}
+
+export async function setImpostosContrato(contratoId, impostos) {
+  return apiRequest(`/contratos/${contratoId}/impostos`, {
+    method: 'PUT',
+    body: JSON.stringify({ impostos })
+  });
 }
 
 // ==================== USUÁRIO ATUAL ====================

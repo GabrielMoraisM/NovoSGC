@@ -70,32 +70,14 @@ def prevent_delete_faturado_bm(mapper, connection, target):
 def obter_aliquotas_contrato(contrato_id: int, session: Session):
     """
     Retorna um dicionário com as alíquotas de impostos configuradas para o contrato.
-    Se houver configuração personalizada em contrato_impostos, usa ela.
-    Caso contrário, usa os percentuais padrão (convertidos para Decimal).
+    Se não houver configuração, retorna dicionário vazio {}.
+    Não há valores padrão — os impostos devem ser configurados explicitamente pelo usuário.
     """
-    # Valores padrão (agora como Decimal)
-    padroes = {
-        'ISS': Decimal('5.0'),
-        'INSS': Decimal('11.0'),
-        'IRRF': Decimal('1.5'),
-        'CSLL': Decimal('1.0'),
-        'PIS': Decimal('0.65'),
-        'COFINS': Decimal('3.0'),
-    }
-
-    # Busca configurações personalizadas para este contrato
     impostos = session.execute(
         select(ContratoImposto).where(ContratoImposto.contrato_id == contrato_id)
     ).scalars().all()
 
-    # personalizados já são Decimal se o campo do modelo for DECIMAL
-    personalizados = {imp.tipo_imposto: imp.aliquota for imp in impostos}
-
-    # Mescla: se existir personalizado, usa; senão, usa padrão
-    resultado = {}
-    for imposto in padroes:
-        resultado[imposto] = personalizados.get(imposto, padroes[imposto])
-    return resultado
+    return {imp.tipo_imposto: imp.aliquota for imp in impostos}
 
 
 # ----------------------------------------------------------------------
@@ -118,13 +100,25 @@ def calculate_nf_liquido(mapper, connection, target):
 
     aliquotas = obter_aliquotas_contrato(bm.contrato_id, session)
 
+    # Se não houver impostos configurados, sem retenções (zeros)
+    zero = Decimal('0')
+    if not aliquotas:
+        target.iss_retido    = zero
+        target.inss_retido   = zero
+        target.irrf_retido   = zero
+        target.csll_retido   = zero
+        target.pis_retido    = zero
+        target.cofins_retido = zero
+        target.valor_liquido_nf = target.valor_bruto_nf
+        return
+
     # Cálculo das retenções (percentual sobre o valor bruto) - tudo Decimal
-    target.iss_retido = target.valor_bruto_nf * (aliquotas['ISS'] / Decimal('100'))
-    target.inss_retido = target.valor_bruto_nf * (aliquotas['INSS'] / Decimal('100'))
-    target.irrf_retido = target.valor_bruto_nf * (aliquotas['IRRF'] / Decimal('100'))
-    target.csll_retido = target.valor_bruto_nf * (aliquotas['CSLL'] / Decimal('100'))
-    target.pis_retido = target.valor_bruto_nf * (aliquotas['PIS'] / Decimal('100'))
-    target.cofins_retido = target.valor_bruto_nf * (aliquotas['COFINS'] / Decimal('100'))
+    target.iss_retido    = target.valor_bruto_nf * (aliquotas.get('ISS',    zero) / Decimal('100'))
+    target.inss_retido   = target.valor_bruto_nf * (aliquotas.get('INSS',   zero) / Decimal('100'))
+    target.irrf_retido   = target.valor_bruto_nf * (aliquotas.get('IRRF',   zero) / Decimal('100'))
+    target.csll_retido   = target.valor_bruto_nf * (aliquotas.get('CSLL',   zero) / Decimal('100'))
+    target.pis_retido    = target.valor_bruto_nf * (aliquotas.get('PIS',    zero) / Decimal('100'))
+    target.cofins_retido = target.valor_bruto_nf * (aliquotas.get('COFINS', zero) / Decimal('100'))
 
     total_retencoes = (
         target.iss_retido

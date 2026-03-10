@@ -13,6 +13,8 @@ from app.schemas.projecao import ProjecaoFinanceiraResponse
 from app.services import projecao_service
 from app.schemas.analise_ritmo import AnaliseRitmoResponse
 from app.services import analise_ritmo_service
+from app.models.contrato_imposto import ContratoImposto
+from app.schemas.contrato_imposto import ContratoImpostoInDB, ContratoImpostosBulkSet
 
 
 
@@ -154,3 +156,58 @@ def get_analise_ritmo(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Erro ao calcular análise de ritmo")
+
+
+# ----------------------------------------------------------------------
+# GET /contratos/{id}/impostos  — lista as alíquotas configuradas
+# ----------------------------------------------------------------------
+@router.get("/{contrato_id}/impostos", response_model=List[ContratoImpostoInDB])
+def listar_impostos_contrato(
+    contrato_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: Usuario = Depends(deps.get_current_active_user)
+):
+    """Retorna os impostos configurados para um contrato (lista vazia = não configurado)."""
+    return db.query(ContratoImposto).filter(
+        ContratoImposto.contrato_id == contrato_id
+    ).all()
+
+
+# ----------------------------------------------------------------------
+# PUT /contratos/{id}/impostos  — substitui todos os impostos de uma vez
+# ----------------------------------------------------------------------
+@router.put("/{contrato_id}/impostos", response_model=List[ContratoImpostoInDB])
+def configurar_impostos_contrato(
+    contrato_id: int,
+    body: ContratoImpostosBulkSet,
+    db: Session = Depends(deps.get_db),
+    current_user: Usuario = Depends(deps.get_current_active_user)
+):
+    """
+    Configura (substitui) os impostos de um contrato.
+    Apaga todos os registros anteriores e insere os novos fornecidos.
+    """
+    # Verificar se o contrato existe
+    service = ContratoService(db)
+    service.get_contrato(contrato_id)  # lança HTTPException 404 se não encontrar
+
+    # Remover impostos existentes
+    db.query(ContratoImposto).filter(
+        ContratoImposto.contrato_id == contrato_id
+    ).delete(synchronize_session='fetch')
+
+    # Inserir novos
+    novos = [
+        ContratoImposto(
+            contrato_id=contrato_id,
+            tipo_imposto=imp.tipo_imposto,
+            aliquota=imp.aliquota,
+            base_calculo=imp.base_calculo,
+        )
+        for imp in body.impostos
+    ]
+    db.add_all(novos)
+    db.commit()
+    for n in novos:
+        db.refresh(n)
+    return novos
