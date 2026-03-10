@@ -8,7 +8,6 @@ from app.models.boletim_medicao import BoletimMedicao
 from app.models.faturamento import Faturamento
 from app.models.pagamento import Pagamento
 from app.models.contrato import Contrato
-from app.models.aditivo import Aditivo
 from app.core.exceptions import BusinessError
 
 def calcular_resumo_contrato(db: Session, contrato_id: int) -> Dict[str, Any]:
@@ -87,13 +86,9 @@ def calcular_status_desempenho(db: Session, contrato_id: int) -> Dict[str, Any]:
             "dias_totais": None,
         }
 
-    # Soma os dias de aditivos de prazo (tipo PRAZO ou AMBOS)
-    dias_aditivos = db.query(func.sum(Aditivo.dias_acrescimo)).filter(
-        Aditivo.contrato_id == contrato_id,
-        Aditivo.tipo.in_(["PRAZO", "AMBOS"])
-    ).scalar() or 0
-
-    dias_totais = (data_fim - data_inicio).days + dias_aditivos
+    # data_fim_prevista já é atualizada automaticamente pelo event listener (events.py)
+    # toda vez que um aditivo é inserido/editado/excluído — não é preciso somar aditivos aqui.
+    dias_totais = (data_fim - data_inicio).days
     dias_decorridos = (hoje - data_inicio).days
 
     if dias_totais <= 0:
