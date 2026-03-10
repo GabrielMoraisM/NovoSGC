@@ -47,7 +47,8 @@ def upgrade() -> None:
             'status',
             sa.Enum(
                 'PENDENTE', 'AGUARDANDO_MEDICAO', 'INCLUIDO_EM_MEDICAO', 'CANCELADO',
-                name='status_prateleira'
+                name='status_prateleira',
+                create_type=False
             ),
             nullable=False,
             server_default='PENDENTE'
