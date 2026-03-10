@@ -7,6 +7,7 @@ from app.services import financeiro_service
 from app.services import projecao_service
 from app.schemas.projecao import ProjecaoFinanceiraResponse
 from app.models.usuario import Usuario
+from app.repositories.prateleira_repository import PrateleiraRepository
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -78,6 +79,19 @@ def get_dashboard_resumo(
         percentual_fisico = (valor_executado_total / valor_total_contratado) * 100
         percentual_recebido = (valor_recebido_total / valor_total_contratado) * 100
 
+    # ── Métricas da Prateleira ───────────────────────────────────
+    try:
+        prateleira_repo = PrateleiraRepository(db)
+        resumo_prateleira = prateleira_repo.get_resumo_global()
+    except Exception as e:
+        print(f"Erro ao calcular métricas da prateleira: {e}")
+        resumo_prateleira = {
+            "valor_total_em_prateleira": 0.0,
+            "qtd_execucoes_pendentes": 0,
+            "qtd_execucoes_aguardando": 0,
+            "qtd_execucoes_antigas_30dias": 0,
+        }
+
     return {
         "total_contratos": total_contratos,
         "valor_total_contratado": round(valor_total_contratado, 2),
@@ -87,7 +101,11 @@ def get_dashboard_resumo(
         "percentual_global_fisico": round(percentual_fisico, 2),
         "percentual_global_recebido": round(percentual_recebido, 2),
         "contratos_recentes": contratos_recentes,
-        "alertas_recentes": alertas_recentes
+        "alertas_recentes": alertas_recentes,
+        # Prateleira
+        "valor_total_em_prateleira": round(resumo_prateleira["valor_total_em_prateleira"], 2),
+        "qtd_execucoes_prateleira": resumo_prateleira["qtd_execucoes_pendentes"] + resumo_prateleira["qtd_execucoes_aguardando"],
+        "execucoes_sem_medicao_30dias": resumo_prateleira["qtd_execucoes_antigas_30dias"],
     }
 
 

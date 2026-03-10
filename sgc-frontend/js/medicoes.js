@@ -1,10 +1,11 @@
 // js/medicoes.js
-import { getBoletins, createBoletim, updateBoletim, getContratos } from './api.js';
+import { getBoletins, createBoletim, updateBoletim, getContratos, getPrateleirasPendentes, vincularPrateleiraAoBoletim } from './api.js';
 
 // ===== Variáveis globais =====
 let contratos = [];
 let boletins = [];
 let currentBoletimId = null;
+let prateleiraItens = []; // itens carregados para o modal de novo BM
 
 // ===== Funções auxiliares =====
 function formatarMoeda(valor) {
@@ -295,6 +296,125 @@ window.editarBoletim = function(id) {
   alert('Edição não implementada ainda.');
 };
 
+// ===== Carregar itens da prateleira para o modal de novo BM =====
+async function carregarPrateleiraParaMedicao(contratoId) {
+  const section = document.getElementById('prateleira-section');
+  const badge = document.getElementById('prateleira-badge');
+  const info = document.getElementById('prateleira-info');
+  const listEl = document.getElementById('prateleira-items-list');
+  const totalLabel = document.getElementById('prateleira-total-label');
+
+  if (!section) return;
+
+  // Sem contrato selecionado — oculta seção
+  if (!contratoId) {
+    section.style.display = 'none';
+    prateleiraItens = [];
+    return;
+  }
+
+  section.style.display = 'block';
+  listEl.innerHTML = '<p class="text-xs text-muted" style="padding:0.5rem 0;">Carregando...</p>';
+  if (badge) { badge.style.display = 'none'; }
+  totalLabel.textContent = '';
+
+  try {
+    prateleiraItens = await getPrateleirasPendentes(contratoId);
+
+    if (!prateleiraItens || prateleiraItens.length === 0) {
+      listEl.innerHTML = '<p class="text-xs text-muted" style="padding:0.5rem 0;">Nenhuma execução pendente neste contrato.</p>';
+      info.textContent = 'Sem itens disponíveis';
+      badge.style.display = 'none';
+      return;
+    }
+
+    info.textContent = `${prateleiraItens.length} execuç${prateleiraItens.length > 1 ? 'ões' : 'ão'} disponível`;
+    badge.textContent = prateleiraItens.length;
+    badge.style.display = 'inline';
+
+    listEl.innerHTML = prateleiraItens.map(item => {
+      const saldo = (parseFloat(item.valor_estimado) || 0) - (parseFloat(item.valor_medido_acumulado) || 0);
+      const saldoFormatado = saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const saldoNumero = saldo.toFixed(2).replace('.', ',');
+      return `
+        <div class="prateleira-item" style="
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.625rem 0;
+          border-bottom: 1px solid var(--border);
+          font-size: 0.8rem;
+        " data-id="${item.id}" data-saldo="${saldo}">
+          <input type="checkbox" class="prateleira-check"
+            id="prat-check-${item.id}"
+            data-id="${item.id}"
+            onchange="togglePrateleirItem(this)">
+          <label for="prat-check-${item.id}" style="cursor:pointer; margin:0;">
+            <div class="font-semibold" style="line-height:1.3;">${item.descricao_servico}</div>
+            <div class="text-muted" style="font-size:0.72rem;">
+              ${formatarData(item.data_execucao)} &nbsp;•&nbsp; Saldo: ${saldoFormatado}
+            </div>
+          </label>
+          <input type="text"
+            class="form-input money-mask prateleira-valor-input"
+            id="prat-valor-${item.id}"
+            data-id="${item.id}"
+            placeholder="0,00"
+            value="${saldoNumero}"
+            disabled
+            style="width: 110px; text-align:right; font-size:0.8rem; padding: 0.3rem 0.5rem;"
+            oninput="atualizarTotalPrateleira()">
+        </div>
+      `;
+    }).join('');
+
+    // Aplica máscara de moeda nos novos inputs
+    listEl.querySelectorAll('.prateleira-valor-input').forEach(inp => {
+      inp.addEventListener('input', aplicarMascaraMoeda);
+    });
+
+  } catch (err) {
+    console.error('Erro ao carregar prateleira:', err);
+    listEl.innerHTML = '<p class="text-xs" style="color:var(--danger);padding:0.5rem 0;">Erro ao carregar execuções.</p>';
+  }
+}
+
+// ===== Habilitar/desabilitar input de valor ao marcar checkbox =====
+window.togglePrateleirItem = function(checkbox) {
+  const id = checkbox.dataset.id;
+  const input = document.getElementById(`prat-valor-${id}`);
+  if (input) {
+    input.disabled = !checkbox.checked;
+    if (checkbox.checked) {
+      input.focus();
+      input.select();
+    }
+  }
+  atualizarTotalPrateleira();
+};
+
+// ===== Atualizar total exibido nos itens selecionados da prateleira =====
+function atualizarTotalPrateleira() {
+  const totalLabel = document.getElementById('prateleira-total-label');
+  if (!totalLabel) return;
+
+  let total = 0;
+  document.querySelectorAll('.prateleira-check:checked').forEach(cb => {
+    const id = cb.dataset.id;
+    const input = document.getElementById(`prat-valor-${id}`);
+    if (input) {
+      total += limparMascaraMoeda(input.value);
+    }
+  });
+
+  if (total > 0) {
+    totalLabel.textContent = `Total da prateleira incluído: ${formatarMoeda(total)}`;
+  } else {
+    totalLabel.textContent = '';
+  }
+}
+
 // ===== Salvar novo boletim =====
 async function salvarNovaMedicao(event) {
   event.preventDefault();
@@ -318,10 +438,35 @@ async function salvarNovaMedicao(event) {
     // observacoes removido por enquanto
   };
   
+  // Coletar itens da prateleira selecionados
+  const vinculosSelecionados = [];
+  document.querySelectorAll('.prateleira-check:checked').forEach(cb => {
+    const id = parseInt(cb.dataset.id);
+    const input = document.getElementById(`prat-valor-${id}`);
+    const valor = input ? limparMascaraMoeda(input.value) : 0;
+    if (valor > 0) {
+      vinculosSelecionados.push({ prateleira_id: id, valor_incluido: valor });
+    }
+  });
+
   try {
-    await createBoletim(contratoId, dados);
+    const novoBM = await createBoletim(contratoId, dados);
+
+    // Vincular itens da prateleira ao BM recém criado
+    if (vinculosSelecionados.length > 0 && novoBM && novoBM.id) {
+      try {
+        await vincularPrateleiraAoBoletim(novoBM.id, vinculosSelecionados);
+      } catch (errVincular) {
+        console.error('Erro ao vincular prateleira ao BM:', errVincular);
+        alert(`BM criado, mas houve erro ao vincular itens da prateleira: ${errVincular.message}`);
+      }
+    }
+
     alert('Medição criada com sucesso!');
     document.getElementById('new-measurement-modal').classList.remove('active');
+    // Limpar seleções da prateleira para próxima abertura
+    prateleiraItens = [];
+    document.getElementById('prateleira-section').style.display = 'none';
     await carregarBoletins();
   } catch (error) {
     alert('Erro: ' + error.message);
@@ -356,4 +501,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filter-status')?.addEventListener('change', filtrarBoletins);
   document.getElementById('search-measurements')?.addEventListener('input', filtrarBoletins);
   document.getElementById('new-measurement-form')?.addEventListener('submit', salvarNovaMedicao);
+
+  // Listener para carregar a prateleira quando o contrato mudar no modal do BM
+  document.getElementById('bm-contrato-select')?.addEventListener('change', (e) => {
+    carregarPrateleiraParaMedicao(e.target.value);
+  });
+
+  // Ao fechar o modal, limpar seção da prateleira
+  document.querySelectorAll('[data-modal-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modal = btn.closest('.modal-overlay');
+      if (modal && modal.id === 'new-measurement-modal') {
+        document.getElementById('prateleira-section').style.display = 'none';
+        prateleiraItens = [];
+      }
+    });
+  });
 });

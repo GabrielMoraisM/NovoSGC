@@ -314,6 +314,68 @@ export async function getAlertas(contrato_id) {
   return apiRequest(url);
 }
 
+// ==================== PRATELEIRA ====================
+
+export async function getPrateleiras(filtros = {}) {
+  const params = new URLSearchParams(filtros).toString();
+  const url = params ? `/prateleira/?${params}` : '/prateleira/';
+  return apiRequest(url);
+}
+
+export async function getPrateleirasPorContrato(contratoId, status = null) {
+  const url = status
+    ? `/contratos/${contratoId}/prateleira?status=${status}`
+    : `/contratos/${contratoId}/prateleira`;
+  return apiRequest(url);
+}
+
+export async function getPrateleirasPendentes(contratoId) {
+  return apiRequest(`/contratos/${contratoId}/prateleira/pendentes`);
+}
+
+export async function createPrateleira(contratoId, data) {
+  return apiRequest(`/contratos/${contratoId}/prateleira`, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+}
+
+export async function updatePrateleira(id, data) {
+  return apiRequest(`/prateleira/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  });
+}
+
+export async function cancelarPrateleira(id, motivo) {
+  return apiRequest(`/prateleira/${id}/cancelar`, {
+    method: 'POST',
+    body: JSON.stringify({ motivo })
+  });
+}
+
+export async function marcarAguardandoMedicao(id) {
+  return apiRequest(`/prateleira/${id}/aguardar-medicao`, {
+    method: 'POST'
+  });
+}
+
+export async function vincularPrateleiraAoBoletim(boletimId, vinculos) {
+  // vinculos: [{ prateleira_id, valor_incluido }, ...]
+  return apiRequest(`/boletins/${boletimId}/prateleira`, {
+    method: 'POST',
+    body: JSON.stringify({ vinculos })
+  });
+}
+
+export async function getVinculosPrateleira(boletimId) {
+  return apiRequest(`/boletins/${boletimId}/prateleira`);
+}
+
+export async function getResumoPrateleira() {
+  return apiRequest('/prateleira/resumo');
+}
+
 // ==================== USUÁRIO ATUAL ====================
 export async function getCurrentUser() {
   return apiRequest('/usuarios/me');

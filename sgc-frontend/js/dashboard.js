@@ -393,6 +393,19 @@ function atualizarKPIsGlobais(data) {
     preencherContratosRecentes(data.contratos_recentes || []);
     preencherAlertasRecentes(data.alertas_recentes || []);
     preencherAlertasDestaque(data.alertas_recentes || []);
+
+    // KPIs da Prateleira de Execuções
+    const elValorPrat = document.getElementById('kpi-prateleira-valor-val');
+    const elQtdPrat = document.getElementById('kpi-prateleira-qtd-val');
+    const elVencidosPrat = document.getElementById('kpi-prateleira-vencidos-val');
+
+    if (elValorPrat) elValorPrat.innerText = formatarMoeda(data.valor_total_em_prateleira || 0);
+    if (elQtdPrat) elQtdPrat.innerText = data.qtd_execucoes_prateleira ?? 0;
+    if (elVencidosPrat) {
+        const vencidos = data.execucoes_sem_medicao_30dias ?? 0;
+        elVencidosPrat.innerText = vencidos;
+        elVencidosPrat.style.color = vencidos > 0 ? 'var(--danger, #d32f2f)' : 'inherit';
+    }
 }
 
 function preencherContratosRecentes(contratos) {

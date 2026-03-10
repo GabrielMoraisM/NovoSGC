@@ -39,3 +39,8 @@ class BoletimMedicao(Base):
     # Relacionamentos
     contrato = relationship("Contrato", back_populates="boletins")
     faturas = relationship("Faturamento", back_populates="bm", cascade="all, delete-orphan")
+    prateleira_vinculos = relationship(
+        "BoletimPrateleiraExecucao",
+        back_populates="boletim",
+        cascade="all, delete-orphan"
+    )

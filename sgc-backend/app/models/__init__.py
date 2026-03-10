@@ -10,7 +10,8 @@ from .faturamento import Faturamento
 from .pagamento import Pagamento
 from .contrato_imposto import ContratoImposto
 from .usuario_contrato import UsuarioContrato
-from . import events  
+from .prateleira import PrateleiraExecucao, BoletimPrateleiraExecucao
+from . import events
 
 __all__ = [
     "Usuario",
@@ -25,5 +26,7 @@ __all__ = [
     "Pagamento",
     "ContratoImposto",
     "UsuarioContrato",
+    "PrateleiraExecucao",
+    "BoletimPrateleiraExecucao",
     "events"
 ]

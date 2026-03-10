@@ -125,6 +125,9 @@ class Contrato(Base):
     # Usuários com permissão de acesso (RLS)
     usuarios = relationship("UsuarioContrato", back_populates="contrato", cascade="all, delete-orphan")
 
+    # Execuções na prateleira (aguardando medição)
+    prateleiras = relationship("PrateleiraExecucao", back_populates="contrato", cascade="all, delete-orphan")
+
     # ------------------------------------------------------------
     # Índices adicionais (além do PK e do unique)
     # ------------------------------------------------------------

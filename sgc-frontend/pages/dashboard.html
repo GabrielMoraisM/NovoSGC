@@ -375,8 +375,17 @@
             </svg>
             <span>Medições</span>
           </a>
+          <a href="prateleira.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 20h20"></path>
+              <path d="M5 20V8h14v12"></path>
+              <path d="M9 20v-5h6v5"></path>
+              <path d="M2 8l10-6 10 6"></path>
+            </svg>
+            <span>Prateleira</span>
+          </a>
         </div>
-        
+
         <div class="nav-section">
           <div class="nav-section-title">Financeiro</div>
           <a href="financeiro.html" class="nav-item">
@@ -611,6 +620,54 @@
           </div>
         </div>
         
+        <!-- LINHA 2.5: KPIs da Prateleira de Execuções -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.5rem;">
+          <div class="kpi-card" id="kpi-prateleira-valor">
+            <div class="kpi-header">
+              <div class="kpi-icon primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                  <path d="M2 20h20"></path>
+                  <path d="M5 20V8h14v12"></path>
+                  <path d="M9 20v-5h6v5"></path>
+                  <path d="M2 8l10-6 10 6"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-prateleira-valor-val">R$ 0</div>
+            <div class="kpi-label">🏗️ Valor em Prateleira</div>
+          </div>
+
+          <div class="kpi-card" id="kpi-prateleira-qtd">
+            <div class="kpi-header">
+              <div class="kpi-icon success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-prateleira-qtd-val">0</div>
+            <div class="kpi-label">📋 Execuções Pendentes</div>
+          </div>
+
+          <div class="kpi-card" id="kpi-prateleira-vencidos">
+            <div class="kpi-header">
+              <div class="kpi-icon warning">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-prateleira-vencidos-val" style="color: var(--warning, #f57c00);">0</div>
+            <div class="kpi-label">⏰ Sem Medição &gt; 30 dias</div>
+          </div>
+        </div>
+
         <!-- LINHA 3: Gráfico de Evolução -->
         <div class="card">
           <div class="card-header">

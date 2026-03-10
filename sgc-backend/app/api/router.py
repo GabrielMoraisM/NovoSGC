@@ -14,6 +14,7 @@ from app.api.routes.alertas import router as alertas_router
 from app.api.routes.dashboard import router as dashboard_router  # <-- NOVO
 from app.api.routes.graficos import router as graficos_router
 from app.api.routes.logs import router as logs_router
+from app.api.routes.prateleira import router as prateleira_router
 
 
 api_router = APIRouter()
@@ -33,4 +34,5 @@ api_router.include_router(alertas_router, prefix="/alertas", tags=["alertas"])
 api_router.include_router(dashboard_router, prefix="/dashboard", tags=["dashboard"])  # <-- NOVO
 api_router.include_router(graficos_router, prefix="/graficos", tags=["gráficos"])
 api_router.include_router(logs_router, prefix="/logs", tags=["logs"])
+api_router.include_router(prateleira_router, prefix="", tags=["prateleira"])
 
