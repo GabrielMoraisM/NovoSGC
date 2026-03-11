@@ -75,7 +75,11 @@ window.api = {
   setImpostosContrato: (contratoId, impostos) => apiFetch(`/contratos/${contratoId}/impostos`, {
     method: 'PUT',
     body: JSON.stringify({ impostos })
-  })
+  }),
+  uploadArquivo: (formData) => uploadArquivo(formData),
+  getArquivos: (tipo, id) => getArquivos(tipo, id),
+  deleteArquivo: (id) => deleteArquivo(id),
+  getArvoreArquivos: (contratoId) => getArvoreArquivos(contratoId),
 };
 
 // ==================== AUTENTICAÇÃO ====================
@@ -392,6 +396,38 @@ export async function setImpostosContrato(contratoId, impostos) {
     method: 'PUT',
     body: JSON.stringify({ impostos })
   });
+}
+
+// ==================== ARQUIVOS ====================
+
+export async function uploadArquivo(formData) {
+  // multipart upload — must NOT set Content-Type (browser sets boundary automatically)
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/arquivos/upload`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: formData
+  });
+  if (!response.ok) {
+    let errorData = {};
+    try { errorData = await response.json(); } catch (e) {}
+    const msg = errorData.detail || `Erro ${response.status}`;
+    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  }
+  return response.json();
+}
+
+export async function getArquivos(entidadeTipo, entidadeId) {
+  const params = new URLSearchParams({ entidade_tipo: entidadeTipo, entidade_id: entidadeId });
+  return apiRequest(`/arquivos/?${params}`);
+}
+
+export async function deleteArquivo(id) {
+  return apiFetch(`/arquivos/${id}`, { method: 'DELETE' });
+}
+
+export async function getArvoreArquivos(contratoId) {
+  return apiRequest(`/arquivos/arvore?contrato_id=${contratoId}`);
 }
 
 // ==================== USUÁRIO ATUAL ====================

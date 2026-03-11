@@ -10,6 +10,7 @@ import {
   getImpostosContrato,
   setImpostosContrato
 } from './api.js';
+import { uploadPendingFiles, inicializarUploadArea } from './arquivos.js';
 
 // ===== Estado global =====
 let empresas = [];
@@ -754,7 +755,17 @@ async function salvarNovaNF(event) {
   };
 
   try {
-    await createFaturamento(nfData);
+    const novaFatura = await createFaturamento(nfData);
+    // Upload pending files for the new NF
+    const nfInput = document.getElementById('nf-file-input');
+    if (nfInput && nfInput._getPendingFiles && nfInput._getPendingFiles().length > 0) {
+      try {
+        await uploadPendingFiles(nfInput._getPendingFiles(), 'faturamento', novaFatura.id);
+      } catch (e) {
+        console.error('Erro ao fazer upload dos arquivos da NF:', e);
+      }
+      nfInput._clearPendingFiles();
+    }
     mostrarToast('NF criada com sucesso!');
     document.getElementById('new-invoice-modal').classList.remove('active');
     form.reset();
@@ -842,7 +853,17 @@ async function salvarNovoPagamento(event) {
   };
 
   try {
-    await createPagamento(pagData);
+    const novoPagamento = await createPagamento(pagData);
+    // Upload pending files for the new Pagamento
+    const pagInput = document.getElementById('pagamento-file-input');
+    if (pagInput && pagInput._getPendingFiles && pagInput._getPendingFiles().length > 0) {
+      try {
+        await uploadPendingFiles(pagInput._getPendingFiles(), 'pagamento', novoPagamento.id);
+      } catch (e) {
+        console.error('Erro ao fazer upload dos arquivos do pagamento:', e);
+      }
+      pagInput._clearPendingFiles();
+    }
     mostrarToast('Pagamento registrado!');
     document.getElementById('new-payment-modal').classList.remove('active');
     form.reset();
@@ -1040,6 +1061,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('new-invoice-form')?.addEventListener('submit', salvarNovaNF);
   document.getElementById('new-payment-form')?.addEventListener('submit', salvarNovoPagamento);
+
+  inicializarUploadArea('nf-file-input', 'nf-file-list');
+  inicializarUploadArea('pagamento-file-input', 'pagamento-file-list');
 
   // Modal A: configurar impostos
   document.getElementById('configure-taxes-form')?.addEventListener('submit', salvarImpostos);

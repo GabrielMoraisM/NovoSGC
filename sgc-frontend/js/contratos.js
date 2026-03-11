@@ -19,6 +19,7 @@ import {
   updateContrato,
   getEmpresas
 } from './api.js';
+import { uploadPendingFiles, inicializarUploadArea } from './arquivos.js';
 
 // ===== Variáveis globais =====
 let contratos = [];
@@ -675,6 +676,17 @@ async function salvarNovoContrato(event) {
       await updateParticipantes(novoContrato.id, participantesTemp);
     }
 
+    // Upload pending files for the new contrato
+    const contratoInput = document.getElementById('contrato-file-input');
+    if (contratoInput && contratoInput._getPendingFiles && contratoInput._getPendingFiles().length > 0) {
+      try {
+        await uploadPendingFiles(contratoInput._getPendingFiles(), 'contrato', novoContrato.id);
+      } catch (e) {
+        console.error('Erro ao fazer upload dos arquivos do contrato:', e);
+      }
+      contratoInput._clearPendingFiles();
+    }
+
     alert('Contrato criado com sucesso!');
     document.getElementById('new-contract-modal').classList.remove('active');
     form.reset();
@@ -851,6 +863,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('add-participante-btn')?.addEventListener('click', adicionarParticipanteTemp);
 
   document.getElementById('new-contract-form')?.addEventListener('submit', salvarNovoContrato);
+
+  inicializarUploadArea('contrato-file-input', 'contrato-file-list');
 
   document.querySelectorAll('.money-mask').forEach(campo => {
   campo.addEventListener('input', aplicarMascaraMoeda);

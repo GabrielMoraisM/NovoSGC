@@ -1,10 +1,15 @@
 # app/main.py
 
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from app.core.config import settings
 from app.api.routes import dashboard
+from app.services.arquivo_service import UPLOAD_DIR
+
+# Garantir existência do diretório de uploads
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(
     title="SGC - Sistema de Gestão de Contratos",

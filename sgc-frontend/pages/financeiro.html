@@ -128,6 +128,16 @@
         </div>
 
         <div class="nav-section">
+          <div class="nav-section-title">Documentos</div>
+          <a href="arquivos.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Arquivos</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
           <div class="nav-section-title">Financeiro</div>
           <a href="financeiro.html" class="nav-item active">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -144,7 +154,7 @@
             <span>Alertas</span>
           </a>
         </div>
-        
+
         <div class="nav-section">
           <div class="nav-section-title">Sistema</div>
           <a href="configuracoes.html" class="nav-item" id="menu-configuracoes">
@@ -599,6 +609,21 @@
               <option value="">Selecione...</option>
             </select>
           </div>
+
+          <!-- Anexar Arquivos (opcional) -->
+          <div class="form-group" style="margin-top:0.5rem">
+            <label class="form-label">Anexar Arquivos <span style="font-weight:400;color:var(--text-muted)">(opcional)</span></label>
+            <label style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:1rem;border:2px dashed var(--border);border-radius:var(--radius);cursor:pointer;color:var(--text-muted);font-size:0.875rem;transition:border-color 0.2s;" id="nf-upload-area">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              Clique ou arraste arquivos aqui
+              <input type="file" id="nf-file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" style="display:none">
+            </label>
+            <div id="nf-file-list" style="margin-top:0.5rem"></div>
+          </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -642,6 +667,20 @@
           <div class="form-group">
             <label class="form-label">Observação</label>
             <textarea class="form-input" name="observacao" rows="2"></textarea>
+          </div>
+          <!-- Anexar Arquivos (opcional) -->
+          <div class="form-group" style="margin-top:0.5rem">
+            <label class="form-label">Anexar Arquivos <span style="font-weight:400;color:var(--text-muted)">(opcional)</span></label>
+            <label style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:1rem;border:2px dashed var(--border);border-radius:var(--radius);cursor:pointer;color:var(--text-muted);font-size:0.875rem;transition:border-color 0.2s;" id="pagamento-upload-area">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              Clique ou arraste arquivos aqui
+              <input type="file" id="pagamento-file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" style="display:none">
+            </label>
+            <div id="pagamento-file-list" style="margin-top:0.5rem"></div>
           </div>
         </form>
       </div>

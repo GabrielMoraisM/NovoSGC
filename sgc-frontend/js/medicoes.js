@@ -1,5 +1,6 @@
 // js/medicoes.js
 import { getBoletins, createBoletim, updateBoletim, getContratos, getPrateleirasPendentes, vincularPrateleiraAoBoletim } from './api.js';
+import { uploadPendingFiles, inicializarUploadArea } from './arquivos.js';
 
 // ===== Variáveis globais =====
 let contratos = [];
@@ -462,6 +463,17 @@ async function salvarNovaMedicao(event) {
       }
     }
 
+    // Upload pending files for the new BM
+    const bmInput = document.getElementById('bm-file-input');
+    if (bmInput && bmInput._getPendingFiles && bmInput._getPendingFiles().length > 0) {
+      try {
+        await uploadPendingFiles(bmInput._getPendingFiles(), 'boletim', novoBM.id);
+      } catch (e) {
+        console.error('Erro ao fazer upload dos arquivos do BM:', e);
+      }
+      bmInput._clearPendingFiles();
+    }
+
     alert('Medição criada com sucesso!');
     document.getElementById('new-measurement-modal').classList.remove('active');
     // Limpar seleções da prateleira para próxima abertura
@@ -496,6 +508,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   await carregarContratosSelect();
   await carregarBoletins();
+
+  inicializarUploadArea('bm-file-input', 'bm-file-list');
 
   document.getElementById('filter-contract')?.addEventListener('change', filtrarBoletins);
   document.getElementById('filter-status')?.addEventListener('change', filtrarBoletins);
