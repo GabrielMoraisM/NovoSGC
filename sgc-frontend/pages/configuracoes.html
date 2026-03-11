@@ -8,25 +8,126 @@
     <style>
         .filters-bar {
             display: flex;
-            gap: 1rem;
-            align-items: center;
+            gap: 0.75rem;
+            align-items: flex-end;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
             background: var(--surface);
             padding: 1rem;
             border-radius: var(--radius);
         }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
         .filter-input {
-            min-width: 200px;
+            min-width: 155px;
+        }
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+            margin-left: auto;
         }
         .logs-table {
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
-        .badge-create { background: #d4edda; color: #155724; }
-        .badge-update { background: #fff3cd; color: #856404; }
-        .badge-delete { background: #f8d7da; color: #721c24; }
-        .badge-login { background: #d1ecf1; color: #0c5460; }
-        .badge-logout { background: #e2e3e5; color: #383d41; }
+        .logs-table td {
+            vertical-align: middle;
+        }
+        /* Ação badges */
+        .badge-create        { background: #d4edda; color: #155724; }
+        .badge-update        { background: #fff3cd; color: #856404; }
+        .badge-delete        { background: #f8d7da; color: #721c24; }
+        .badge-login         { background: #d1ecf1; color: #0c5460; }
+        .badge-logout        { background: #e2e3e5; color: #383d41; }
+        .badge-approve       { background: #c3e6cb; color: #1a5c2e; }
+        .badge-cancel        { background: #ffd6a5; color: #7a3e00; }
+        .badge-upload        { background: #e2d9f3; color: #4a1d8f; }
+        .badge-status_update { background: #b8ecf9; color: #0b5569; }
+
+        /* Modal de detalhes */
+        .log-detail-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+        .detail-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+        }
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .log-diff {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .log-diff.single {
+            grid-template-columns: 1fr;
+        }
+        .diff-panel h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 0 0.5rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 2px solid;
+        }
+        .diff-panel.antes h4  { color: #721c24; border-color: #f5c6cb; }
+        .diff-panel.depois h4 { color: #155724; border-color: #c3e6cb; }
+        .diff-panel.unico h4  { color: #0c5460; border-color: #bee5eb; }
+        .diff-panel pre {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            margin: 0;
+            max-height: 320px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .diff-empty {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.8rem;
+            padding: 0.5rem 0;
+        }
+        .log-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
     </style>
 </head>
 <body>
@@ -39,7 +140,7 @@
           <span>SGC Protótipo</span>
         </div>
       </div>
-      
+
       <nav class="sidebar-nav">
         <div class="nav-section">
           <div class="nav-section-title">Principal</div>
@@ -117,8 +218,7 @@
 
         <div class="nav-section">
           <div class="nav-section-title">Sistema</div>
-         <a href="configuracoes.html" class="nav-item active" id="menu-configuracoes">
-
+          <a href="configuracoes.html" class="nav-item active" id="menu-configuracoes">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -127,7 +227,7 @@
           </a>
         </div>
       </nav>
-      
+
       <div class="sidebar-footer">
         <button id="sidebar-toggle" class="sidebar-toggle">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
@@ -197,7 +297,7 @@
               </a>
               <a href="#" onclick="fazerLogout(event)" class="dropdown-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <path d="M9 21H5a2 2 0 0 0-2-2V5a2 2 0 0 0 2-2h4"></path>
                   <polyline points="16 17 21 12 16 7"></polyline>
                   <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
@@ -210,27 +310,67 @@
 
             <div class="page-content">
                 <div class="page-header">
-                    <h1>📋 Log de Atividades</h1>
-                    <p>Visualize todas as ações realizadas no sistema</p>
+                    <div>
+                        <h1>🔍 Log de Atividades</h1>
+                        <p>Rastreie tudo que acontece no sistema — quem fez, o quê e quando</p>
+                    </div>
+                    <a href="registro.html" class="btn btn-primary">➕ Novo usuário</a>
                 </div>
 
                 <!-- Filtros -->
                 <div class="filters-bar">
-                    <select id="filter-usuario" class="form-input form-select filter-input">
-                        <option value="">Todos os usuários</option>
-                    </select>
-                    <select id="filter-modulo" class="form-input form-select filter-input">
-                        <option value="">Todos os módulos</option>
-                        <option value="contratos">Contratos</option>
-                        <option value="empresas">Empresas</option>
-                        <option value="medicoes">Medições</option>
-                        <option value="financeiro">Financeiro</option>
-                        <option value="configuracoes">Configurações</option>
-                    </select>
-                    <input type="text" id="filter-usuario-nome" class="form-input filter-input" placeholder="Nome do usuário...">
-                    <button class="btn btn-primary" id="btn-filtrar">Filtrar</button>
-                    <button class="btn btn-secondary" id="btn-limpar">Limpar</button>
-                    <button class="btn btn-secondary" id="btn-atualizar">↻ Atualizar</button>
+                    <div class="filter-group">
+                        <label>Usuário</label>
+                        <select id="filter-usuario" class="form-input form-select filter-input">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Módulo</label>
+                        <select id="filter-modulo" class="form-input form-select filter-input">
+                            <option value="">Todos</option>
+                            <option value="contratos">Contratos</option>
+                            <option value="empresas">Empresas</option>
+                            <option value="boletins">Medições (BMs)</option>
+                            <option value="prateleira">Prateleira</option>
+                            <option value="arquivos">Arquivos</option>
+                            <option value="faturamentos">Faturamentos (NFs)</option>
+                            <option value="pagamentos">Pagamentos</option>
+                            <option value="usuarios">Usuários</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Ação</label>
+                        <select id="filter-acao" class="form-input form-select filter-input">
+                            <option value="">Todas</option>
+                            <option value="CREATE">Criação</option>
+                            <option value="UPDATE">Atualização</option>
+                            <option value="DELETE">Exclusão</option>
+                            <option value="APPROVE">Aprovação</option>
+                            <option value="CANCEL">Cancelamento</option>
+                            <option value="UPLOAD">Upload</option>
+                            <option value="STATUS_UPDATE">Mudança de Status</option>
+                            <option value="LOGIN">Login</option>
+                            <option value="LOGOUT">Logout</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>De</label>
+                        <input type="date" id="filter-data-inicio" class="form-input filter-input" style="min-width:140px;">
+                    </div>
+                    <div class="filter-group">
+                        <label>Até</label>
+                        <input type="date" id="filter-data-fim" class="form-input filter-input" style="min-width:140px;">
+                    </div>
+                    <div class="filter-group">
+                        <label>E-mail / nome</label>
+                        <input type="text" id="filter-usuario-nome" class="form-input filter-input" placeholder="buscar...">
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" id="btn-filtrar">🔍 Filtrar</button>
+                        <button class="btn btn-secondary" id="btn-limpar">Limpar</button>
+                        <button class="btn btn-secondary" id="btn-atualizar" title="Atualizar">↻</button>
+                    </div>
                 </div>
 
                 <!-- Tabela de logs -->
@@ -239,12 +379,12 @@
                         <table class="table logs-table" id="logs-table">
                             <thead>
                                 <tr>
-                                    <th>Data/Hora</th>
+                                    <th style="white-space:nowrap">Data / Hora</th>
                                     <th>Usuário</th>
                                     <th>Ação</th>
                                     <th>Módulo</th>
                                     <th>Descrição</th>
-                                    <th>Detalhes</th>
+                                    <th style="width:80px;text-align:center">Ver</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -254,31 +394,26 @@
                     </div>
                     <div class="card-footer flex items-center justify-between">
                         <span id="logs-count">Mostrando 0 registros</span>
-                        <div class="flex gap-2">
-                            <button class="btn btn-secondary btn-sm" id="prev-page" disabled>Anterior</button>
-                            <span id="page-info">1</span>
-                            <button class="btn btn-secondary btn-sm" id="next-page">Próximo</button>
+                        <div class="flex gap-2 items-center">
+                            <button class="btn btn-secondary btn-sm" id="prev-page" disabled>&#8249; Anterior</button>
+                            <span style="font-size:0.85rem;color:var(--text-secondary)">Página <strong id="page-info">1</strong></span>
+                            <button class="btn btn-secondary btn-sm" id="next-page">Próximo &#8250;</button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Botão para criar novo usuário -->
-                <div style="margin-top: 2rem; text-align: right;">
-                    <a href="registro.html" class="btn btn-primary">➕ Criar novo usuário</a>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Modal para detalhes (opcional) -->
+    <!-- Modal Detalhes do Log -->
     <div id="log-details-modal" class="modal-overlay">
-        <div class="modal" style="max-width: 600px;">
+        <div class="modal" style="max-width:760px;width:95%;">
             <div class="modal-header">
-                <h3 class="modal-title">Detalhes da Ação</h3>
+                <h3 class="modal-title" id="log-details-title">Detalhes da Ação</h3>
                 <button class="modal-close" data-modal-close>&times;</button>
             </div>
-            <div class="modal-body">
-                <pre id="log-details-content"></pre>
+            <div class="modal-body" id="log-details-body">
+                <!-- preenchido via JS -->
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-modal-close>Fechar</button>

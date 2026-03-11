@@ -1,7 +1,8 @@
 from pathlib import Path
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
@@ -13,11 +14,11 @@ from app.models.faturamento import Faturamento
 from app.models.pagamento import Pagamento
 from app.schemas.arquivo import ArquivoInDB
 from app.services.arquivo_service import ArquivoService
+from app.services.log_service import LogService
 
 router = APIRouter()
 
 
-# ── Helper: convert Arquivo ORM → dict ──────────────────────────────
 def _to_schema(arquivo) -> dict:
     return {
         "id": arquivo.id,
@@ -34,6 +35,7 @@ def _to_schema(arquivo) -> dict:
 
 @router.post("/upload", response_model=ArquivoInDB, status_code=status.HTTP_201_CREATED)
 async def upload_arquivo(
+    request: Request,
     file: UploadFile = File(...),
     entidade_tipo: str = Form(...),
     entidade_id: int = Form(...),
@@ -50,6 +52,23 @@ async def upload_arquivo(
         descricao=descricao,
         usuario_id=current_user.id,
     )
+    LogService(db).registrar_log(
+        usuario_id=current_user.id,
+        usuario_email=current_user.email,
+        acao="UPLOAD",
+        entidade="arquivos",
+        entidade_id=arquivo.id,
+        dados_novos={
+            "nome_original": arquivo.nome_original,
+            "tipo_mime": arquivo.tipo_mime,
+            "tamanho": arquivo.tamanho,
+            "entidade_tipo": entidade_tipo,
+            "entidade_id": entidade_id,
+            "descricao": descricao,
+        },
+        ip=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+    )
     result = ArquivoInDB.model_validate(arquivo)
     result.url_download = f"/api/arquivos/{arquivo.id}/download"
     return result
@@ -63,36 +82,24 @@ def get_arvore_arquivos(
 ):
     """Retorna a hierarquia de arquivos de um contrato: contrato -> BMs -> NFs -> Pagamentos."""
     service = ArquivoService(db)
-
     contrato = db.query(Contrato).filter(Contrato.id == contrato_id).first()
     if not contrato:
-        raise HTTPException(status_code=404, detail="Contrato não encontrado.")
-
+        raise HTTPException(status_code=404, detail="Contrato nao encontrado.")
     arquivos_contrato = service.get_by_entidade("contrato", contrato_id)
-
     boletins = (
         db.query(BoletimMedicao)
         .filter(BoletimMedicao.contrato_id == contrato_id)
         .order_by(BoletimMedicao.numero_sequencial)
         .all()
     )
-
     boletins_data = []
     for bm in boletins:
         arquivos_bm = service.get_by_entidade("boletim", bm.id)
-        faturamentos = (
-            db.query(Faturamento)
-            .filter(Faturamento.bm_id == bm.id)
-            .all()
-        )
+        faturamentos = db.query(Faturamento).filter(Faturamento.bm_id == bm.id).all()
         faturamentos_data = []
         for fat in faturamentos:
             arquivos_fat = service.get_by_entidade("faturamento", fat.id)
-            pagamentos = (
-                db.query(Pagamento)
-                .filter(Pagamento.faturamento_id == fat.id)
-                .all()
-            )
+            pagamentos = db.query(Pagamento).filter(Pagamento.faturamento_id == fat.id).all()
             pagamentos_data = []
             for pag in pagamentos:
                 arquivos_pag = service.get_by_entidade("pagamento", pag.id)
@@ -117,7 +124,6 @@ def get_arvore_arquivos(
             "arquivos": [_to_schema(a) for a in arquivos_bm],
             "faturamentos": faturamentos_data,
         })
-
     return {
         "contrato": {
             "id": contrato.id,
@@ -158,7 +164,7 @@ def download_arquivo(
     arquivo = service.get_arquivo(arquivo_id)
     path = Path(arquivo.caminho)
     if not path.exists():
-        raise HTTPException(status_code=404, detail="Arquivo não encontrado no disco.")
+        raise HTTPException(status_code=404, detail="Arquivo nao encontrado no disco.")
     return FileResponse(
         path=str(path),
         filename=arquivo.nome_original,
@@ -169,9 +175,28 @@ def download_arquivo(
 @router.delete("/{arquivo_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_arquivo(
     arquivo_id: int,
+    request: Request,
     db: Session = Depends(deps.get_db),
     current_user: Usuario = Depends(deps.get_current_active_user),
 ):
     """Remove um arquivo (disco + banco)."""
     service = ArquivoService(db)
+    arquivo_obj = service.get_arquivo(arquivo_id)
+    dados_antigos = {
+        "id": arquivo_obj.id,
+        "nome_original": arquivo_obj.nome_original,
+        "entidade_tipo": arquivo_obj.entidade_tipo,
+        "entidade_id": arquivo_obj.entidade_id,
+        "tamanho": arquivo_obj.tamanho,
+    }
     service.delete_arquivo(arquivo_id)
+    LogService(db).registrar_log(
+        usuario_id=current_user.id,
+        usuario_email=current_user.email,
+        acao="DELETE",
+        entidade="arquivos",
+        entidade_id=arquivo_id,
+        dados_antigos=dados_antigos,
+        ip=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+    )
