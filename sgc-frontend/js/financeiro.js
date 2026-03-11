@@ -803,12 +803,15 @@ async function abrirModalNovoPagamento() {
 
   selectNF.addEventListener('change', function() {
     const selectedId = parseInt(this.value);
-    if (selectedId) {
+    const campoValor = document.getElementById('payment-valor-pago');
+    if (selectedId && campoValor) {
       const fatura = faturas.find(f => f.id === selectedId);
       if (fatura) {
         const saldo = calcularSaldoDevedor(fatura);
-        document.getElementById('payment-valor').value = saldo.toFixed(2);
+        campoValor.value = mascaraMoeda(Math.round(saldo * 100).toString());
       }
+    } else if (campoValor) {
+      campoValor.value = '';
     }
   });
 
@@ -833,7 +836,7 @@ async function salvarNovoPagamento(event) {
   }
 
   const saldoDevedor = calcularSaldoDevedor(fatura);
-  const valorPago = parseFloat(formData.get('valorPago'));
+  const valorPago = limparMascaraMoeda(formData.get('valorPago'));
 
   if (valorPago <= 0) {
     mostrarToast('Valor pago deve ser maior que zero.', 'error');

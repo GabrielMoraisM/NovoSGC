@@ -39,11 +39,11 @@ class PagamentoService:
         pagamentos_anteriores = self.repo.get_by_faturamento(pagamento_data.faturamento_id)
         total_pago_anterior = sum(p.valor_pago for p in pagamentos_anteriores)
 
-        # 4. Verificar se o valor do novo pagamento não ultrapassa o valor líquido da NF
-        if total_pago_anterior + pagamento_data.valor_pago > faturamento.valor_liquido_nf:
+        # 4. Verificar se o valor do novo pagamento não ultrapassa o valor BRUTO da NF
+        if total_pago_anterior + pagamento_data.valor_pago > faturamento.valor_bruto_nf:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Valor total dos pagamentos ultrapassa o valor líquido da NF."
+                detail="Valor total dos pagamentos ultrapassa o valor bruto da NF."
             )
 
         # 5. Criar pagamento
@@ -104,10 +104,10 @@ class PagamentoService:
             outros_pagamentos = self.repo.get_by_faturamento(pagamento.faturamento_id)
             total_outros = sum(p.valor_pago for p in outros_pagamentos if p.id != pagamento.id)
 
-            if total_outros + update_dict['valor_pago'] > faturamento.valor_liquido_nf:
+            if total_outros + update_dict['valor_pago'] > faturamento.valor_bruto_nf:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Valor total dos pagamentos ultrapassaria o valor líquido da NF."
+                    detail="Valor total dos pagamentos ultrapassaria o valor bruto da NF."
                 )
 
         pagamento_atualizado = self.repo.update(pagamento, update_dict)
