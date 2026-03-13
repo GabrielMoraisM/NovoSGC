@@ -89,10 +89,14 @@ class UsuarioService:
         # Hash impossível de adivinhar: ninguém sabe essa "senha"
         senha_placeholder = get_password_hash(f"LDAP_{secrets.token_hex(32)}")
 
-        return self.repo.create(
+        usuario = self.repo.create(
             nome=ldap_info.get("nome", ldap_info["email"].split("@")[0]),
             email=ldap_info["email"],
             senha_hash=senha_placeholder,
             perfil=settings.LDAP_DEFAULT_PERFIL,
             ativo=True,
         )
+        # flush() não persiste — commit explícito necessário para salvar o novo usuário AD
+        self.repo.db.commit()
+        self.repo.db.refresh(usuario)
+        return usuario
