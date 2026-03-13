@@ -51,10 +51,16 @@ class UsuarioService:
 
             if ldap_ok is True:
                 # Credenciais válidas no AD
+                # 1) Tenta achar pelo email de login (ex: @heca.corp)
                 usuario = self.repo.get_by_email(email)
+                # 2) O AD pode retornar um email diferente (ex: mail=@heca.com.br)
+                #    Se não achou pelo login, tenta pelo email do AD
+                if not usuario and ldap_info.get("email") and ldap_info["email"] != email:
+                    usuario = self.repo.get_by_email(ldap_info["email"])
                 if not usuario:
-                    # Primeiro acesso: provisionar usuário automaticamente
-                    usuario = self._provision_ldap_user(ldap_info)
+                    # Primeiro acesso: cria com o email de login para evitar duplicatas
+                    provision_info = {**ldap_info, "email": email}
+                    usuario = self._provision_ldap_user(provision_info)
                 return usuario
 
             if ldap_ok is False:
