@@ -1,2 +1,7 @@
 uploads/*
 !uploads/.gitkeep
+
+# Variáveis de ambiente — nunca commitar (contém senhas e chaves)
+.env
+.env.*
+!.env.example
